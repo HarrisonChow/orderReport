@@ -24,6 +24,7 @@ import {
 import {
   connectionArgs,
   connectionDefinitions,
+  connectionFromPromisedArray,
   connectionFromArray,
   cursorForObjectInConnection,
   fromGlobalId,
@@ -46,123 +47,14 @@ import {
   removeCompletedTodos,
   removeTodo,
   renameTodo,
+  Conn,
+  Order,
+  Parcel,
+  Logistic,
+  getAllOrders,
+  getAllLogistics,
+  getAllParcels,
 } from './database';
-
-import Db from './db';
-
-
-
-import graphql from 'graphql';
-
-
-const Order = new GraphQLObjectType({
-  name: 'Order',
-  description: 'This represents a order',
-  fields: () =>{
-    return {
-      id: {
-        type: GraphQLInt,
-        resolve(order) {
-          return order.id
-        }
-      },
-      order_number: {
-        type: GraphQLString,
-        resolve(order){
-          return order.orderNumber;
-        }
-      },
-      status: {
-        type: GraphQLString,
-        resolve(order){
-          return order.status;
-        }
-      },
-      created_at: {
-        type: GraphQLString,
-        resolve(order){
-          return order.createdAt;
-        }
-      },
-      parcels: {
-        type: new GraphQLList(Parcel),
-        resolve(order){
-          return order.getParcels();
-        }
-      },
-    };
-  }
-});
-
-const Parcel = new GraphQLObjectType({
-  name: 'Parcel',
-  description: 'This represents a parcel',
-  fields: () =>{
-    return {
-      id: {
-        type: GraphQLInt,
-        resolve(parcel) {
-          return parcel.id
-        }
-      },
-      tracking_number: {
-        type: GraphQLString,
-        resolve(parcel){
-          return parcel.trackingNumber;
-        }
-      },
-      status: {
-        type: GraphQLString,
-        resolve(parcel){
-          return parcel.status;
-        }
-      },
-      delivery_time: {
-        type: GraphQLInt,
-        resolve(parcel){
-          return parcel.deliveryTime;
-        }
-      },
-    };
-  }
-});
-
-const Logistic = new GraphQLObjectType({
-  name: 'Logistic',
-  description: 'This represents a logistic',
-  fields: () =>{
-    return {
-      id: {
-        type: GraphQLInt,
-        resolve(logistic) {
-          return logistic.id
-        }
-      },
-      name: {
-        type: GraphQLString,
-        resolve(logistic){
-          return logistic.name;
-        }
-      },
-      parcels: {
-        type: new GraphQLList(Parcel),
-        resolve(logistic){
-          return logistic.getParcels();
-        }
-      },
-    };
-  }
-});
-
-
-
-
-
-
-
-
-
-
 
 
 const {nodeInterface, nodeField} = nodeDefinitions(
@@ -173,6 +65,13 @@ const {nodeInterface, nodeField} = nodeDefinitions(
     } else if (type === 'User') {
       return getUser(id);
     }
+    // else if (type === 'Order'){
+    //   return getOrder(id);
+    // } else if (type === 'Parcle'){
+    //   return getParcle(id);
+    // } else if (type === 'Logistic'){
+    //   return getLogistic(id);
+    // }
     return null;
   },
   (obj) => {
@@ -180,6 +79,12 @@ const {nodeInterface, nodeField} = nodeDefinitions(
       return GraphQLTodo;
     } else if (obj instanceof User) {
       return GraphQLUser;
+    } else if(obj instanceof Order) {
+      return GraphQLOrder;
+    } else if(obj instanceof Parcel) {
+      return GraphQLParcel;
+    } else if(obj instanceof Logistic) {
+      return GraphQLLogistic;
     }
     return null;
   }
@@ -201,18 +106,129 @@ const GraphQLTodo = new GraphQLObjectType({
   interfaces: [nodeInterface],
 });
 
-const {
-  connectionType: TodosConnection,
-  edgeType: GraphQLTodoEdge,
-} = connectionDefinitions({
-  name: 'Todo',
-  nodeType: GraphQLTodo,
+
+
+const { connectionType: TodosConnection, edgeType: GraphQLTodoEdge } =
+  connectionDefinitions({ name: 'Todo', nodeType: GraphQLTodo });
+
+
+const GraphQLOrder = new GraphQLObjectType({
+  name: 'Order',
+  fields: () => ({
+      id: globalIdField('Order'),
+      status: {
+        type: GraphQLString,
+        resolve: (obj) => obj.status,
+      },
+      order_number: {
+        type: GraphQLString,
+        resolve: (obj) => obj.orderNumber,
+      },
+      created_at: {
+        type: GraphQLString,
+        resolve: (obj) => obj.createdAt,
+      },
+      parcels: {
+        args: connectionArgs,
+        type: ParcelsConnection,
+        resolve: (obj, ...args) => connectionFromPromisedArray(obj.getParcels(), args),
+      },
+    }),
+  interfaces: [nodeInterface],
 });
+
+const { connectionType: OrdersConnection, edgeType: GraphQLOrderEdge } =
+   connectionDefinitions({ name: 'Order', nodeType: GraphQLOrder });
+
+
+const GraphQLParcel = new GraphQLObjectType({
+  name: 'Parcel',
+  fields: () => ({
+      id: globalIdField('Parcel'),
+      status: {
+        type: GraphQLString,
+        resolve: (obj) => obj.status,
+      },
+      tracking_number: {
+        type: GraphQLString,
+        resolve: (obj) => obj.trackingNumber,
+      },
+      delivery_time: {
+
+        type: GraphQLInt,
+        resolve: (obj) => obj.deliveryTime,
+      },
+      logistic: {
+        args: connectionArgs,
+        type: LogisticsConnection,
+        resolve: (obj, ...args) => connectionFromPromisedArray(obj.getLogistic(), args),
+      },
+      order: {
+        args: connectionArgs,
+        type: OrdersConnection,
+        resolve: (obj, ...args) => connectionFromPromisedArray(obj.getOrder(), args),
+      },
+    }),
+  interfaces: [nodeInterface],
+
+});
+
+const { connectionType: ParcelsConnection, edgeType: GraphQLParcelEdge } =
+  connectionDefinitions({ name: 'Parcel', nodeType: GraphQLParcel });
+
+
+const GraphQLLogistic = new GraphQLObjectType({
+  name: 'Logistic',
+  fields: () => ({
+      id: globalIdField('Logistic'),
+      name: {
+        type: GraphQLString,
+        resolve: (obj) => obj.name,
+      },
+      parcels: {
+        args: connectionArgs,
+        type: ParcelsConnection,
+        resolve: (obj, ...args) => connectionFromPromisedArray(obj.getParcels(), args),
+      },
+    }),
+  interfaces: [nodeInterface],
+});
+
+const { connectionType: LogisticsConnection, edgeType: GraphQLLogisticEdge } =
+  connectionDefinitions({ name: 'Logistic', nodeType: GraphQLLogistic });
 
 const GraphQLUser = new GraphQLObjectType({
   name: 'User',
   fields: {
     id: globalIdField('User'),
+
+    orders: {
+      type: OrdersConnection,
+      args: {
+        ...connectionArgs,
+      },
+      resolve: (obj, { ...args}) =>
+        connectionFromPromisedArray(getAllOrders(), args)
+    },
+
+    parcels: {
+      type: ParcelsConnection,
+      args: {
+        ...connectionArgs,
+      },
+      resolve: (obj, { ...args}) =>
+        connectionFromPromisedArray(getAllParcels(), args)
+    },
+
+    logistics: {
+      type: LogisticsConnection,
+      args: {
+        ...connectionArgs,
+      },
+      resolve: (obj, { ...args}) =>
+        connectionFromPromisedArray(getAllLogistics(), args)
+    },
+
     todos: {
       type: TodosConnection,
       args: {
@@ -225,6 +241,7 @@ const GraphQLUser = new GraphQLObjectType({
       resolve: (obj, {status, ...args}) =>
         connectionFromArray(getTodos(status), args),
     },
+
     totalCount: {
       type: GraphQLInt,
       resolve: () => getTodos().length,
@@ -244,64 +261,8 @@ const Root = new GraphQLObjectType({
       type: GraphQLUser,
       resolve: () => getViewer(),
     },
-
-
-    order: {
-      type: new GraphQLList(Order),
-      args:{
-        id:{
-          type:GraphQLInt
-        },
-        order_number:{
-          type:GraphQLString
-        }
-      },
-      resolve(root, args){
-        return Db.models.order.findAll({where: args});
-      }
-    },
-
-    parcel: {
-      type: new GraphQLList(Parcel),
-      args:{
-        id:{
-          type:GraphQLInt
-        },
-        tracking_number:{
-          type:GraphQLString
-        }
-      },
-      resolve(root, args){
-        return Db.models.parcel.findAll({where: args});
-      }
-    },
-
-    logistic: {
-      type: new GraphQLList(Logistic),
-      args:{
-        id:{
-          type:GraphQLInt
-        },
-        name:{
-          type:GraphQLString
-        }
-      },
-      resolve(root, args){
-        return Db.models.logistic.findAll({where: args});
-      }
-    },
-    node: nodeField,
+  node: nodeField,
   },
-
-
-
-
-
-
-
-
-
-
 });
 
 const GraphQLAddTodoMutation = mutationWithClientMutationId({

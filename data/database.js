@@ -11,6 +11,102 @@
  */
 
 
+ import Sequelize from 'sequelize';
+
+ import {
+   connectionFromPromisedArray,
+ } from 'graphql-relay';
+
+ export const Conn = new Sequelize(
+   'orders_report',
+   'albert',
+   'sydneytools123',
+   {
+     dialect: 'postgres',
+     host: 'localhost'
+   }
+ );
+
+ export const Order = Conn.define('order', {
+   orderNumber: {
+     type: Sequelize.STRING,
+   },
+   status: {
+     type: Sequelize.STRING
+   },
+   createdAt: {
+     type: Sequelize.STRING
+   }
+ });
+
+ export const Parcel = Conn.define('parcel', {
+   trackingNumber: {
+     type: Sequelize.STRING,
+   },
+   status: {
+     type: Sequelize.STRING
+   },
+   deliveryTime: {
+     type: Sequelize.INTEGER
+   },
+   orderId: {
+     type: Sequelize.INTEGER
+   },
+   logisticId: {
+     type: Sequelize.INTEGER
+   },
+ });
+
+ export const Logistic = Conn.define('logistic', {
+   name: {
+     type: Sequelize.STRING,
+   }
+ });
+
+ //relationships
+ Order.hasMany(Parcel);
+ Parcel.belongsTo(Order);
+ Logistic.hasMany(Parcel);
+ Parcel.belongsTo(Logistic);
+
+
+
+ export function getOrder(id) {
+   const order = Order.findOne({
+     where:{id: id},
+     raw : true
+   }).then(function(v) {
+     return order;
+   });
+ };
+ export function getParcel(id) {
+   const parcel = Parcel.findOne({
+     where:{id: id},
+     raw : true
+   }).then(function(v) {
+     return parcel;
+   });
+ };
+ export function getLogistic(id) {
+   const logistic = Logistic.findOne({
+     where:{id: id},
+     raw : true
+   }).then(function(v) {
+     return logistic;
+   });
+ };
+
+
+
+ export function getAllOrders() {
+  return Order.findAll();
+ }
+ export function getAllParcels() {
+  return Parcel.findAll();
+ }
+ export function getAllLogistics() {
+  return Logistic.findAll();
+ }
 
 export class Todo {}
 export class User {}

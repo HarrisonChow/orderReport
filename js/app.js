@@ -17,6 +17,7 @@ import {IndexRoute, Route, Router} from 'react-router';
 import TodoApp from './components/TodoApp';
 import TodoList from './components/TodoList';
 import ViewerQueries from './queries/ViewerQueries';
+import Order from './components/Order';
 
 import {createHashHistory} from 'history';
 import {applyRouterMiddleware, useRouterHistory} from 'react-router';

@@ -49,4 +49,12 @@ Parcel.belongsTo(Order);
 Logistic.hasMany(Parcel);
 Parcel.belongsTo(Logistic);
 
+export function getOrder(id) {
+  return Order.findOne({
+    where:{id: id}
+  });
+}
 export default Conn;
+// export function getOrder(id) {
+//   return Order.id;
+// }
