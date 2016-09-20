@@ -74,7 +74,6 @@
  export function getOrder(id) {
    const order = Order.findOne({
      where:{id: id},
-     raw : true
    }).then(function(v) {
      return order;
    });
@@ -82,7 +81,6 @@
  export function getParcel(id) {
    const parcel = Parcel.findOne({
      where:{id: id},
-     raw : true
    }).then(function(v) {
      return parcel;
    });
@@ -90,7 +88,6 @@
  export function getLogistic(id) {
    const logistic = Logistic.findOne({
      where:{id: id},
-     raw : true
    }).then(function(v) {
      return logistic;
    });

@@ -25,24 +25,31 @@ const history = useRouterHistory(createHashHistory)({ queryKey: false });
 const mountNode = document.getElementById('root');
 import useRelay from 'react-router-relay';
 
+
+
+
 ReactDOM.render(
   <Router
     environment={Relay.Store}
     history={history}
     render={applyRouterMiddleware(useRelay)}>
+
     <Route path="/"
       component={TodoApp}
       queries={ViewerQueries}>
       <IndexRoute
-        component={TodoList}
+        component={Order}
         queries={ViewerQueries}
-        prepareParams={() => ({status: 'any'})}
+        prepareParams={() => ({status: 'Processing'})}
       />
       <Route path=":status"
         component={TodoList}
         queries={ViewerQueries}
       />
     </Route>
+
+
+
   </Router>,
   mountNode
 );

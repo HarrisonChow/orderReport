@@ -140,7 +140,6 @@ const GraphQLOrder = new GraphQLObjectType({
 const { connectionType: OrdersConnection, edgeType: GraphQLOrderEdge } =
    connectionDefinitions({ name: 'Order', nodeType: GraphQLOrder });
 
-
 const GraphQLParcel = new GraphQLObjectType({
   name: 'Parcel',
   fields: () => ({
@@ -154,7 +153,6 @@ const GraphQLParcel = new GraphQLObjectType({
         resolve: (obj) => obj.trackingNumber,
       },
       delivery_time: {
-
         type: GraphQLInt,
         resolve: (obj) => obj.deliveryTime,
       },
