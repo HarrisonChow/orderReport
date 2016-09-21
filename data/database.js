@@ -29,19 +29,22 @@
 
  export const Order = Conn.define('order', {
    orderNumber: {
-     type: Sequelize.STRING,
+     type: Sequelize.STRING
    },
    status: {
      type: Sequelize.STRING
    },
    createdAt: {
      type: Sequelize.STRING
+   },
+   updatedAt: {
+     type: Sequelize.DATE
    }
  });
 
  export const Parcel = Conn.define('parcel', {
    trackingNumber: {
-     type: Sequelize.STRING,
+     type: Sequelize.STRING
    },
    status: {
      type: Sequelize.STRING
@@ -59,7 +62,7 @@
 
  export const Logistic = Conn.define('logistic', {
    name: {
-     type: Sequelize.STRING,
+     type: Sequelize.STRING
    }
  });
 

@@ -128,6 +128,10 @@ const GraphQLOrder = new GraphQLObjectType({
         type: GraphQLString,
         resolve: (obj) => obj.createdAt,
       },
+      updated_at:{
+        type:GraphQLString,
+        resolve: (obj) => obj.updatedAt,
+      },
       parcels: {
         args: connectionArgs,
         type: ParcelsConnection,
@@ -157,14 +161,12 @@ const GraphQLParcel = new GraphQLObjectType({
         resolve: (obj) => obj.deliveryTime,
       },
       logistic: {
-        args: connectionArgs,
-        type: LogisticsConnection,
-        resolve: (obj, ...args) => connectionFromPromisedArray(obj.getLogistic(), args),
+        type: GraphQLLogistic,
+        resolve: (obj) => obj.getLogistic(),
       },
       order: {
-        args: connectionArgs,
-        type: OrdersConnection,
-        resolve: (obj, ...args) => connectionFromPromisedArray(obj.getOrder(), args),
+        type: GraphQLOrder,
+        resolve: (obj) => obj.getOrder(),
       },
     }),
   interfaces: [nodeInterface],
@@ -173,7 +175,6 @@ const GraphQLParcel = new GraphQLObjectType({
 
 const { connectionType: ParcelsConnection, edgeType: GraphQLParcelEdge } =
   connectionDefinitions({ name: 'Parcel', nodeType: GraphQLParcel });
-
 
 const GraphQLLogistic = new GraphQLObjectType({
   name: 'Logistic',

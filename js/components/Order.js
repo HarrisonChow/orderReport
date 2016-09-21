@@ -1,12 +1,19 @@
 import React from 'react';
 import Relay from 'react-relay';
 import classnames from 'classnames';
+import ReactList from "react-list";
+
+const pageSize = 3;
 
 class OrderList extends React.Component {
   render() {
     return(
       <div className="container" >
         <h4>Order numbers list</h4>
+        <select>
+          <option value="7">Last 7 Days</option>
+          <option value="3">Last 3 Days</option>
+        </select>
         {this.props.viewer.orders.edges.map(edge =>
           <Order edge={edge} key={edge.node.id}/>
         )}
@@ -19,26 +26,28 @@ class Order extends React.Component {
   render() {
     var edge = this.props.edge;
     return (
-      <div className="col-sm-4">
-        <div className="panel panel-default">
-          <div className="panel-heading" >
-            <h4>{edge.node.order_number}</h4> {edge.node.status}
+        <div className="order">
+          <div className="order-detail">
+            <h4>{edge.node.order_number}</h4>
           </div>
-          <div className="panel-body">
-            <h5>{edge.node.created_at}</h5>
+          <div className="order-detail">
+            <h4>{edge.node.status}</h4>
           </div>
+          <div className="order-detail">
+            <h4>{edge.node.created_at}</h4>
+          </div>
+
         </div>
-      </div>
     )
   }
 }
 
-
 export default Relay.createContainer(OrderList, {
+  initialVariables: {count: 2},
   fragments: {
     viewer: () => Relay.QL`
       fragment on User {
-        orders(first: 99999) {
+        orders(first: $count) {
           edges {
             node {
               id,
@@ -46,6 +55,11 @@ export default Relay.createContainer(OrderList, {
               created_at,
               status,
             }
+            cursor
+          }
+          pageInfo {
+            hasNextPage,
+            hasPreviousPage
           }
         }
       }

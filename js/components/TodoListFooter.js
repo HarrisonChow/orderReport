@@ -38,7 +38,7 @@ class TodoListFooter extends React.Component {
             <IndexLink to="/" activeClassName="selected">All</IndexLink>
           </li>
           <li>
-            <Link to="/active" activeClassName="selected">Active</Link>
+            <Link to="/parcel" activeClassName="selected">Parcels</Link>
           </li>
           <li>
             <Link to="/completed" activeClassName="selected">Completed</Link>

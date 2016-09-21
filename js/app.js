@@ -18,6 +18,7 @@ import TodoApp from './components/TodoApp';
 import TodoList from './components/TodoList';
 import ViewerQueries from './queries/ViewerQueries';
 import Order from './components/Order';
+import Parcel from './components/Parcel';
 
 import {createHashHistory} from 'history';
 import {applyRouterMiddleware, useRouterHistory} from 'react-router';
@@ -40,14 +41,13 @@ ReactDOM.render(
       <IndexRoute
         component={Order}
         queries={ViewerQueries}
-        prepareParams={() => ({status: 'Processing'})}
       />
-      <Route path=":status"
-        component={TodoList}
+
+      <Route path="parcel"
+        component={Parcel}
         queries={ViewerQueries}
       />
     </Route>
-
 
 
   </Router>,
