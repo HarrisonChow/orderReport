@@ -101,6 +101,29 @@
  export function getAllOrders() {
   return Order.findAll();
  }
+
+ // export function getAmountByStatus() {
+ //    return Order.findAndCountAll().then(function(result) {
+ //      return result.count;
+ //    });
+ // }
+ export function getAmountByStatus(status = 'any') {
+   if (status === 'any') {
+     return Order.findAndCountAll().then(function(result) {
+      return result.count;
+    });
+   } else if (status === "Processing") {
+    return Order.findAndCountAll({ where: {status: "Processing"} }).then(function(result) {
+     return result.count;
+     });
+   } else if (status === "Complete") {
+     return Order.findAndCountAll({ where: {status: "Complete"} }).then(function(result) {
+      return result.count;
+    });
+   }
+ }
+
+
  export function getAllParcels() {
   return Parcel.findAll();
  }

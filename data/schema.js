@@ -54,6 +54,7 @@ import {
   getAllOrders,
   getAllLogistics,
   getAllParcels,
+  getAmountByStatus,
 } from './database';
 
 
@@ -244,6 +245,18 @@ const GraphQLUser = new GraphQLObjectType({
     totalCount: {
       type: GraphQLInt,
       resolve: () => getTodos().length,
+    },
+    ordersAmount: {
+      type: GraphQLInt,
+      resolve: () => getAmountByStatus(),
+    },
+    processingOrdersAmount: {
+      type: GraphQLInt,
+      resolve: () => getAmountByStatus('Processing'),
+    },
+    completeOrdersAmount: {
+      type: GraphQLInt,
+      resolve: () => getAmountByStatus('Complete'),
     },
     completedCount: {
       type: GraphQLInt,
