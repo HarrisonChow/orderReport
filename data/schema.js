@@ -55,6 +55,7 @@ import {
   getAllLogistics,
   getAllParcels,
   getAmountByStatus,
+  getOrderById,
 } from './database';
 
 
@@ -205,10 +206,14 @@ const GraphQLUser = new GraphQLObjectType({
     orders: {
       type: OrdersConnection,
       args: {
+        order_number: {
+          type: GraphQLString,
+          defaultValue: 'any',
+        },
         ...connectionArgs,
       },
-      resolve: (obj, { ...args}) =>
-        connectionFromPromisedArray(getAllOrders(), args)
+      resolve: (obj, {order_number, ...args}) =>
+        connectionFromPromisedArray(getAllOrders(order_number), args)
     },
 
     parcels: {
@@ -246,6 +251,10 @@ const GraphQLUser = new GraphQLObjectType({
       type: GraphQLInt,
       resolve: () => getTodos().length,
     },
+    completedCount: {
+      type: GraphQLInt,
+      resolve: () => getTodos('completed').length,
+    },
     ordersAmount: {
       type: GraphQLInt,
       resolve: () => getAmountByStatus(),
@@ -254,13 +263,9 @@ const GraphQLUser = new GraphQLObjectType({
       type: GraphQLInt,
       resolve: () => getAmountByStatus('Processing'),
     },
-    completeOrdersAmount: {
+    deliveriedOrdersAmount: {
       type: GraphQLInt,
-      resolve: () => getAmountByStatus('Complete'),
-    },
-    completedCount: {
-      type: GraphQLInt,
-      resolve: () => getTodos('completed').length,
+      resolve: () => getAmountByStatus('Deliveried'),
     },
   },
   interfaces: [nodeInterface],

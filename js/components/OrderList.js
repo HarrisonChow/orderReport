@@ -1,9 +1,9 @@
 import React from 'react';
 import Relay from 'react-relay';
 import classnames from 'classnames';
-// import ReactList from "react-list";
-
-const pageSize = 3;
+import {IndexLink, Link} from 'react-router';
+//
+// const pageSize = 3;
 
 class OrderList extends React.Component {
   state = { dateRange: 7 };
@@ -21,12 +21,13 @@ class OrderList extends React.Component {
         <div className="order-amount">
           <h4>Total: {this.props.viewer.ordersAmount} orders </h4>
           <h4>Processing: {this.props.viewer.processingOrdersAmount} orders </h4>
-          <h4>Complete: {this.props.viewer.completeOrdersAmount} orders </h4>
+          <h4>Deliveried: {this.props.viewer.deliveriedOrdersAmount} orders </h4>
         </div>
         <div>
           <select onChange={this.onChange}>
             <option value="7" >Last 7 Days</option>
             <option value="10" >Last 10 Days</option>
+            <option value="160" >Last 160 Days</option>
           </select>
         </div>
         {this.props.viewer.orders.edges
@@ -34,11 +35,12 @@ class OrderList extends React.Component {
             let startDate = new Date();
             startDate.setDate(startDate.getDate() - dateRange);
             let createAt = new Date(edge.node.created_at);
+            // let ostatus = edge.node.status;
             // debugger;
-            return createAt.getTime() >= startDate.getTime();
+            return createAt.getTime() >= startDate.getTime() ;
           })
           .map(edge =>
-          <Order edge={edge} key={edge.node.id}/>
+          <Order edge={edge} key={edge.node.id} onClick={this.props.OrderDetail}/>
         )}
       </div>
     )
@@ -59,13 +61,17 @@ class Order extends React.Component {
           <div className="order-detail">
             <h4>{edge.node.created_at}</h4>
           </div>
+          <div className="order-detail">
+            <Link to={`orders/${edge.node.order_number}`}>detail</Link>
+          </div>
         </div>
     )
   }
 }
 
+
 export default Relay.createContainer(OrderList, {
-  initialVariables: {count: 10},
+  initialVariables: {count: 15},
   fragments: {
     viewer: () => Relay.QL`
       fragment on User {
@@ -81,7 +87,7 @@ export default Relay.createContainer(OrderList, {
         },
         ordersAmount,
         processingOrdersAmount,
-        completeOrdersAmount,
+        deliveriedOrdersAmount,
       }
     `
   },

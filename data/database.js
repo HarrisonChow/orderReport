@@ -97,9 +97,18 @@
  };
 
 
+ // 
+ // export function getAllOrders() {
+ //  return Order.findAll();
+ // }
 
- export function getAllOrders() {
-  return Order.findAll();
+ export function getAllOrders(order_number) {
+   if (order_number === 'any') {
+     return Order.findAll();
+   } else {
+     return Order.findAll({ where: { orderNumber: order_number } });
+   }
+  //  return Order.findAll({ where: { id: 'T3JkZXI6MQ==' } });
  }
 
  // export function getAmountByStatus() {
@@ -116,8 +125,8 @@
     return Order.findAndCountAll({ where: {status: "Processing"} }).then(function(result) {
      return result.count;
      });
-   } else if (status === "Complete") {
-     return Order.findAndCountAll({ where: {status: "Complete"} }).then(function(result) {
+   } else if (status === "Deliveried") {
+     return Order.findAndCountAll({ where: {status: "Deliveried"} }).then(function(result) {
       return result.count;
     });
    }

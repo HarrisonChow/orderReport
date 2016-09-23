@@ -17,7 +17,8 @@ import {IndexRoute, Route, Router} from 'react-router';
 import TodoApp from './components/TodoApp';
 import TodoList from './components/TodoList';
 import ViewerQueries from './queries/ViewerQueries';
-import Order from './components/Order';
+import OrderList from './components/OrderList';
+import OrderDetails from './components/OrderDetails';
 import Parcel from './components/Parcel';
 
 import {createHashHistory} from 'history';
@@ -27,6 +28,12 @@ const mountNode = document.getElementById('root');
 import useRelay from 'react-router-relay';
 
 
+function prepareOrderParams(params, route) {
+  return {
+    ...params,
+    order_number:params.id
+  };
+};
 
 
 ReactDOM.render(
@@ -39,10 +46,14 @@ ReactDOM.render(
       component={TodoApp}
       queries={ViewerQueries}>
       <IndexRoute
-        component={Order}
+        component={OrderList}
         queries={ViewerQueries}
       />
-
+      <Route path="/orders/:id"
+        component={OrderDetails}
+        queries={ViewerQueries}
+        prepareParams={prepareOrderParams}
+      />
       <Route path="parcel"
         component={Parcel}
         queries={ViewerQueries}
