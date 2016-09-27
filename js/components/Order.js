@@ -19,7 +19,7 @@ class Detail extends React.Component {
   render() {
     var edge = this.props.edge;
     return (
-        <div>
+        <div >
           <div className="order-detail">
             <h4>Order Number: {edge.node.order_number}</h4>
           </div>
@@ -45,6 +45,8 @@ class Parcel extends React.Component {
     return (
       <div>
         <div><h4>Parcel Trancking Number: {edge.node.tracking_number}</h4></div>
+        <div><h4>Parcel Status: {edge.node.status}</h4></div>
+        <div><h4>Parcel Delivery Time: {edge.node.delivery_time}</h4></div>
         <div><h4>Logistic Company: {edge.node.logistic.name}</h4></div>
       </div>
     )
@@ -72,6 +74,8 @@ export default Relay.createContainer(OrderDetails, {
                   node {
                     id,
                     tracking_number,
+                    status,
+                    delivery_time,
                     logistic{
                       name
                     }

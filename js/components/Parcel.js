@@ -2,49 +2,65 @@ import React from 'react';
 import Relay from 'react-relay';
 import classnames from 'classnames';
 
-class ParcelList extends React.Component {
+class ParcelDetails extends React.Component {
   render() {
-    return(
-      <div className="container" >
-        <h4>Parcels list</h4>
-        {this.props.viewer.parcels.edges.map(edge =>
-          <Parcel edge={edge} key={edge.node.id}/>
-        )}
-      </div>
+    return (
+        <div className="parcel">
+          {this.props.viewer.parcels.edges
+            .map(edge =>
+            <Detail edge={edge} key={edge.node.id}/>
+          )}
+        </div>
     )
   }
 }
 
-class Parcel extends React.Component {
+class Detail extends React.Component {
   render() {
     var edge = this.props.edge;
     return (
-        <div className="parcel">
+        <div>
           <div className="parcel-detail">
-            <h4>{edge.node.tracking_number}</h4>
+            <h4>Parcel Trancking Number: {edge.node.tracking_number}</h4>
           </div>
           <div className="parcel-detail">
-            <h4>{edge.node.status}</h4>
+            <h4>Parcel Status: {edge.node.status}</h4>
           </div>
           <div className="parcel-detail">
-            <h4>{edge.node.delivery_time}</h4>
+            <h4>Delivery Time: {edge.node.delivery_time} days</h4>
+          </div>
+          <div className="parcel-detail">
+            <h4>Order Number: {edge.node.order.order_number}</h4>
+          </div>
+          <div className="parcel-detail">
+            <h4>Logistic Name: {edge.node.logistic.name}</h4>
           </div>
         </div>
     )
   }
 }
 
-export default Relay.createContainer(ParcelList, {
+export default Relay.createContainer(ParcelDetails, {
+  initialVariables: {
+    tracking_number: null,
+  },
+
   fragments: {
     viewer: () => Relay.QL`
       fragment on User {
-        parcels(first: 99999) {
+        parcels(tracking_number: $tracking_number, first: 9999) {
           edges {
             node {
               id,
-              delivery_time,
               tracking_number,
               status,
+              delivery_time,
+              logistic{
+                name
+              },
+              order{
+                order_number
+              },
             }
           }
         }

@@ -38,10 +38,10 @@ class TodoListFooter extends React.Component {
             <IndexLink to="/" activeClassName="selected">All</IndexLink>
           </li>
           <li>
-            <Link to="/parcel" activeClassName="selected">Parcels</Link>
+            <Link to="/parcels" activeClassName="selected">Parcels</Link>
           </li>
           <li>
-            <Link to="/completed" activeClassName="selected">Completed</Link>
+            <Link to="/logistics" activeClassName="selected">Logistics</Link>
           </li>
         </ul>
         {numCompletedTodos > 0 &&

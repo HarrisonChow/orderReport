@@ -17,9 +17,11 @@ import {IndexRoute, Route, Router} from 'react-router';
 import TodoApp from './components/TodoApp';
 import TodoList from './components/TodoList';
 import ViewerQueries from './queries/ViewerQueries';
-import OrderList from './components/OrderList';
-import OrderDetails from './components/OrderDetails';
+import Orders from './components/Orders';
+import Order from './components/Order';
+import Parcels from './components/Parcels';
 import Parcel from './components/Parcel';
+import Logistics from './components/Logistics';
 
 import {createHashHistory} from 'history';
 import {applyRouterMiddleware, useRouterHistory} from 'react-router';
@@ -35,32 +37,23 @@ function prepareOrderParams(params, route) {
   };
 };
 
+function prepareParcelParams(params, route) {
+  return {
+    ...params,
+    tracking_number:params.id
+  };
+};
+
 
 ReactDOM.render(
-  <Router
-    environment={Relay.Store}
-    history={history}
-    render={applyRouterMiddleware(useRelay)}>
-
-    <Route path="/"
-      component={TodoApp}
-      queries={ViewerQueries}>
-      <IndexRoute
-        component={OrderList}
-        queries={ViewerQueries}
-      />
-      <Route path="/orders/:id"
-        component={OrderDetails}
-        queries={ViewerQueries}
-        prepareParams={prepareOrderParams}
-      />
-      <Route path="parcel"
-        component={Parcel}
-        queries={ViewerQueries}
-      />
+  <Router environment={Relay.Store} history={history} render={applyRouterMiddleware(useRelay)}>
+    <Route path="/" component={TodoApp} queries={ViewerQueries}>
+      <IndexRoute component={Orders} queries={ViewerQueries}/>
+      <Route path="/orders/:id" component={Order} queries={ViewerQueries} prepareParams={prepareOrderParams}/>
+      <Route path="parcels" component={Parcels} queries={ViewerQueries}/>
+      <Route path="/parcels/:id" component={Parcel} queries={ViewerQueries} prepareParams={prepareParcelParams}/>
+      <Route path="logistics" component={Logistics} queries={ViewerQueries}/>
     </Route>
-
-
   </Router>,
   mountNode
 );

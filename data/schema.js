@@ -56,6 +56,7 @@ import {
   getAllParcels,
   getAmountByStatus,
   getOrderById,
+  getLogisticDeliveryTime,
 } from './database';
 
 
@@ -191,6 +192,18 @@ const GraphQLLogistic = new GraphQLObjectType({
         type: ParcelsConnection,
         resolve: (obj, ...args) => connectionFromPromisedArray(obj.getParcels(), args),
       },
+      lessTwo: {
+        type: GraphQLInt,
+        resolve: (obj) => getLogisticDeliveryTime(2, obj.id),
+      },
+      ThreeToFive: {
+        type: GraphQLInt,
+        resolve: (obj) => getLogisticDeliveryTime(3, obj.id),
+      },
+      fiveMore: {
+        type: GraphQLInt,
+        resolve: (obj) => getLogisticDeliveryTime(5, obj.id),
+      },
     }),
   interfaces: [nodeInterface],
 });
@@ -219,10 +232,14 @@ const GraphQLUser = new GraphQLObjectType({
     parcels: {
       type: ParcelsConnection,
       args: {
+        tracking_number: {
+          type: GraphQLString,
+          defaultValue: 'any',
+        },
         ...connectionArgs,
       },
-      resolve: (obj, { ...args}) =>
-        connectionFromPromisedArray(getAllParcels(), args)
+      resolve: (obj, {tracking_number, ...args}) =>
+        connectionFromPromisedArray(getAllParcels(tracking_number), args)
     },
 
     logistics: {
@@ -262,6 +279,10 @@ const GraphQLUser = new GraphQLObjectType({
     processingOrdersAmount: {
       type: GraphQLInt,
       resolve: () => getAmountByStatus('Processing'),
+    },
+    deliveryOrdersAmount: {
+      type: GraphQLInt,
+      resolve: () => getAmountByStatus('Delivery'),
     },
     deliveriedOrdersAmount: {
       type: GraphQLInt,

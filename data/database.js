@@ -96,26 +96,14 @@
    });
  };
 
-
- // 
- // export function getAllOrders() {
- //  return Order.findAll();
- // }
-
  export function getAllOrders(order_number) {
    if (order_number === 'any') {
      return Order.findAll();
    } else {
      return Order.findAll({ where: { orderNumber: order_number } });
    }
-  //  return Order.findAll({ where: { id: 'T3JkZXI6MQ==' } });
  }
 
- // export function getAmountByStatus() {
- //    return Order.findAndCountAll().then(function(result) {
- //      return result.count;
- //    });
- // }
  export function getAmountByStatus(status = 'any') {
    if (status === 'any') {
      return Order.findAndCountAll().then(function(result) {
@@ -129,13 +117,37 @@
      return Order.findAndCountAll({ where: {status: "Deliveried"} }).then(function(result) {
       return result.count;
     });
+  } else if (status === "Delivery") {
+    return Order.findAndCountAll({ where: {status: "Delivery"} }).then(function(result) {
+     return result.count;
+   });
    }
  }
 
-
- export function getAllParcels() {
-  return Parcel.findAll();
+ export function getLogisticDeliveryTime(num, id) {
+   if (num === 2) {
+     return Parcel.count({ where: {deliveryTime: {$lte: num}, logisticId: id} }).then(function(days) {
+       return days;
+     });
+   } else if (num === 3) {
+     return Parcel.count({ where: {deliveryTime: {$gte: num, $lte: 5}, logisticId: id} }).then(function(days) {
+       return days;
+     });
+   } else {
+     return Parcel.count({ where: {deliveryTime: {$gt: num}, logisticId: id} }).then(function(days) {
+       return days;
+     });
+   }
  }
+
+ export function getAllParcels(tracking_number) {
+   if (tracking_number === 'any') {
+     return Parcel.findAll();
+   } else {
+     return Parcel.findAll({ where: { trackingNumber: tracking_number } });
+   }
+ }
+
  export function getAllLogistics() {
   return Logistic.findAll();
  }
