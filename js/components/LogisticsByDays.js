@@ -2,9 +2,19 @@ import React from 'react';
 import Relay from 'react-relay';
 import classnames from 'classnames';
 import {IndexLink, Link} from 'react-router';
+import moment from 'moment';
 
-class LogisticList extends React.Component {
+class LogisticsListByDays extends React.Component {
+  constructor(props) {
+      super(props);
+
+      this.state = {
+         header: this.props.params.days,
+      }
+   }
+
   render() {
+
     return(
       <div className="container" >
         <h4>Logistics list</h4>
@@ -26,7 +36,7 @@ class LogisticList extends React.Component {
           </div>
         </div>
         {this.props.viewer.logistics.edges.map(edge =>
-          <Logistic edge={edge} key={edge.node.id}/>
+          <Logistic headerProp = {this.state.header} edge={edge} key={edge.node.id}/>
         )}
       </div>
     )
@@ -35,8 +45,19 @@ class LogisticList extends React.Component {
 
 class Logistic extends React.Component {
   render() {
-    var edge = this.props.edge;
+    let edge = this.props.edge;
     let logisticId = (window.atob(edge.node.id)).match(/\d+/g);
+    let filterData = edge.node.parcels.edges
+                  .filter(edge => {
+                    // let daysRequired = parseInt(this._reactInternalInstance._context.queryAggregator.queryConfig.params.days);
+                    let daysRequired = parseInt(this.props.headerProp);
+                    let createAt = moment(edge.node.created_at).format('L');
+                    let startDate = moment().subtract(daysRequired, 'days').calendar();
+                    return moment(createAt).isAfter(startDate);
+                  });
+    let lessTwo = filterData.filter(edge=>{return edge.node.delivery_time <= 2});
+    let ThreeToFive = filterData.filter(edge=>{return (edge.node.delivery_time > 2 && edge.node.delivery_time <= 5)});
+    let fiveMore = filterData.filter(edge=>{return edge.node.delivery_time > 5});
 
     return (
         <div className="logistic">
@@ -48,36 +69,46 @@ class Logistic extends React.Component {
               <h4>{edge.node.name}</h4>
             </div>
             <div className="logistic-detail">
-              <h4>{edge.node.lessTwo}</h4>
+              <h4>{lessTwo.length}</h4>
             </div>
             <div className="logistic-detail">
-              <h4>{edge.node.ThreeToFive}</h4>
+              <h4>{ThreeToFive.length}</h4>
             </div>
             <div className="logistic-detail">
-              <h4>{edge.node.fiveMore}</h4>
+              <h4>{fiveMore.length}</h4>
             </div>
           </div>
         </div>
     )
   }
 }
-//
-// class Parcel extends React.Component {
-//   render() {
-//     var edge = this.props.edge;
-//     return (
-//       <div>
-//         <div><h4>Parcel Delivery Time: {edge.node.delivery_time}</h4></div>
-//         <div className="logistic-detail">
-//           <h4></h4>
-//         </div>
-//       </div>
-//
-//     )
-//   }
-// }
 
-export default Relay.createContainer(LogisticList, {
+
+export default Relay.createContainer(LogisticsListByDays, {
+  // fragments: {
+  //   viewer: () => Relay.QL`
+  //     fragment on User {
+  //       logistics(first: 99999) {
+  //         edges {
+  //           node {
+  //             id,
+  //             name,
+  //             parcels(first: 999){
+  //               edges{
+  //                 node{
+  //                   id,
+  //                   delivery_time,
+  //                   created_at
+  //                 }
+  //               }
+  //             },
+  //           }
+  //         }
+  //       }
+  //     }
+  //   `
+  // },
+
   fragments: {
     viewer: () => Relay.QL`
       fragment on User {

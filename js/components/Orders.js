@@ -16,23 +16,34 @@ class OrderList extends React.Component {
     let dateRange = this.state.dateRange;
     let startDate = new Date();
     startDate.setDate(startDate.getDate() - dateRange);
+    let filterResult = this.props.viewer.orders.edges
+                        .filter(edge => {
+                          let createAt = new Date(edge.node.created_at);
+                          return createAt.getTime() >= startDate.getTime() ;
+                        });
 
-    let filtedDeliveriedResult = this.props.viewer.orders.edges.filter(edge => {
-            let createAt = new Date(edge.node.created_at);
-            let ostatus = edge.node.status;
-            return (createAt.getTime() >= startDate.getTime())&&(edge.node.status==='Deliveried')
-          });
-    let filtedDeliveryResult = this.props.viewer.orders.edges.filter(edge => {
-            let createAt = new Date(edge.node.created_at);
-            let ostatus = edge.node.status;
-            return (createAt.getTime() >= startDate.getTime())&&(edge.node.status==='Delivery')
-          });
-    let filtedProcessingResult = this.props.viewer.orders.edges.filter(edge => {
-            let createAt = new Date(edge.node.created_at);
-            let ostatus = edge.node.status;
-            return (createAt.getTime() >= startDate.getTime())&&(edge.node.status==='Processing')
-          });
+    let filtedDeliveriedResult = filterResult.filter(edge => {return edge.node.status==='Deliveried'});
+    let filtedDeliveryResult = filterResult.filter(edge => {return edge.node.status==='Delivery'});
+    let filtedProcessingResult = filterResult.filter(edge => {return edge.node.status==='Processing'});
 
+    var result = "All orders list in last " + dateRange + " days";
+    if (this.props.params.status === "processing") {
+      filterResult = filtedProcessingResult;
+      result = "Processing orders list in last " + dateRange + " days";
+    } else if (this.props.params.status === "delivery") {
+      filterResult = filtedDeliveryResult;
+      result = "Delivery orders list in last " + dateRange + " days";
+    } else if (this.props.params.status === "deliveried"){
+      filterResult = filtedDeliveriedResult;
+      result = "Deliveried orders list in last " + dateRange + " days";
+    }
+
+    let daysForLogis = 0;
+    if (!event.target.value) {
+      daysForLogis = 365
+    } else {
+      daysForLogis = event.target.value
+    }
     return(
 
       <div className="container" >
@@ -50,23 +61,19 @@ class OrderList extends React.Component {
             <option value="160" >Last 160 Days</option>
           </select>
         </div>
+        <div className="order-amount"><h4><Link to={`/logistics/${daysForLogis}`}>Logistic Stastics in last {daysForLogis} days.</Link> </h4></div>
+        <div className="order-amount"><h4><Link to="/longorders">Order processing longer than 7 Days</Link></h4></div>
+
         <div className="order-amount">
-          <h4>Processing: {filtedProcessingResult.length}</h4>
-          <h4>Delivery: {filtedDeliveryResult.length}</h4>
-          <h4>Deliveried: {filtedDeliveriedResult.length}</h4>
-          <h4>Total: {filtedDeliveriedResult.length+filtedDeliveryResult.length+filtedProcessingResult.length}</h4>
+          <h4>Processing: <Link to="/ordercheck/processing">{filtedProcessingResult.length}</Link></h4>
+          <h4>Delivery: <Link to="/ordercheck/delivery">{filtedDeliveryResult.length}</Link></h4>
+          <h4>Deliveried: <Link to="/ordercheck/deliveried">{filtedDeliveriedResult.length}</Link></h4>
         </div>
-        {this.props.viewer.orders.edges
-          .filter(edge => {
-            let startDate = new Date();
-            startDate.setDate(startDate.getDate() - dateRange);
-            let createAt = new Date(edge.node.created_at);
-            let ostatus = edge.node.status;
-            // debugger;
-            return createAt.getTime() >= startDate.getTime() ;
-          })
-          .map(edge =>
-          <Order edge={edge} key={edge.node.id} onClick={this.props.OrderDetail}/>
+        <div className="order-amount">
+          <h4>{result}</h4>
+        </div>
+        {filterResult.map(edge =>
+          <Order edge={edge} key={edge.node.id}/>
         )}
       </div>
     )
@@ -75,20 +82,20 @@ class OrderList extends React.Component {
 
 class Order extends React.Component {
   render() {
-    var edge = this.props.edge;
+    var order = this.props.edge.node;
     return (
         <div className="order">
           <div className="order-detail">
-            <h4>{edge.node.order_number}</h4>
+            <h4>{order.order_number}</h4>
           </div>
           <div className="order-detail">
-            <h4>{edge.node.status}</h4>
+            <h4>{order.status}</h4>
           </div>
           <div className="order-detail">
-            <h4>{edge.node.created_at}</h4>
+            <h4>{order.created_at}</h4>
           </div>
           <div className="order-detail">
-            <Link to={`/orders/${edge.node.order_number}`}>detail</Link>
+            <Link to={`/orders/${order.order_number}`}><h4>detail</h4></Link>
           </div>
         </div>
     )
@@ -106,6 +113,7 @@ export default Relay.createContainer(OrderList, {
               id,
               order_number,
               created_at,
+              updated_at,
               status,
             }
           }

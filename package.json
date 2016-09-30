@@ -19,6 +19,7 @@
     "graphql": "0.6.2",
     "graphql-relay": "0.4.2",
     "history": "2.1.2",
+    "moment": "^2.15.1",
     "react": "^15.3.1",
     "react-addons-transition-group": "^15.3.2",
     "react-dom": "^15.3.1",

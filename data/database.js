@@ -12,6 +12,7 @@
 
 
  import Sequelize from 'sequelize';
+ import moment from 'moment';
 
  import {
    connectionFromPromisedArray,
@@ -104,6 +105,8 @@
    }
  }
 
+
+
  export function getAmountByStatus(status = 'any') {
    if (status === 'any') {
      return Order.findAndCountAll().then(function(result) {
@@ -124,9 +127,10 @@
    }
  }
 
- export function getLogisticDeliveryTime(num, id) {
+
+ export function getLogisticDeliveryTime(num, id, days) {
    if (num === 2) {
-     return Parcel.count({ where: {deliveryTime: {$lte: num}, logisticId: id} }).then(function(days) {
+     return Parcel.count({ where: {deliveryTime: {$lte: num}, logisticId: id}}).then(function(days) {
        return days;
      });
    } else if (num === 3) {

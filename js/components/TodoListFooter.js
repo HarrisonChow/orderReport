@@ -43,6 +43,7 @@ class TodoListFooter extends React.Component {
           <li>
             <Link to="/logistics" activeClassName="selected">Logistics</Link>
           </li>
+
         </ul>
         {numCompletedTodos > 0 &&
           <button

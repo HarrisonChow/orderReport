@@ -18,24 +18,26 @@ class ParcelList extends React.Component {
 
 class Parcel extends React.Component {
   render() {
-    var edge = this.props.edge;
+    var parcel = this.props.edge.node;
     return (
         <div className="parcel">
           <div className="parcel-detail">
-            <h4>{edge.node.tracking_number}</h4>
+            <h4>{parcel.tracking_number}</h4>
           </div>
           <div className="parcel-detail">
-            <h4>{edge.node.status}</h4>
+            <h4>{parcel.status}</h4>
           </div>
           <div className="parcel-detail">
-            <Link to={`/parcels/${edge.node.tracking_number}`}>detail</Link>
+            <Link to={`/parcels/${parcel.tracking_number}`}><h4>detail</h4></Link>
           </div>
         </div>
     )
   }
 }
 
+
 export default Relay.createContainer(ParcelList, {
+
   fragments: {
     viewer: () => Relay.QL`
       fragment on User {
@@ -45,6 +47,11 @@ export default Relay.createContainer(ParcelList, {
               id,
               tracking_number,
               status,
+              created_at,
+              order{
+                order_number
+                status
+              }
             }
           }
         }

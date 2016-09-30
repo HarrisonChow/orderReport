@@ -171,6 +171,14 @@ const GraphQLParcel = new GraphQLObjectType({
         type: GraphQLOrder,
         resolve: (obj) => obj.getOrder(),
       },
+      created_at: {
+        type: GraphQLString,
+        resolve: (obj) => obj.createdAt,
+      },
+      updated_at: {
+        type: GraphQLString,
+        resolve: (obj) => obj.updatedAt,
+      }
     }),
   interfaces: [nodeInterface],
 

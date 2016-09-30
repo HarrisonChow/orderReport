@@ -55,6 +55,7 @@ export default Relay.createContainer(ParcelDetails, {
               tracking_number,
               status,
               delivery_time,
+              created_at,
               logistic{
                 name
               },
