@@ -99,7 +99,7 @@
 
  export function getAllOrders(order_number) {
    if (order_number === 'any') {
-     return Order.findAll();
+     return Order.findAll({order: '"createdAt" DESC'});
    } else {
      return Order.findAll({ where: { orderNumber: order_number } });
    }

@@ -19,7 +19,7 @@ import TodoList from './components/TodoList';
 import ViewerQueries from './queries/ViewerQueries';
 import Orders from './components/Orders';
 import Order from './components/Order';
-import OrderCheck from './components/OrderCheck';
+import SpeedCheck from './components/SpeedCheck';
 import LongOrders from './components/LongOrders';
 import Parcels from './components/Parcels';
 import Parcel from './components/Parcel';
@@ -61,6 +61,7 @@ ReactDOM.render(
     <Route path="/" component={TodoApp} queries={ViewerQueries}>
       <IndexRoute component={Orders} queries={ViewerQueries}/>
       <Route path="/orders/:id" component={Order} queries={ViewerQueries} prepareParams={prepareOrderParams}/>
+      <Route path="/speedcheck/:speed" component={SpeedCheck} queries={ViewerQueries}/>
       <Route path="/ordercheck/:status" component={Orders} queries={ViewerQueries}/>
       <Route path="/longorders" component={LongOrders} queries={ViewerQueries}/>
       <Route path="/parcels" component={Parcels} queries={ViewerQueries}/>

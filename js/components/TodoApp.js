@@ -28,17 +28,6 @@ class TodoApp extends React.Component {
     return (
       <div>
         <section className="todoapp">
-          <header className="header">
-            <h1>
-              todos
-            </h1>
-            <TodoTextInput
-              autoFocus={true}
-              className="new-todo"
-              onSave={this._handleTextInputSave}
-              placeholder="What needs to be done?"
-            />
-          </header>
 
           {this.props.children}
 

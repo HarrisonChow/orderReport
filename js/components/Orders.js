@@ -15,12 +15,14 @@ class OrderList extends React.Component {
   render() {
     let dateRange = this.state.dateRange;
     let startDate = new Date();
-    startDate.setDate(startDate.getDate() - dateRange);
+    var oneDay = 24*60*60*1000;
     let filterResult = this.props.viewer.orders.edges
                         .filter(edge => {
-                          let createAt = new Date(edge.node.created_at);
-                          return createAt.getTime() >= startDate.getTime() ;
+                          var createDate = new Date(edge.node.created_at);
+                          var diffDays = Math.round(Math.abs((startDate.getTime() - createDate.getTime())/(oneDay)));
+                          return diffDays <= dateRange ;
                         });
+
 
     let filtedDeliveriedResult = filterResult.filter(edge => {return edge.node.status==='Deliveried'});
     let filtedDeliveryResult = filterResult.filter(edge => {return edge.node.status==='Delivery'});
@@ -63,7 +65,8 @@ class OrderList extends React.Component {
         </div>
         <div className="order-amount"><h4><Link to={`/logistics/${daysForLogis}`}>Logistic Stastics in last {daysForLogis} days.</Link> </h4></div>
         <div className="order-amount"><h4><Link to="/longorders">Order processing longer than 7 Days</Link></h4></div>
-
+        <div className="order-amount"><h4><Link to="/speedcheck/fast">The fastest 3 Days</Link></h4></div>
+        <div className="order-amount"><h4><Link to="/speedcheck/slowest">The slowest 7 Days</Link></h4></div>
         <div className="order-amount">
           <h4>Processing: <Link to="/ordercheck/processing">{filtedProcessingResult.length}</Link></h4>
           <h4>Delivery: <Link to="/ordercheck/delivery">{filtedDeliveryResult.length}</Link></h4>
@@ -103,11 +106,10 @@ class Order extends React.Component {
 }
 
 export default Relay.createContainer(OrderList, {
-  initialVariables: {count: 15},
   fragments: {
     viewer: () => Relay.QL`
       fragment on User {
-        orders(first: $count) {
+        orders(first: 8888) {
           edges {
             node {
               id,
