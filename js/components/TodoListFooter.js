@@ -30,12 +30,12 @@ class TodoListFooter extends React.Component {
     const numRemainingTodos = this.props.viewer.totalCount - numCompletedTodos;
     return (
       <footer className="footer">
-        <span className="todo-count">
-          <strong>{numRemainingTodos}</strong> item{numRemainingTodos === 1 ? '' : 's'} left
-        </span>
         <ul className="filters">
           <li>
-            <IndexLink to="/" activeClassName="selected">All</IndexLink>
+            <IndexLink to="/" activeClassName="selected">Home</IndexLink>
+          </li>
+          <li>
+            <Link to="/allOrders" activeClassName="selected">Orders</Link>
           </li>
           <li>
             <Link to="/parcels" activeClassName="selected">Parcels</Link>
@@ -43,9 +43,7 @@ class TodoListFooter extends React.Component {
           <li>
             <Link to="/logistics" activeClassName="selected">Logistics</Link>
           </li>
-
         </ul>
-
       </footer>
     );
   }

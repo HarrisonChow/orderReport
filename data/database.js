@@ -97,14 +97,17 @@
    });
  };
 
- export function getAllOrders(order_number) {
-   if (order_number === 'any') {
-     return Order.findAll({order: '"createdAt" DESC'});
-   } else {
+ export function getAllOrders(order_number, created_at, status) {
+   if( order_number != 'any') {
      return Order.findAll({ where: { orderNumber: order_number } });
+   } else if (created_at != 'any' && status === 'any') {
+     return Order.findAll({ where: { createdAt: {$gt: created_at} } });
+   } else if (created_at != 'any' && status != 'any') {
+     return Order.findAll({ where: { createdAt: {$gt: created_at}, status: status }});
+   } else {
+     return Order.findAll({order: '"createdAt" DESC'});
    }
  }
-
 
 
  export function getAmountByStatus(status = 'any') {
@@ -144,13 +147,16 @@
    }
  }
 
- export function getAllParcels(tracking_number) {
-   if (tracking_number === 'any') {
+ export function getAllParcels(tracking_number, created_at) {
+   if (tracking_number === 'any' && created_at === 'any') {
      return Parcel.findAll();
-   } else {
+   } else if(created_at === 'any') {
      return Parcel.findAll({ where: { trackingNumber: tracking_number } });
+   } else if (tracking_number === 'any') {
+     return Parcel.findAll({ where: { createdAt: {$lt: created_at}, status: {$ne: "Deliveried"} } });
    }
  }
+
 
  export function getAllLogistics() {
   return Logistic.findAll();

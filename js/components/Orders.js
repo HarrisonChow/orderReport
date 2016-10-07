@@ -2,6 +2,7 @@ import React from 'react';
 import Relay from 'react-relay';
 import classnames from 'classnames';
 import {IndexLink, Link} from 'react-router';
+import moment from 'moment';
 
 // const pageSize = 3;
 class OrderList extends React.Component {
@@ -28,89 +29,90 @@ class OrderList extends React.Component {
     let filtedDeliveryResult = filterResult.filter(edge => {return edge.node.status==='Delivery'});
     let filtedProcessingResult = filterResult.filter(edge => {return edge.node.status==='Processing'});
 
-    var result = "All orders list in last " + dateRange + " days";
-    if (this.props.params.status === "processing") {
-      filterResult = filtedProcessingResult;
-      result = "Processing orders list in last " + dateRange + " days";
-    } else if (this.props.params.status === "delivery") {
-      filterResult = filtedDeliveryResult;
-      result = "Delivery orders list in last " + dateRange + " days";
-    } else if (this.props.params.status === "deliveried"){
-      filterResult = filtedDeliveriedResult;
-      result = "Deliveried orders list in last " + dateRange + " days";
-    }
+    var result = "Click to check all orders list in last " + dateRange + " days";
+
 
     let daysForLogis = 0;
     if (!event.target.value) {
-      daysForLogis = 365
+      daysForLogis = 7
     } else {
       daysForLogis = event.target.value
     }
+
+    let sevenDaysDate = 7;
+
     return(
 
       <div className="container" >
-        <h3>Order numbers list</h3>
         <div className="order-amount">
           <h4>Processing: {this.props.viewer.processingOrdersAmount} orders </h4>
           <h4>Delivery: {this.props.viewer.deliveryOrdersAmount} orders </h4>
           <h4>Deliveried: {this.props.viewer.deliveriedOrdersAmount} orders </h4>
           <h4>Total: {this.props.viewer.ordersAmount} orders </h4>
         </div>
-        <div>
+        <div className="daysSelection">
           <select onChange={this.onChange}>
             <option value="7" >Last 7 Days</option>
             <option value="10" >Last 10 Days</option>
             <option value="160" >Last 160 Days</option>
           </select>
         </div>
+        {filterResult.length !=0 &&
+        <div className="order-amount">
+          <h4>Processing: <Link to={`/allOrders/${dateRange}/Processing`}>{filtedProcessingResult.length}</Link></h4>
+          <h4>Delivery: <Link to={`/allOrders/${dateRange}/Delivery`}>{filtedDeliveryResult.length}</Link></h4>
+          <h4>Deliveried: <Link to={`/allOrders/${dateRange}/Deliveried`}>{filtedDeliveriedResult.length}</Link></h4>
+        </div>
+        }
+        {filterResult.length !=0 &&
+        <div className="order-amount spaces">
+          <h4><Link to={`/allOrders/${dateRange}/any`}>{result}</Link></h4>
+        </div>
+        }
         <div className="order-amount"><h4><Link to={`/logistics/${daysForLogis}`}>Logistic Stastics in last {daysForLogis} days.</Link> </h4></div>
-        <div className="order-amount"><h4><Link to="/longorders">Order processing longer than 7 Days</Link></h4></div>
+        <div className="order-amount"><h4><Link to={`/longorders/${sevenDaysDate}`}>Order processing longer than 7 Days</Link></h4></div>
         <div className="order-amount"><h4><Link to="/speedcheck/fast">The fastest 3 Days</Link></h4></div>
         <div className="order-amount"><h4><Link to="/speedcheck/slowest">The slowest 7 Days</Link></h4></div>
-        <div className="order-amount">
-          <h4>Processing: <Link to="/ordercheck/processing">{filtedProcessingResult.length}</Link></h4>
-          <h4>Delivery: <Link to="/ordercheck/delivery">{filtedDeliveryResult.length}</Link></h4>
-          <h4>Deliveried: <Link to="/ordercheck/deliveried">{filtedDeliveriedResult.length}</Link></h4>
-        </div>
-        <div className="order-amount">
-          <h4>{result}</h4>
-        </div>
-        {filterResult.map(edge =>
-          <Order edge={edge} key={edge.node.id}/>
-        )}
+        <div className="spaces"></div>
+
+
       </div>
     )
   }
 }
 
-class Order extends React.Component {
-  render() {
-    var order = this.props.edge.node;
-    return (
-        <div className="order">
-          <div className="order-detail">
-            <h4>{order.order_number}</h4>
-          </div>
-          <div className="order-detail">
-            <h4>{order.status}</h4>
-          </div>
-          <div className="order-detail">
-            <h4>{order.created_at}</h4>
-          </div>
-          <div className="order-detail">
-            <Link to={`/orders/${order.order_number}`}><h4>detail</h4></Link>
-          </div>
-        </div>
-    )
-  }
-}
+// {filterResult.map(edge =>
+//   <Order edge={edge} key={edge.node.id}/>
+// )}
+// class Order extends React.Component {
+//   render() {
+//     var order = this.props.edge.node;
+//     return (
+//         <div className="order">
+//           <div className="order-detail">
+//             <h4>{order.order_number}</h4>
+//           </div>
+//           <div className="order-detail">
+//             <h4>{order.status}</h4>
+//           </div>
+//           <div className="order-detail">
+//             <h4>{order.created_at}</h4>
+//           </div>
+//           <div className="order-detail">
+//             <Link to={`/orders/${order.order_number}`}><h4>detail</h4></Link>
+//           </div>
+//         </div>
+//     )
+//   }
+// }
 
 export default Relay.createContainer(OrderList, {
   fragments: {
     viewer: () => Relay.QL`
       fragment on User {
-        orders(first: 8888) {
+        orders(first: 1000) {
           edges {
+            cursor,
             node {
               id,
               order_number,
@@ -118,6 +120,12 @@ export default Relay.createContainer(OrderList, {
               updated_at,
               status,
             }
+          },
+          pageInfo{
+            hasNextPage,
+            hasPreviousPage,
+            endCursor,
+            startCursor,
           }
         },
         ordersAmount,

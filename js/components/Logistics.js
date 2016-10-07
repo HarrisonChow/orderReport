@@ -7,7 +7,7 @@ class LogisticList extends React.Component {
   render() {
     return(
       <div className="container" >
-        <h4>Logistics list</h4>
+        <h4>Logistics Statistic</h4>
         <div className="row">
           <div className="logistic-detail">
             <h4>NO.</h4>

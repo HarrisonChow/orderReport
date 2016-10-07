@@ -17,7 +17,7 @@ class LogisticsListByDays extends React.Component {
 
     return(
       <div className="container" >
-        <h4>Logistics list</h4>
+        <h4>Logistics Statistic for last {this.props.params.days} days</h4>
         <div className="row">
           <div className="logistic-detail">
             <h4>NO.</h4>
@@ -85,29 +85,6 @@ class Logistic extends React.Component {
 
 
 export default Relay.createContainer(LogisticsListByDays, {
-  // fragments: {
-  //   viewer: () => Relay.QL`
-  //     fragment on User {
-  //       logistics(first: 99999) {
-  //         edges {
-  //           node {
-  //             id,
-  //             name,
-  //             parcels(first: 999){
-  //               edges{
-  //                 node{
-  //                   id,
-  //                   delivery_time,
-  //                   created_at
-  //                 }
-  //               }
-  //             },
-  //           }
-  //         }
-  //       }
-  //     }
-  //   `
-  // },
 
   fragments: {
     viewer: () => Relay.QL`

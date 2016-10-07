@@ -69,8 +69,6 @@ class SpeedCheck extends React.Component {
     var contents = [];
     var dateArray = [];
     for (var i = 0; i < checkResult[0].length; i++) {
-
-
       var orderDate = moment(new Date(checkResult[0][i][1].getTime()).toString("MMM dd")).format('L');
       contents.push(
         <div className="order" key={i}>
@@ -84,15 +82,9 @@ class SpeedCheck extends React.Component {
             <Link to={`/orders/${checkResult[0][i][0]}`}><h4>detail</h4></Link>
           </div>
         </div>
-        // <div className='order-detail' key={i}>{checkResult[0][i][0]} {orderDate} details</div>
       );
       dateArray.push(checkResult[0][i][1]);
     }
-
-
-
-
-
 
     var maxDate = new Date(Math.max.apply(null,dateArray));
     var minDate = new Date(Math.min.apply(null,dateArray));

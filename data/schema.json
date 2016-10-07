@@ -95,6 +95,26 @@
                   "defaultValue": "\"any\""
                 },
                 {
+                  "name": "created_at",
+                  "description": null,
+                  "type": {
+                    "kind": "SCALAR",
+                    "name": "String",
+                    "ofType": null
+                  },
+                  "defaultValue": "\"any\""
+                },
+                {
+                  "name": "status",
+                  "description": null,
+                  "type": {
+                    "kind": "SCALAR",
+                    "name": "String",
+                    "ofType": null
+                  },
+                  "defaultValue": "\"any\""
+                },
+                {
                   "name": "after",
                   "description": null,
                   "type": {
@@ -149,6 +169,16 @@
               "args": [
                 {
                   "name": "tracking_number",
+                  "description": null,
+                  "type": {
+                    "kind": "SCALAR",
+                    "name": "String",
+                    "ofType": null
+                  },
+                  "defaultValue": "\"any\""
+                },
+                {
+                  "name": "created_at",
                   "description": null,
                   "type": {
                     "kind": "SCALAR",

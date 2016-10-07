@@ -18,6 +18,7 @@ import TodoApp from './components/TodoApp';
 import TodoList from './components/TodoList';
 import ViewerQueries from './queries/ViewerQueries';
 import Orders from './components/Orders';
+import AllOrders from './components/AllOrders';
 import Order from './components/Order';
 import SpeedCheck from './components/SpeedCheck';
 import LongOrders from './components/LongOrders';
@@ -28,6 +29,7 @@ import LogisticsByDays from './components/LogisticsByDays';
 import useRelay from 'react-router-relay';
 import {createHashHistory} from 'history';
 import {applyRouterMiddleware, useRouterHistory} from 'react-router';
+import moment from 'moment';
 
 const history = useRouterHistory(createHashHistory)({ queryKey: false });
 const mountNode = document.getElementById('root');
@@ -40,10 +42,16 @@ function prepareOrderParams(params, route) {
 };
 
 function prepareOrdersParams(params, route) {
-  console.log(params);
-
   return {
     ...params,
+  };
+};
+function prepareOrderdateParams(params, route) {
+  let selectDaysDate = moment().subtract(params.days, 'days').calendar();
+  return {
+    ...params,
+    created_at:selectDaysDate,
+    status:params.status
   };
 };
 
@@ -53,7 +61,19 @@ function prepareParcelParams(params, route) {
     tracking_number:params.id
   };
 };
-
+function prepareParcelPageParams(params, route) {
+  return {
+    ...params,
+    cursor:params.cursor
+  };
+};
+function prepareParceldateParams(params, route) {
+  let sevenDaysDate = moment().subtract(params.created_at, 'days').calendar();
+  return {
+    ...params,
+    created_at:sevenDaysDate
+  };
+};
 
 
 ReactDOM.render(
@@ -62,8 +82,9 @@ ReactDOM.render(
       <IndexRoute component={Orders} queries={ViewerQueries}/>
       <Route path="/orders/:id" component={Order} queries={ViewerQueries} prepareParams={prepareOrderParams}/>
       <Route path="/speedcheck/:speed" component={SpeedCheck} queries={ViewerQueries}/>
-      <Route path="/ordercheck/:status" component={Orders} queries={ViewerQueries}/>
-      <Route path="/longorders" component={LongOrders} queries={ViewerQueries}/>
+      <Route path="/allOrders" component={AllOrders} queries={ViewerQueries}/>
+      <Route path="/allOrders/:days/:status" component={AllOrders} queries={ViewerQueries} prepareParams={prepareOrderdateParams}/>
+      <Route path="/longorders/:created_at" component={LongOrders} queries={ViewerQueries} prepareParams={prepareParceldateParams}/>
       <Route path="/parcels" component={Parcels} queries={ViewerQueries}/>
       <Route path="/parcels/:id" component={Parcel} queries={ViewerQueries} prepareParams={prepareParcelParams}/>
       <Route path="/logistics" component={Logistics} queries={ViewerQueries}/>
