@@ -21,6 +21,8 @@ import Orders from './components/Orders';
 import AllOrders from './components/AllOrders';
 import Order from './components/Order';
 import SpeedCheck from './components/SpeedCheck';
+import FastThreeDays from './components/FastThreeDays';
+import SlowestSevenDays from './components/SlowestSevenDays';
 import LongOrders from './components/LongOrders';
 import Parcels from './components/Parcels';
 import Parcel from './components/Parcel';
@@ -41,11 +43,6 @@ function prepareOrderParams(params, route) {
   };
 };
 
-function prepareOrdersParams(params, route) {
-  return {
-    ...params,
-  };
-};
 function prepareOrderdateParams(params, route) {
   let selectDaysDate = moment().subtract(params.days, 'days').calendar();
   return {
@@ -61,12 +58,7 @@ function prepareParcelParams(params, route) {
     tracking_number:params.id
   };
 };
-function prepareParcelPageParams(params, route) {
-  return {
-    ...params,
-    cursor:params.cursor
-  };
-};
+
 function prepareParceldateParams(params, route) {
   let sevenDaysDate = moment().subtract(params.created_at, 'days').calendar();
   return {
@@ -89,6 +81,9 @@ ReactDOM.render(
       <Route path="/parcels/:id" component={Parcel} queries={ViewerQueries} prepareParams={prepareParcelParams}/>
       <Route path="/logistics" component={Logistics} queries={ViewerQueries}/>
       <Route path="/logistics/:days" component={LogisticsByDays} queries={ViewerQueries}/>
+      <Route path="/fastThreeDays" component={FastThreeDays} queries={ViewerQueries}/>
+      <Route path="/slowestSevenDays" component={SlowestSevenDays} queries={ViewerQueries}/>
+
     </Route>
   </Router>,
   mountNode

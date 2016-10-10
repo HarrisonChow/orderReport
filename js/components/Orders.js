@@ -23,8 +23,6 @@ class OrderList extends React.Component {
                           var diffDays = Math.round(Math.abs((startDate.getTime() - createDate.getTime())/(oneDay)));
                           return diffDays <= dateRange ;
                         });
-
-
     let filtedDeliveriedResult = filterResult.filter(edge => {return edge.node.status==='Deliveried'});
     let filtedDeliveryResult = filterResult.filter(edge => {return edge.node.status==='Delivery'});
     let filtedProcessingResult = filterResult.filter(edge => {return edge.node.status==='Processing'});
@@ -44,14 +42,19 @@ class OrderList extends React.Component {
     return(
 
       <div className="container" >
+          <header className="header">
+            <h2>
+              Sydney Tools Order Report
+            </h2>
+          </header>
         <div className="order-amount">
-          <h4>Processing: {this.props.viewer.processingOrdersAmount} orders </h4>
-          <h4>Delivery: {this.props.viewer.deliveryOrdersAmount} orders </h4>
-          <h4>Deliveried: {this.props.viewer.deliveriedOrdersAmount} orders </h4>
-          <h4>Total: {this.props.viewer.ordersAmount} orders </h4>
+          <h4>Processing orders: {this.props.viewer.processingOrdersAmount}  </h4>
+          <h4>Delivery orders: {this.props.viewer.deliveryOrdersAmount}  </h4>
+          <h4>Deliveried orders: {this.props.viewer.deliveriedOrdersAmount}  </h4>
+          <h4>Total: {this.props.viewer.ordersAmount} </h4>
         </div>
         <div className="daysSelection">
-          <select onChange={this.onChange}>
+          <select onChange={this.onChange} id="soflow">
             <option value="7" >Last 7 Days</option>
             <option value="10" >Last 10 Days</option>
             <option value="160" >Last 160 Days</option>
@@ -71,8 +74,8 @@ class OrderList extends React.Component {
         }
         <div className="order-amount"><h4><Link to={`/logistics/${daysForLogis}`}>Logistic Stastics in last {daysForLogis} days.</Link> </h4></div>
         <div className="order-amount"><h4><Link to={`/longorders/${sevenDaysDate}`}>Order processing longer than 7 Days</Link></h4></div>
-        <div className="order-amount"><h4><Link to="/speedcheck/fast">The fastest 3 Days</Link></h4></div>
-        <div className="order-amount"><h4><Link to="/speedcheck/slowest">The slowest 7 Days</Link></h4></div>
+        <div className="order-amount"><h4><Link to="/fastThreeDays">The fastest 3 Days</Link></h4></div>
+        <div className="order-amount"><h4><Link to="/slowestSevenDays">The slowest 7 Days</Link></h4></div>
         <div className="spaces"></div>
 
 

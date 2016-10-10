@@ -52,6 +52,8 @@ import {
   Parcel,
   Logistic,
   getAllOrders,
+  getFastThreeDays,
+  getSlowSevenDays,
   getAllLogistics,
   getAllParcels,
   getAmountByStatus,
@@ -244,6 +246,25 @@ const GraphQLUser = new GraphQLObjectType({
       resolve: (obj, {order_number,created_at,status, ...args}) =>
         connectionFromPromisedArray(getAllOrders(order_number,created_at,status), args)
     },
+
+    fastThreeDays: {
+      type: OrdersConnection,
+      args: {
+        ...connectionArgs,
+      },
+      resolve: (obj, { ...args}) =>
+        connectionFromPromisedArray(getFastThreeDays(), args)
+    },
+    
+    slowSevenDays: {
+      type: OrdersConnection,
+      args: {
+        ...connectionArgs,
+      },
+      resolve: (obj, { ...args}) =>
+        connectionFromPromisedArray(getSlowSevenDays(), args)
+    },
+
 
     parcels: {
       type: ParcelsConnection,

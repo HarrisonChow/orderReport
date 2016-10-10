@@ -49,11 +49,10 @@ class Logistic extends React.Component {
     let logisticId = (window.atob(edge.node.id)).match(/\d+/g);
     let filterData = edge.node.parcels.edges
                   .filter(edge => {
-                    // let daysRequired = parseInt(this._reactInternalInstance._context.queryAggregator.queryConfig.params.days);
                     let daysRequired = parseInt(this.props.headerProp);
                     let createAt = moment(edge.node.created_at).format('L');
                     let startDate = moment().subtract(daysRequired, 'days').calendar();
-                    return moment(createAt).isAfter(startDate);
+                    return (moment(createAt).isAfter(startDate) && edge.node.status ==="Deliveried");
                   });
     let lessTwo = filterData.filter(edge=>{return edge.node.delivery_time <= 2});
     let ThreeToFive = filterData.filter(edge=>{return (edge.node.delivery_time > 2 && edge.node.delivery_time <= 5)});
@@ -102,7 +101,8 @@ export default Relay.createContainer(LogisticsListByDays, {
                   node{
                     id,
                     delivery_time,
-                    created_at
+                    created_at,
+                    status
                   }
                 }
               },

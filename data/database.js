@@ -97,6 +97,95 @@
    });
  };
 
+
+ export function getFastThreeDays() {
+   return Order.findAll({where: {status: "Deliveried"}}).then(function(orders) {
+     var oneDay = 24*60*60*1000;
+     var doneByDays = [];
+     var lastArray=[];
+     var finalResult=[];
+
+     for (var x = 0; x < orders.length; x++) {
+       var diffDays = Math.round(Math.abs((new Date(orders[x].createdAt)).getTime() - (orders[x].updatedAt).getTime())/oneDay);
+       if (diffDays <= 3 ) {
+         doneByDays.push(orders[x]);
+       }
+     }
+     function fileterResultArray(arrays) {
+       var defaultArray = [arrays[0]];
+       var result =[];
+       for (var i = 1; i < arrays.length; i++) {
+         if (arrays[i].length>arrays[i-1].length) {
+           defaultArray.push(arrays[i]);
+         }
+       }
+       defaultArray.sort(function(a, b){
+         return b.length - a.length;
+       });
+       result = defaultArray[0];
+       return result;
+     }
+
+     for (var j = 0; j < doneByDays.length; j++) {
+       for (var m = j; m < doneByDays.length; m++) {
+         if ((Math.round(Math.abs(((doneByDays[m].updatedAt).getTime() - (doneByDays[j].updatedAt).getTime())/(oneDay)))) <= 3 ) {
+           lastArray.push(doneByDays[m]);
+         }
+       }
+       finalResult.push(lastArray);
+       lastArray=[];
+     }
+
+     let checkResult = fileterResultArray(finalResult);
+     return checkResult;
+   });
+ }
+
+
+ export function getSlowSevenDays() {
+   return Order.findAll({where: {status: "Deliveried"}}).then(function(orders) {
+     var oneDay = 24*60*60*1000;
+     var doneByDays = [];
+     var lastArray=[];
+     var finalResult=[];
+
+     for (var x = 0; x < orders.length; x++) {
+       var diffDays = Math.round(Math.abs((new Date(orders[x].createdAt)).getTime() - (orders[x].updatedAt).getTime())/oneDay);
+       if (diffDays <= 7 ) {
+         doneByDays.push(orders[x]);
+       }
+     }
+     function fileterResultArray(arrays) {
+       var defaultArray = [arrays[0]];
+       var result =[];
+       for (var i = 1; i < arrays.length; i++) {
+         if (arrays[i].length>arrays[i-1].length) {
+           defaultArray.push(arrays[i]);
+         }
+       }
+       defaultArray.sort(function(a, b){
+         return a.length - b.length;
+       });
+       result = defaultArray[0];
+       return result;
+     }
+
+
+     for (var j = 0; j < doneByDays.length; j++) {
+       for (var m = j; m < doneByDays.length; m++) {
+         if ((Math.round(Math.abs(((doneByDays[m].updatedAt).getTime() - (doneByDays[j].updatedAt).getTime())/(oneDay)))) <= 7 ) {
+           lastArray.push(doneByDays[m]);
+         }
+       }
+       finalResult.push(lastArray);
+       lastArray=[];
+     }
+
+     let checkResult = fileterResultArray(finalResult);
+     return checkResult;
+   });
+ }
+
  export function getAllOrders(order_number, created_at, status) {
    if( order_number != 'any') {
      return Order.findAll({ where: { orderNumber: order_number } });
