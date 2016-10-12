@@ -43,6 +43,9 @@ class TodoListFooter extends React.Component {
           <li>
             <Link to="/logistics" activeClassName="selected">Logistics</Link>
           </li>
+          <li>
+            <Link to="/d3test" activeClassName="selected">test</Link>
+          </li>
         </ul>
       </footer>
     );

@@ -2,7 +2,8 @@
   "private": true,
   "scripts": {
     "start": "babel-node ./server.js",
-    "update-schema": "babel-node ./scripts/updateSchema.js"
+    "update-schema": "babel-node ./scripts/updateSchema.js",
+    "build": "webpack --config webpack.config.js"
   },
   "dependencies": {
     "babel-core": "^6.13.2",
@@ -22,8 +23,8 @@
     "moment": "^2.15.1",
     "react": "^15.3.1",
     "react-addons-transition-group": "^15.3.2",
+    "react-d3-basic": "^1.6.11",
     "react-dom": "^15.3.1",
-    "react-list": "^0.8.0",
     "react-relay": "0.9.2",
     "react-router": "2.7.0",
     "react-router-relay": "0.13.4",

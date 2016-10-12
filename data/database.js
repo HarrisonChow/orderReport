@@ -190,9 +190,9 @@
    if( order_number != 'any') {
      return Order.findAll({ where: { orderNumber: order_number } });
    } else if (created_at != 'any' && status === 'any') {
-     return Order.findAll({ where: { createdAt: {$gt: created_at} } });
+     return Order.findAll({ where: { createdAt: {$gte: created_at} } });
    } else if (created_at != 'any' && status != 'any') {
-     return Order.findAll({ where: { createdAt: {$gt: created_at}, status: status }});
+     return Order.findAll({ where: { createdAt: {$gte: created_at}, status: status }});
    } else {
      return Order.findAll({order: '"createdAt" DESC'});
    }

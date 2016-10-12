@@ -41,6 +41,7 @@ class SpeedCheck extends React.Component {
       finalResult.push(lastArray);
       lastArray=[];
     }
+    console.log(finalResult.length);
 
     function fileterResultArray(arrays) {
       var defaultArray = [arrays[0]];
@@ -64,6 +65,8 @@ class SpeedCheck extends React.Component {
     }
 
     let checkResult = fileterResultArray(finalResult);
+    console.log(checkResult[0].length);
+
 
     var total = checkResult[0].length;
     var contents = [];
@@ -100,7 +103,6 @@ class SpeedCheck extends React.Component {
     )
   }
 }
-
 
 export default Relay.createContainer(SpeedCheck, {
   fragments: {

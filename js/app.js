@@ -84,6 +84,7 @@ ReactDOM.render(
       <Route path="/fastThreeDays" component={FastThreeDays} queries={ViewerQueries}/>
       <Route path="/slowestSevenDays" component={SlowestSevenDays} queries={ViewerQueries}/>
 
+
     </Route>
   </Router>,
   mountNode
