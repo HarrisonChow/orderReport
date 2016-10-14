@@ -2,32 +2,28 @@ import React from 'react';
 import Relay from 'react-relay';
 import classnames from 'classnames';
 import {IndexLink, Link} from 'react-router';
+import ReactChart from './ReactChart';
+
 
 class LogisticList extends React.Component {
   render() {
     return(
       <div className="container" >
         <h4>Logistics Statistic</h4>
-        <div className="row">
-          <div className="logistic-detail">
-            <h4>NO.</h4>
-          </div>
-          <div className="logistic-detail">
-            <h4>Name</h4>
-          </div>
-          <div className="logistic-detail">
-            <h4>(0-2)days</h4>
-          </div>
-          <div className="logistic-detail">
-            <h4>(3-5)days</h4>
-          </div>
-          <div className="logistic-detail">
-            <h4>(5+)days</h4>
-          </div>
-        </div>
+        <svg width="650" height="30">
+          <g>
+            <rect x="20" y="0" height="10" width="10" fill='#00749F' />,
+            <text x="40" y="10" fontSize="12" fill="black" > Less than 2 days </text>,
+            <rect x="170" y="0" height="10" width="10" fill='#73C774' />,
+            <text x="190" y="10" fontSize="12" fill="black" > 3 to 5 days </text>,
+            <rect x="320" y="0" height="10" width="10" fill='#C7754C' />,
+            <text x="340" y="10" fontSize="12" fill="black" > more than 5 days </text>,
+          </g>
+        </svg>
         {this.props.viewer.logistics.edges.map(edge =>
           <Logistic edge={edge} key={edge.node.id}/>
         )}
+
       </div>
     )
   }
@@ -35,47 +31,24 @@ class LogisticList extends React.Component {
 
 class Logistic extends React.Component {
   render() {
-    var edge = this.props.edge;
-    let logisticId = (window.atob(edge.node.id)).match(/\d+/g);
+    var logistic = this.props.edge.node;
+
+    let data = [
+      {type: logistic.name, status: 'Less than 2 days', orderAmount: logistic.lessTwo, color: '#00749F'},
+      {type: logistic.name, status: '3 to 5 days', orderAmount: logistic.ThreeToFive, color: '#73C774'},
+      {type: logistic.name, status: 'more than 5 days', orderAmount: logistic.fiveMore, color: '#C7754C'},
+      ]
 
     return (
         <div className="logistic">
           <div className="row">
-            <div className="logistic-detail">
-              <h4>{logisticId}</h4>
-            </div>
-            <div className="logistic-detail">
-              <h4>{edge.node.name}</h4>
-            </div>
-            <div className="logistic-detail">
-              <h4>{edge.node.lessTwo}</h4>
-            </div>
-            <div className="logistic-detail">
-              <h4>{edge.node.ThreeToFive}</h4>
-            </div>
-            <div className="logistic-detail">
-              <h4>{edge.node.fiveMore}</h4>
-            </div>
+            <div className={`logistic-${logistic.name}`}><ReactChart width={650} height={100} data={data} /></div>
           </div>
         </div>
     )
   }
 }
-//
-// class Parcel extends React.Component {
-//   render() {
-//     var edge = this.props.edge;
-//     return (
-//       <div>
-//         <div><h4>Parcel Delivery Time: {edge.node.delivery_time}</h4></div>
-//         <div className="logistic-detail">
-//           <h4></h4>
-//         </div>
-//       </div>
-//
-//     )
-//   }
-// }
+
 
 export default Relay.createContainer(LogisticList, {
   fragments: {
