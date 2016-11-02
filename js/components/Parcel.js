@@ -1,14 +1,33 @@
 import React from 'react';
 import Relay from 'react-relay';
 import classnames from 'classnames';
+import Paper from 'material-ui/Paper';
+import {Table, TableBody, TableHeader, TableHeaderColumn, TableRow, TableRowColumn} from 'material-ui/Table';
+import {IndexLink, Link} from 'react-router';
+
+const style = {
+  bottomPaper: {
+    textAlign: 'center',
+    margin:20,
+  }
+};
 
 class ParcelDetails extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      hoverable:true,
+      stripedRows: true,
+      showRowHover: false,
+      showCheckboxes: false,
+    };
+  }
   render() {
     return (
         <div className="parcel">
           {this.props.viewer.parcels.edges
             .map(edge =>
-            <Detail edge={edge} key={edge.node.id}/>
+            <Detail showCheckboxes={this.state.showCheckboxes} edge={edge} key={edge.node.id}/>
           )}
         </div>
     )
@@ -19,23 +38,32 @@ class Detail extends React.Component {
   render() {
     var edge = this.props.edge;
     return (
-        <div>
-          <div className="parcel-detail">
-            <h4>Parcel Trancking Number: {edge.node.tracking_number}</h4>
-          </div>
-          <div className="parcel-detail">
-            <h4>Parcel Status: {edge.node.status}</h4>
-          </div>
-          <div className="parcel-detail">
-            <h4>Delivery Time: {edge.node.delivery_time} days</h4>
-          </div>
-          <div className="parcel-detail">
-            <h4>Order Number: {edge.node.order.order_number}</h4>
-          </div>
-          <div className="parcel-detail">
-            <h4>Logistic Name: {edge.node.logistic.name}</h4>
-          </div>
-        </div>
+      <div>
+        <Table>
+          <TableBody displayRowCheckbox = {this.props.showCheckboxes}>
+            <TableRow>
+              <TableRowColumn>Parcel Tracking Number:</TableRowColumn>
+              <TableRowColumn>{edge.node.tracking_number}</TableRowColumn>
+            </TableRow>
+            <TableRow>
+              <TableRowColumn>Parcel Status:</TableRowColumn>
+              <TableRowColumn>{edge.node.status}</TableRowColumn>
+            </TableRow>
+            <TableRow>
+              <TableRowColumn>Delivery Time:</TableRowColumn>
+              <TableRowColumn>{edge.node.delivery_time}</TableRowColumn>
+            </TableRow>
+            <TableRow>
+              <TableRowColumn>Logistic Name:</TableRowColumn>
+              <TableRowColumn>{edge.node.logistic.name}</TableRowColumn>
+            </TableRow>
+            <TableRow>
+              <TableRowColumn>Order Number:</TableRowColumn>
+              <TableRowColumn><Link to = {`/orders/${edge.node.order.order_number}`}>{edge.node.order.order_number}</Link></TableRowColumn>
+            </TableRow>
+          </TableBody>
+        </Table>
+      </div>
     )
   }
 }

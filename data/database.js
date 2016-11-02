@@ -1,16 +1,3 @@
-/**
- * This file provided by Facebook is for non-commercial testing and evaluation
- * purposes only.  Facebook reserves all rights not expressly granted.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
- * FACEBOOK BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
- * ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
- * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
- */
-
-
  import Sequelize from 'sequelize';
  import moment from 'moment';
 
@@ -98,158 +85,112 @@
  };
 
 
- export function getFastThreeDays() {
-   return Order.findAll({where: {status: "Deliveried"}}).then(function(orders) {
-     var oneDay = 24*60*60*1000;
-     var doneByDays = [];
-     var lastArray=[];
-     var finalResult=[];
 
-     for (var x = 0; x < orders.length; x++) {
-       var diffDays = Math.round(Math.abs((new Date(orders[x].createdAt)).getTime() - (orders[x].updatedAt).getTime())/oneDay);
-       if (diffDays <= 3 ) {
-         doneByDays.push(orders[x]);
-       }
-     }
-     function fileterResultArray(arrays) {
-       var defaultArray = [arrays[0]];
-       var result =[];
-       for (var i = 1; i < arrays.length; i++) {
-         if (arrays[i].length>arrays[i-1].length) {
-           defaultArray.push(arrays[i]);
-         }
-       }
-       defaultArray.sort(function(a, b){
-         return b.length - a.length;
-       });
-       result = defaultArray[0];
-       return result;
-     }
+export function getFastSLowByDays(speed, days) {
+  return Order.findAll({where: {status: "Deliveried"}}).then(function(orders) {
 
-     for (var j = 0; j < doneByDays.length; j++) {
-       for (var m = j; m < doneByDays.length; m++) {
-         if ((Math.round(Math.abs(((doneByDays[m].updatedAt).getTime() - (doneByDays[j].updatedAt).getTime())/(oneDay)))) <= 3 ) {
-           lastArray.push(doneByDays[m]);
-         }
-       }
-       finalResult.push(lastArray);
-       lastArray=[];
-     }
+    var oneDay = 24*60*60*1000;
+    var doneByDays = [];
+    var lastArray=[];
+    var finalResult=[];
 
-     let checkResult = fileterResultArray(finalResult);
-     return checkResult;
-   });
+    for (var x = 0; x < orders.length; x++) {
+      var diffDays = Math.round(Math.abs((new Date(orders[x].createdAt)).getTime() - (orders[x].updatedAt).getTime())/oneDay);
+      if (diffDays < days ) {
+        doneByDays.push(orders[x]);
+      }
+    }
+    function fileterResultArray(arrays) {
+      var defaultArray = [arrays[0]];
+      var result =[];
+      for (var i = 1; i < arrays.length; i++) {
+        if (arrays[i].length > arrays[i-1].length) {
+          defaultArray.push(arrays[i]);
+        }
+      }
+
+      defaultArray.sort(function(a, b){
+        if (speed === 'slowest') {
+          return (a.length - b.length);
+        } else {
+          return (b.length - a.length);
+        }
+
+      });
+      result = defaultArray[0];
+      return result;
+    }
+
+    for (var j = 0; j < doneByDays.length; j++) {
+      for (var m = j; m < doneByDays.length; m++) {
+        if ((Math.round(Math.abs(((doneByDays[m].updatedAt).getTime() - (doneByDays[j].updatedAt).getTime())/(oneDay)))) < days ) {
+          lastArray.push(doneByDays[m]);
+        }
+      }
+      finalResult.push(lastArray);
+      lastArray=[];
+    }
+
+    let checkResult = fileterResultArray(finalResult);
+    return checkResult;
+  });
+}
+
+
+ export function getAllOrders(order_number, created_at, status, fromDate, toDate) {
+   var selectCondition = (order_number != 'any') ? {where: { orderNumber: order_number }} :
+                         (created_at != 'any' && status === 'any') ? {where: { createdAt: {$gte: created_at} }} :
+                         (created_at != 'any' && status != 'any') ? {where: { createdAt: {$gte: created_at}, status: status }} :
+                         (fromDate != 'any' && toDate != 'any' && status === 'any') ? {where: { createdAt: {$gte: moment(fromDate).format(), $lte: moment(toDate).format()}}} :
+                         (fromDate != 'any' && toDate != 'any' && status != 'any') ? {where: { createdAt: {$gte: moment(fromDate).format(), $lte: moment(toDate).format()},  status: status}} :
+                         {order: '"id" ASC'};
+   return Order.findAll( selectCondition );
  }
-
-
- export function getSlowSevenDays() {
-   return Order.findAll({where: {status: "Deliveried"}}).then(function(orders) {
-     var oneDay = 24*60*60*1000;
-     var doneByDays = [];
-     var lastArray=[];
-     var finalResult=[];
-
-     for (var x = 0; x < orders.length; x++) {
-       var diffDays = Math.round(Math.abs((new Date(orders[x].createdAt)).getTime() - (orders[x].updatedAt).getTime())/oneDay);
-       if (diffDays <= 7 ) {
-         doneByDays.push(orders[x]);
-       }
-     }
-     function fileterResultArray(arrays) {
-       var defaultArray = [arrays[0]];
-       var result =[];
-       for (var i = 1; i < arrays.length; i++) {
-         if (arrays[i].length>arrays[i-1].length) {
-           defaultArray.push(arrays[i]);
-         }
-       }
-       defaultArray.sort(function(a, b){
-         return a.length - b.length;
-       });
-       result = defaultArray[0];
-       return result;
-     }
-
-
-     for (var j = 0; j < doneByDays.length; j++) {
-       for (var m = j; m < doneByDays.length; m++) {
-         if ((Math.round(Math.abs(((doneByDays[m].updatedAt).getTime() - (doneByDays[j].updatedAt).getTime())/(oneDay)))) <= 7 ) {
-           lastArray.push(doneByDays[m]);
-         }
-       }
-       finalResult.push(lastArray);
-       lastArray=[];
-     }
-
-     let checkResult = fileterResultArray(finalResult);
-     return checkResult;
-   });
- }
-
- export function getAllOrders(order_number, created_at, status) {
-   if( order_number != 'any') {
-     return Order.findAll({ where: { orderNumber: order_number } });
-   } else if (created_at != 'any' && status === 'any') {
-     return Order.findAll({ where: { createdAt: {$gte: created_at} } });
-   } else if (created_at != 'any' && status != 'any') {
-     return Order.findAll({ where: { createdAt: {$gte: created_at}, status: status }});
-   } else {
-     return Order.findAll({order: '"createdAt" DESC'});
-   }
- }
-
 
  export function getAmountByStatus(status = 'any') {
-   if (status === 'any') {
-     return Order.findAndCountAll().then(function(result) {
-      return result.count;
-    });
-   } else if (status === "Processing") {
-    return Order.findAndCountAll({ where: {status: "Processing"} }).then(function(result) {
-     return result.count;
-     });
-   } else if (status === "Deliveried") {
-     return Order.findAndCountAll({ where: {status: "Deliveried"} }).then(function(result) {
-      return result.count;
-    });
-  } else if (status === "Delivery") {
-    return Order.findAndCountAll({ where: {status: "Delivery"} }).then(function(result) {
+   var selectCondition = (status === "Processing") ? { where: {status: "Processing"} } :
+                         (status === "Deliveried") ? { where: {status: "Deliveried"} } :
+                         (status === "Delivery") ? { where: {status: "Delivery"} } :
+                         undefined;
+   return Order.findAndCountAll(selectCondition).then(function(result) {
      return result.count;
    });
-   }
  }
 
+ export function getLogisticDeliveryTime(num, id) {
+   var selectCondition = (num === 2) ? {$lte: num} : (num === 3) ? {$gte: num, $lte: 5} : {$gt: num};
+   return Parcel.count({ where: {deliveryTime: selectCondition, logisticId: id}}).then(function(days) {
+     return days;
+   })
+ }
 
- export function getLogisticDeliveryTime(num, id, days) {
-   if (num === 2) {
-     return Parcel.count({ where: {deliveryTime: {$lte: num}, logisticId: id}}).then(function(days) {
-       return days;
-     });
-   } else if (num === 3) {
-     return Parcel.count({ where: {deliveryTime: {$gte: num, $lte: 5}, logisticId: id} }).then(function(days) {
-       return days;
-     });
+ export function getAllParcels(tracking_number, created_at, delivery_time,logistic_name) {
+   var selectCondition = (tracking_number != 'any') ? { where: { trackingNumber: tracking_number } } :
+                         (created_at != 'any') ? { where: { createdAt: {$lt: created_at}, status: {$ne: "Deliveried"} } } :
+                         (delivery_time === '2' && logistic_name != 'any') ? {where: {deliveryTime: {$lte: 2}},include: [{model: Logistic,where: {name: logistic_name}}]} :
+                         (delivery_time === '3' && logistic_name != 'any') ? {where: {deliveryTime: {$gt: 2, $lte: 5}},include: [{model: Logistic,where: {name: logistic_name}}]} :
+                         (delivery_time === '5' && logistic_name != 'any') ? {where: {deliveryTime: {$gt: 5}},include: [{model: Logistic,where: {name: logistic_name}}]} :
+                         {order: '"id" ASC'};;
+   return Parcel.findAll(selectCondition);
+ }
+
+ export function getFilterParcels(days, fromDate, toDate) {
+
+   if (days != 'any') {
+     return Parcel.findAll({where: { createdAt: {$gte: days}, status: "Deliveried" }});
+   } else if (fromDate != 'any' && toDate != 'any') {
+     return Parcel.findAll({where: { createdAt: {$gte: fromDate, $lte: toDate} , status: "Deliveried" }});
    } else {
-     return Parcel.count({ where: {deliveryTime: {$gt: num}, logisticId: id} }).then(function(days) {
-       return days;
-     });
-   }
- }
-
- export function getAllParcels(tracking_number, created_at) {
-   if (tracking_number === 'any' && created_at === 'any') {
      return Parcel.findAll();
-   } else if(created_at === 'any') {
-     return Parcel.findAll({ where: { trackingNumber: tracking_number } });
-   } else if (tracking_number === 'any') {
-     return Parcel.findAll({ where: { createdAt: {$lt: created_at}, status: {$ne: "Deliveried"} } });
    }
  }
-
 
  export function getAllLogistics() {
-  return Logistic.findAll();
+   return Logistic.findAll()
  }
+
+
+
 
 export class Todo {}
 export class User {}

@@ -2,11 +2,26 @@ import React from 'react';
 import Relay from 'react-relay';
 import classnames from 'classnames';
 import {IndexLink, Link} from 'react-router';
-
+import RaisedButton from 'material-ui/RaisedButton';
+import FlatButton from 'material-ui/FlatButton';
+import moment from 'moment';
+import {Table, TableBody, TableFooter, TableHeader, TableHeaderColumn, TableRow, TableRowColumn, onCellClick} from 'material-ui/Table';
+import FooterNavigation from './Footer';
+import NavbarInstance from './Navigationbar';
 
 const pageSize = 10;
 
 class ParcelList extends React.Component {
+  constructor(props) {
+    super(props);
+
+    this.state = {
+      hoverable:true,
+      stripedRows: true,
+      showRowHover: false,
+      showCheckboxes: false,
+    };
+  }
 
   componentWillMount() {
     this.hasNextPage = this.props.viewer.next ? this.props.viewer.next.pageInfo.hasNextPage : false;
@@ -39,22 +54,47 @@ class ParcelList extends React.Component {
       : [])
   }
 
-  render() {
-    const prevButton = this.hasPreviousPage ? <button onClick={ this.prevPage.bind(this) }>Previous</button> : '';
-    const nextButton = this.hasNextPage ? <button onClick={ this.nextPage.bind(this) }>Next</button> : '';
+  cellClicked(rowNumber, columnId) {
+    var trackingid = this.children[1].props.children;
+    window.location = '#/parcels/'+trackingid;
+  }
 
+  render() {
+    const prevButton = this.hasPreviousPage ? <FlatButton className = "backButton" label = "Back" onClick = { this.prevPage.bind(this) }/> : '';
+    const nextButton = this.hasNextPage ? <RaisedButton className = "nextButton" primary = {true}  label = "Next"  onClick = { this.nextPage.bind(this) }/> : '';
+    let title = (this.props.created_at) ? "Parcel Processing longer than 7 days" : "All parcels list"
     return (
       <div>
-        <div>
-          <h3>All parcels list</h3>
+      <NavbarInstance />
+        <Table>
+          <TableHeader displaySelectAll = {this.state.showCheckboxes}
+            adjustForCheckbox = {this.state.showCheckboxes}>
+            <TableRow>
+              <TableHeaderColumn colSpan = "4" style = {{textAlign: 'center', fontSize: 15}}>
+                {title}
+              </TableHeaderColumn>
+            </TableRow>
+            <TableRow>
+              <TableHeaderColumn>ID</TableHeaderColumn>
+              <TableHeaderColumn>Tracking Number</TableHeaderColumn>
+              <TableHeaderColumn>Status</TableHeaderColumn>
+              <TableHeaderColumn>Created At</TableHeaderColumn>
+            </TableRow>
+          </TableHeader>
+          <TableBody displayRowCheckbox = {this.state.showCheckboxes}
+            deselectOnClickaway = {this.state.deselectOnClickaway}
+            showRowHover = {this.state.showRowHover}
+            stripedRows = {this.state.stripedRows}>
+            { this.parcelEdges().map(edge => <Parcel cellClicked = {this.cellClicked} state = {this.state} {...edge.node} key = { edge.node.__dataID__ } />) }
+          </TableBody>
+        </Table>
+        <div className = "row pageButton">
+          { prevButton }
+          { nextButton }
+
         </div>
-        <div>
-          { this.parcelEdges().map(edge => <Parcel {...edge.node} key={ edge.node.__dataID__ } />) }
-        </div>
-        <div className="pageination">
-          <span className="pageButton">{ prevButton }</span>
-          <span className="pageButton">{ nextButton }</span>
-        </div>
+        <FooterNavigation click = {this.state}/>
+
       </div>
     );
   }
@@ -63,17 +103,12 @@ class ParcelList extends React.Component {
 
 const Parcel = props => {
   return (
-    <div className="parcel">
-      <div className="parcel-detail">
-        <h4>{props.tracking_number}</h4>
-      </div>
-      <div className="parcel-detail">
-        <h4>{props.status}</h4>
-      </div>
-      <div className="parcel-detail">
-        <Link to={`/parcels/${props.tracking_number}`}><h4>detail</h4></Link>
-      </div>
-    </div>
+    <TableRow hoverable = {props.state.hoverable} onCellClick = {props.cellClicked}>
+      <TableRowColumn>{window.atob(props.id).match(/\d+$/)[0]}</TableRowColumn>
+      <TableRowColumn>{props.tracking_number}</TableRowColumn>
+      <TableRowColumn>{props.status}</TableRowColumn>
+      <TableRowColumn>{moment(props.created_at).format('LL')}</TableRowColumn>
+    </TableRow>
   )
 }
 
@@ -85,12 +120,16 @@ export default Relay.createContainer(ParcelList, {
     after: null,
     before: null,
     next: true,
-    prev: false
+    prev: false,
+    created_at: null,
+    logistic_name: null,
+    delivery_time: null
   },
+
   fragments: {
     viewer: () => Relay.QL`
       fragment on User {
-        next: parcels(first: $first, after: $after) @include(if: $next) {
+        next: parcels(created_at: $created_at, logistic_name: $logistic_name, delivery_time: $delivery_time, first: $first, after: $after) @include(if: $next) {
           edges {
             cursor,
             node {
@@ -99,9 +138,15 @@ export default Relay.createContainer(ParcelList, {
               status,
               created_at,
               updated_at,
+              delivery_time,
+              logistic {
+                name,
+              },
               order{
+                id,
                 order_number,
                 status,
+                created_at,
               }
             }
           },
@@ -113,7 +158,7 @@ export default Relay.createContainer(ParcelList, {
           }
         },
 
-        prev: parcels(last: $last, before: $before) @include(if: $prev){
+        prev: parcels(created_at: $created_at,logistic_name: $logistic_name, delivery_time: $delivery_time,last: $last, before: $before) @include(if: $prev){
           edges {
             cursor,
             node {
@@ -122,9 +167,15 @@ export default Relay.createContainer(ParcelList, {
               status,
               created_at,
               updated_at,
+              delivery_time,
+              logistic {
+                name,
+              },
               order{
+                id,
                 order_number,
                 status,
+                created_at,
               }
             }
           },

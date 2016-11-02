@@ -52,8 +52,8 @@ import {
   Parcel,
   Logistic,
   getAllOrders,
-  getFastThreeDays,
-  getSlowSevenDays,
+  getFastSLowByDays,
+  getFilterParcels,
   getAllLogistics,
   getAllParcels,
   getAmountByStatus,
@@ -202,6 +202,26 @@ const GraphQLLogistic = new GraphQLObjectType({
         type: ParcelsConnection,
         resolve: (obj, ...args) => connectionFromPromisedArray(obj.getParcels(), args),
       },
+      filterparcels: {
+        type: ParcelsConnection,
+        args: {
+          days: {
+            type: GraphQLString,
+            defaultValue: 'any',
+          },
+          fromDate: {
+            type: GraphQLString,
+            defaultValue: 'any',
+          },
+          toDate: {
+            type: GraphQLString,
+            defaultValue: 'any',
+          },
+          ...connectionArgs,
+        },
+        resolve: (obj, {days,fromDate,toDate, ...args}) =>
+          connectionFromPromisedArray(getFilterParcels(days,fromDate,toDate), args)
+      },
       lessTwo: {
         type: GraphQLInt,
         resolve: (obj) => getLogisticDeliveryTime(2, obj.id),
@@ -241,30 +261,36 @@ const GraphQLUser = new GraphQLObjectType({
           type: GraphQLString,
           defaultValue: 'any',
         },
+        fromDate: {
+          type: GraphQLString,
+          defaultValue: 'any',
+        },
+        toDate: {
+          type: GraphQLString,
+          defaultValue: 'any',
+        },
         ...connectionArgs,
       },
-      resolve: (obj, {order_number,created_at,status, ...args}) =>
-        connectionFromPromisedArray(getAllOrders(order_number,created_at,status), args)
+      resolve: (obj, {order_number,created_at,status,fromDate,toDate, ...args}) =>
+        connectionFromPromisedArray(getAllOrders(order_number,created_at,status,fromDate,toDate,), args)
     },
 
-    fastThreeDays: {
+    speedByDays: {
       type: OrdersConnection,
       args: {
+        speed: {
+          type: GraphQLString,
+          defaultValue: 'any',
+        },
+        days: {
+          type: GraphQLString,
+          defaultValue: 'any',
+        },
         ...connectionArgs,
       },
-      resolve: (obj, { ...args}) =>
-        connectionFromPromisedArray(getFastThreeDays(), args)
+      resolve: (obj, { speed,days,...args}) =>
+        connectionFromPromisedArray(getFastSLowByDays(speed, days), args)
     },
-    
-    slowSevenDays: {
-      type: OrdersConnection,
-      args: {
-        ...connectionArgs,
-      },
-      resolve: (obj, { ...args}) =>
-        connectionFromPromisedArray(getSlowSevenDays(), args)
-    },
-
 
     parcels: {
       type: ParcelsConnection,
@@ -277,10 +303,18 @@ const GraphQLUser = new GraphQLObjectType({
           type: GraphQLString,
           defaultValue: 'any',
         },
+        delivery_time: {
+          type: GraphQLString,
+          defaultValue: 'any',
+        },
+        logistic_name: {
+          type: GraphQLString,
+          defaultValue: 'any',
+        },
         ...connectionArgs,
       },
-      resolve: (obj, {tracking_number,created_at, ...args}) =>
-        connectionFromPromisedArray(getAllParcels(tracking_number,created_at), args)
+      resolve: (obj, {tracking_number,created_at,delivery_time,logistic_name, ...args}) =>
+        connectionFromPromisedArray(getAllParcels(tracking_number,created_at,delivery_time,logistic_name), args)
     },
 
     logistics: {

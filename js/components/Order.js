@@ -1,16 +1,36 @@
 import React from 'react';
 import Relay from 'react-relay';
 import classnames from 'classnames';
+import Paper from 'material-ui/Paper';
+import moment from 'moment';
+import {Table, TableBody, TableHeader, TableHeaderColumn, TableRow, TableRowColumn} from 'material-ui/Table';
 
+
+const style = {
+  bottomPaper: {
+    textAlign: 'center',
+    margin:20,
+  }
+};
 class OrderDetails extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      hoverable:true,
+      stripedRows: true,
+      showRowHover: false,
+      showCheckboxes: false,
+    };
+  }
+
   render() {
     return (
-        <div className="order">
-          {this.props.viewer.orders.edges
-            .map(edge =>
-            <Detail edge={edge} key={edge.node.id}/>
-          )}
-        </div>
+      <div className="order">
+        {this.props.viewer.orders.edges
+          .map(edge =>
+          <Detail showCheckboxes={this.state.showCheckboxes} edge={edge} key={edge.node.id}/>
+        )}
+      </div>
     )
   }
 }
@@ -19,22 +39,29 @@ class Detail extends React.Component {
   render() {
     var edge = this.props.edge;
     return (
-        <div >
-          <div className="order-detail">
-            <h4>Order Number: {edge.node.order_number}</h4>
-          </div>
-          <div className="order-detail">
-            <h4>Order Status: {edge.node.status}</h4>
-          </div>
-          <div className="order-detail">
-            <h4>Created At: {edge.node.created_at}</h4>
-          </div>
-          <div className="order-detail">
-            {edge.node.parcels.edges.map(edge =>
-              <Parcel edge={edge} key={edge.node.id}/>
-            )}
-          </div>
+      <div>
+        <Table>
+          <TableBody displayRowCheckbox = {this.props.showCheckboxes}>
+            <TableRow>
+              <TableRowColumn>Order Number:</TableRowColumn>
+              <TableRowColumn>{edge.node.order_number}</TableRowColumn>
+            </TableRow>
+            <TableRow>
+              <TableRowColumn>Order Status:</TableRowColumn>
+              <TableRowColumn>{edge.node.status}</TableRowColumn>
+            </TableRow>
+            <TableRow>
+              <TableRowColumn>Created At:</TableRowColumn>
+              <TableRowColumn>{moment(edge.node.created_at).format('ll')}</TableRowColumn>
+            </TableRow>
+          </TableBody>
+        </Table>
+        <div className = "moreDetails">
+        {edge.node.parcels.edges.map(edge =>
+          <Parcel showCheckboxes = {this.props.showCheckboxes} edge = {edge} key = {edge.node.id}/>
+        )}
         </div>
+      </div>
     )
   }
 }
@@ -43,16 +70,31 @@ class Parcel extends React.Component {
   render() {
     var edge = this.props.edge;
     return (
-      <div>
-        <div><h4>Parcel Trancking Number: {edge.node.tracking_number}</h4></div>
-        <div><h4>Parcel Status: {edge.node.status}</h4></div>
-        <div><h4>Parcel Delivery Time: {edge.node.delivery_time}</h4></div>
-        <div><h4>Logistic Company: {edge.node.logistic.name}</h4></div>
-      </div>
+      <Paper zDepth={2} style = {style.bottomPaper}>
+        <Table>
+          <TableBody displayRowCheckbox = {this.props.showCheckboxes}>
+            <TableRow>
+              <TableRowColumn>Parcel Tracking Number:</TableRowColumn>
+              <TableRowColumn>{edge.node.tracking_number}</TableRowColumn>
+            </TableRow>
+            <TableRow>
+              <TableRowColumn>Parcel Status:</TableRowColumn>
+              <TableRowColumn>{edge.node.status}</TableRowColumn>
+            </TableRow>
+            <TableRow>
+              <TableRowColumn>Parcel Delivery Time:</TableRowColumn>
+              <TableRowColumn>{edge.node.delivery_time}</TableRowColumn>
+            </TableRow>
+            <TableRow>
+              <TableRowColumn>Logistic Company Name:</TableRowColumn>
+              <TableRowColumn>{edge.node.logistic.name}</TableRowColumn>
+            </TableRow>
+          </TableBody>
+        </Table>
+      </Paper>
     )
   }
 }
-
 
 export default Relay.createContainer(OrderDetails, {
   initialVariables: {

@@ -1,37 +1,23 @@
-/**
- * This file provided by Facebook is for non-commercial testing and evaluation
- * purposes only.  Facebook reserves all rights not expressly granted.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
- * FACEBOOK BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
- * ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
- * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
- */
-
 import React from 'react';
 import ReactDOM from 'react-dom';
 import Relay from 'react-relay';
 import {IndexRoute, Route, Router} from 'react-router';
-import TodoApp from './components/TodoApp';
-import TodoList from './components/TodoList';
+import OrderReportApp from './components/OrderReportApp';
 import ViewerQueries from './queries/ViewerQueries';
-import Orders from './components/Orders';
+import OrderList from './components/Orders';
 import AllOrders from './components/AllOrders';
 import Order from './components/Order';
-import SpeedCheck from './components/SpeedCheck';
-import FastThreeDays from './components/FastThreeDays';
-import SlowestSevenDays from './components/SlowestSevenDays';
-import LongOrders from './components/LongOrders';
+import SpeedByDays from './components/FastAndSlow';
 import Parcels from './components/Parcels';
 import Parcel from './components/Parcel';
-import Logistics from './components/Logistics';
-import LogisticsByDays from './components/LogisticsByDays';
+import LogisticsList from './components/Logistics';
 import useRelay from 'react-router-relay';
 import {createHashHistory} from 'history';
 import {applyRouterMiddleware, useRouterHistory} from 'react-router';
 import moment from 'moment';
+import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
+import getMuiTheme from 'material-ui/styles/getMuiTheme';
+import lightBaseTheme from 'material-ui/styles/baseThemes/lightBaseTheme';
 
 const history = useRouterHistory(createHashHistory)({ queryKey: false });
 const mountNode = document.getElementById('root');
@@ -44,7 +30,8 @@ function prepareOrderParams(params, route) {
 };
 
 function prepareOrderdateParams(params, route) {
-  let selectDaysDate = moment().subtract(params.days, 'days').calendar();
+  let selectDaysDates = moment().subtract(params.days, 'days').calendar();
+  let selectDaysDate = moment(selectDaysDates).format();
   return {
     ...params,
     created_at:selectDaysDate,
@@ -52,40 +39,95 @@ function prepareOrderdateParams(params, route) {
   };
 };
 
-function prepareParcelParams(params, route) {
+function prepareOrderRangeParams(params, route) {
   return {
     ...params,
-    tracking_number:params.id
+    fromDate:params.from,
+    toDate:params.to,
+    status:params.status
   };
 };
 
+function prepareOrderRangeHomeParams(params, route) {
+  let selectDaysDate = moment(params.from).format();
+  return {
+    ...params,
+    fromDate:params.from,
+    toDate:params.to,
+  };
+};
+
+function prepareOrderFastandSlowParams(params, route) {
+  return {
+    ...params,
+    days:params.days,
+    speed:params.speed,
+  };
+};
+
+
 function prepareParceldateParams(params, route) {
-  let sevenDaysDate = moment().subtract(params.created_at, 'days').calendar();
+  let sevenDaysDates = moment().subtract(params.created_at, 'days').calendar();
+  let sevenDaysDate = moment(sevenDaysDates).format();
   return {
     ...params,
     created_at:sevenDaysDate
   };
 };
 
+function prepareParcelbyLogisticdateParams(params, route) {
+  return {
+    ...params,
+    logistic_name: params.logistic,
+    delivery_time: params.days
+  };
+};
+
+function prepareLogsticsStatisticParams(params, route) {
+  let getDates = moment().subtract(params.days, 'days').calendar();
+  let getDate = moment(getDates).format();
+  return {
+    ...params,
+    days:getDate,
+  };
+};
+
+function prepareIndexParams(params, route) {
+  let getToDates = new Date();
+  let getFromDates = new Date( ( moment( moment().subtract( 7, 'days' ).calendar() ).utc() ).format() );
+  let getToDate = getToDates.toString();
+  let getFromDate = getFromDates.toString();
+  return {
+    ...params,
+    order_number: 'any',
+    created_at: 'any',
+    status: 'any',
+    toDate: getToDate,
+    fromDate: getFromDate
+  };
+};
 
 ReactDOM.render(
-  <Router environment={Relay.Store} history={history} render={applyRouterMiddleware(useRelay)}>
-    <Route path="/" component={TodoApp} queries={ViewerQueries}>
-      <IndexRoute component={Orders} queries={ViewerQueries}/>
-      <Route path="/orders/:id" component={Order} queries={ViewerQueries} prepareParams={prepareOrderParams}/>
-      <Route path="/speedcheck/:speed" component={SpeedCheck} queries={ViewerQueries}/>
-      <Route path="/allOrders" component={AllOrders} queries={ViewerQueries}/>
-      <Route path="/allOrders/:days/:status" component={AllOrders} queries={ViewerQueries} prepareParams={prepareOrderdateParams}/>
-      <Route path="/longorders/:created_at" component={LongOrders} queries={ViewerQueries} prepareParams={prepareParceldateParams}/>
-      <Route path="/parcels" component={Parcels} queries={ViewerQueries}/>
-      <Route path="/parcels/:id" component={Parcel} queries={ViewerQueries} prepareParams={prepareParcelParams}/>
-      <Route path="/logistics" component={Logistics} queries={ViewerQueries}/>
-      <Route path="/logistics/:days" component={LogisticsByDays} queries={ViewerQueries}/>
-      <Route path="/fastThreeDays" component={FastThreeDays} queries={ViewerQueries}/>
-      <Route path="/slowestSevenDays" component={SlowestSevenDays} queries={ViewerQueries}/>
-
-
-    </Route>
-  </Router>,
+  <MuiThemeProvider muiTheme={getMuiTheme(lightBaseTheme)}>
+    <Router environment={Relay.Store} history={history} render={applyRouterMiddleware(useRelay)} forceFetch={true}>
+      <Route path="/" component={OrderReportApp} >
+        <IndexRoute component={OrderList} queries={ViewerQueries} prepareParams={prepareIndexParams}/>
+        <Route path="/orders/:id" component={Order} queries={ViewerQueries} prepareParams={prepareOrderParams}/>
+        <Route path="/orders/:from/:to" component={OrderList} queries={ViewerQueries} prepareParams={prepareOrderRangeHomeParams}/>
+        <Route path="/allOrders" component={AllOrders} queries={ViewerQueries} prepareParams={params => ({ ...params, days: 'any', status: 'any',  fromDate: 'any', toDate: 'any'  })}/>
+        <Route path="/allOrders/:days/:status" component={AllOrders} queries={ViewerQueries} prepareParams={prepareOrderdateParams}/>
+        <Route path="/OrdersByRange/:status/:from/:to" component={AllOrders} queries={ViewerQueries} prepareParams={prepareOrderRangeParams}/>
+        <Route path="/OrdersByRange/:from/:to" component={AllOrders} queries={ViewerQueries} prepareParams={prepareOrderRangeHomeParams}/>
+        <Route path="/longorders/:created_at" component={Parcels} queries={ViewerQueries} prepareParams={prepareParceldateParams}/>
+        <Route path="/parcels" component={Parcels} queries={ViewerQueries} prepareParams={params => ({ ...params, logistic_name: 'any', delivery_time: 'any'})}/>
+        <Route path="/parcels/:days/:logistic" component={Parcels} queries={ViewerQueries} prepareParams={prepareParcelbyLogisticdateParams}/>
+        <Route path="/parcels/:id" component={Parcel} queries={ViewerQueries} prepareParams={params => ({...params, tracking_number: params.id})}/>
+        <Route path="/logistics" component={LogisticsList} queries={ViewerQueries} />
+        <Route path="/logistics/:days" component={LogisticsList} queries={ViewerQueries} prepareParams={prepareLogsticsStatisticParams}/>
+        <Route path="/logistics/:from/:to" component={LogisticsList} queries={ViewerQueries} prepareParams={prepareOrderRangeHomeParams}/>
+        <Route path="/speedcheck/:speed/:days" component={SpeedByDays} queries={ViewerQueries} prepareParams={prepareOrderFastandSlowParams}/>
+      </Route>
+    </Router>
+  </MuiThemeProvider>,
   mountNode
 );
