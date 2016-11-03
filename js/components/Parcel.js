@@ -4,6 +4,8 @@ import classnames from 'classnames';
 import Paper from 'material-ui/Paper';
 import {Table, TableBody, TableHeader, TableHeaderColumn, TableRow, TableRowColumn} from 'material-ui/Table';
 import {IndexLink, Link} from 'react-router';
+import FooterNavigation from './Footer';
+import NavbarInstance from './Navigationbar';
 
 const style = {
   bottomPaper: {
@@ -24,11 +26,15 @@ class ParcelDetails extends React.Component {
   }
   render() {
     return (
-        <div className="parcel">
-          {this.props.viewer.parcels.edges
-            .map(edge =>
-            <Detail showCheckboxes={this.state.showCheckboxes} edge={edge} key={edge.node.id}/>
-          )}
+        <div>
+          <NavbarInstance />
+          <div className="parcel">
+            {this.props.viewer.parcels.edges
+              .map(edge =>
+              <Detail showCheckboxes={this.state.showCheckboxes} edge={edge} key={edge.node.id}/>
+            )}
+          </div>
+          <FooterNavigation />
         </div>
     )
   }

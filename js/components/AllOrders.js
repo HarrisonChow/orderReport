@@ -97,7 +97,7 @@ class AllOrders extends React.Component {
           { prevButton }
           { nextButton }
         </div>
-        <FooterNavigation click = {this.state}/>
+        <FooterNavigation />
       </div>
     );
   }

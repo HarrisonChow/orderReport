@@ -4,7 +4,8 @@ import classnames from 'classnames';
 import Paper from 'material-ui/Paper';
 import moment from 'moment';
 import {Table, TableBody, TableHeader, TableHeaderColumn, TableRow, TableRowColumn} from 'material-ui/Table';
-
+import FooterNavigation from './Footer';
+import NavbarInstance from './Navigationbar';
 
 const style = {
   bottomPaper: {
@@ -25,11 +26,18 @@ class OrderDetails extends React.Component {
 
   render() {
     return (
-      <div className="order">
-        {this.props.viewer.orders.edges
-          .map(edge =>
-          <Detail showCheckboxes={this.state.showCheckboxes} edge={edge} key={edge.node.id}/>
-        )}
+      <div>
+        <NavbarInstance />
+        <div className="order">
+        {this.props.viewer.orders.edges.length===0 &&
+          <div>Sorry! Order Number {this.props.id} not exist</div>
+        }
+          {this.props.viewer.orders.edges
+            .map(edge =>
+            <Detail showCheckboxes={this.state.showCheckboxes} edge={edge} key={edge.node.id}/>
+          )}
+        </div>
+        <FooterNavigation />
       </div>
     )
   }

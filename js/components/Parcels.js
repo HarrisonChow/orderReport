@@ -93,7 +93,7 @@ class ParcelList extends React.Component {
           { nextButton }
 
         </div>
-        <FooterNavigation click = {this.state}/>
+        <FooterNavigation/>
 
       </div>
     );

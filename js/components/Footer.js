@@ -23,8 +23,10 @@ export default class FooterNavigation extends Component {
     this.setState({selectedIndex: index});
     let urls = (index === 1) ? '#/allOrders' : (index === 2) ? '#/parcels' : (index === 3) ? '#/logistics' : '#/';
     window.location = urls;
-    this.props.click.displayDatePicker = false;
-    this.props.click.value = 7
+    if (this.props.click) {
+      this.props.click.displayDatePicker = false;
+      this.props.click.value = 7
+    }
   }
 
   render() {

@@ -35,7 +35,7 @@ class LogisticsList extends React.Component {
           {this.props.viewer.logistics.edges.map(edge =>
             <Logistic edge={edge} name={edge.node.name} days={this.props.days} titleDays={this.props.params.days} fromDate={this.props.fromDate} toDate={this.props.toDate} key={edge.node.id} />
           )}
-        <FooterNavigation click = {this.state}/>
+        <FooterNavigation/>
       </div>
     )
   }
