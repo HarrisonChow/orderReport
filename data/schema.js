@@ -282,14 +282,14 @@ const GraphQLUser = new GraphQLObjectType({
           type: GraphQLString,
           defaultValue: 'any',
         },
-        days: {
+        daterange: {
           type: GraphQLString,
           defaultValue: 'any',
         },
         ...connectionArgs,
       },
-      resolve: (obj, { speed,days,...args}) =>
-        connectionFromPromisedArray(getFastSLowByDays(speed, days), args)
+      resolve: (obj, { speed,daterange,...args}) =>
+        connectionFromPromisedArray(getFastSLowByDays(speed,daterange), args)
     },
 
     parcels: {

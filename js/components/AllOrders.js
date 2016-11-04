@@ -8,6 +8,7 @@ import moment from 'moment';
 import {Table, TableBody, TableFooter, TableHeader, TableHeaderColumn, TableRow, TableRowColumn, onCellClick} from 'material-ui/Table';
 import FooterNavigation from './Footer';
 import NavbarInstance from './Navigationbar';
+import SearchForm from './SearchForm'
 
 const pageSize = 10;
 
@@ -60,13 +61,13 @@ class AllOrders extends React.Component {
   }
 
   render() {
-      var titleDays = this.props.params.days;
-      var titleStatus = this.props.params.status ==='any'? 'All':this.props.params.status;
-      var pageTitle = (this.props.params.status && !this.props.from) ? titleStatus + " orders list in last " + titleDays + " days":
-                      (this.props.params.status && this.props.from) ? titleStatus + " orders list from " + moment(this.props.from).format('ll') + " to " + moment(this.props.to).format('ll') :
-                      "All orders list";
-      const prevButton = this.hasPreviousPage ? <FlatButton className="backButton" label="Back" onClick={ this.prevPage.bind(this) }/> : '';
-      const nextButton = this.hasNextPage ? <RaisedButton className="nextButton" primary={true}  label="Next"  onClick={ this.nextPage.bind(this) }/> : '';
+    var titleDays = this.props.params.days;
+    var titleStatus = this.props.params.status ==='any'? 'All':this.props.params.status;
+    var pageTitle = (this.props.params.status && !this.props.from) ? titleStatus + " orders list in last " + titleDays + " days":
+                    (this.props.params.status && this.props.from) ? titleStatus + " orders list from " + moment(this.props.from).format('ll') + " to " + moment(this.props.to).format('ll') :
+                    "All orders list";
+    const prevButton = this.hasPreviousPage ? <FlatButton className="backButton" label="Back" onClick={ this.prevPage.bind(this) }/> : '';
+    const nextButton = this.hasNextPage ? <RaisedButton className="nextButton" primary={true}  label="Next"  onClick={ this.nextPage.bind(this) }/> : '';
 
     return (
       <div>
@@ -74,6 +75,11 @@ class AllOrders extends React.Component {
         <Table>
           <TableHeader displaySelectAll = {this.state.showCheckboxes}
             adjustForCheckbox = {this.state.showCheckboxes}>
+            <TableRow>
+              <TableHeaderColumn colSpan = "4" style = {{textAlign: 'center', fontSize: 15}}>
+                <SearchForm />
+              </TableHeaderColumn>
+            </TableRow>
             <TableRow>
               <TableHeaderColumn colSpan = "4" style = {{textAlign: 'center', fontSize: 15}}>
                 {pageTitle}

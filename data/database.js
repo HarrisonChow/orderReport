@@ -84,57 +84,77 @@
    });
  };
 
-
-
-export function getFastSLowByDays(speed, days) {
-  return Order.findAll({where: {status: "Deliveried"}}).then(function(orders) {
-
+export function getFastSLowByDays(speed, daterange) {
+  let getDates = moment().subtract(daterange, 'days').calendar();
+  let getDate = moment(getDates).format();
+  return Order.findAll({where: {status:  "Deliveried", createdAt: {$gte: getDate}}}).then(function(orders) {
     var oneDay = 24*60*60*1000;
-    var doneByDays = [];
-    var lastArray=[];
-    var finalResult=[];
-
-    for (var x = 0; x < orders.length; x++) {
-      var diffDays = Math.round(Math.abs((new Date(orders[x].createdAt)).getTime() - (orders[x].updatedAt).getTime())/oneDay);
-      if (diffDays < days ) {
+    var doneByDays = [orders[0]];
+    var diffDaysOne = Math.round(Math.abs((new Date(orders[0].createdAt)).getTime() - (orders[0].updatedAt).getTime())/oneDay);
+    for (var x = 1; x < orders.length; x++) {
+      var diffDaysTwo = Math.round(Math.abs((new Date(orders[x].createdAt)).getTime() - (orders[x].updatedAt).getTime())/oneDay);
+      var condition = (speed === 'fastest') ? diffDaysOne>diffDaysTwo : diffDaysOne<diffDaysTwo;
+      if (diffDaysOne===diffDaysTwo) {
+        doneByDays.push(orders[x])
+      } else if (condition) {
+        doneByDays=[];
         doneByDays.push(orders[x]);
+        diffDaysOne = diffDaysTwo;
       }
     }
-    function fileterResultArray(arrays) {
-      var defaultArray = [arrays[0]];
-      var result =[];
-      for (var i = 1; i < arrays.length; i++) {
-        if (arrays[i].length > arrays[i-1].length) {
-          defaultArray.push(arrays[i]);
-        }
-      }
-
-      defaultArray.sort(function(a, b){
-        if (speed === 'slowest') {
-          return (a.length - b.length);
-        } else {
-          return (b.length - a.length);
-        }
-
-      });
-      result = defaultArray[0];
-      return result;
-    }
-
-    for (var j = 0; j < doneByDays.length; j++) {
-      for (var m = j; m < doneByDays.length; m++) {
-        if ((Math.round(Math.abs(((doneByDays[m].updatedAt).getTime() - (doneByDays[j].updatedAt).getTime())/(oneDay)))) < days ) {
-          lastArray.push(doneByDays[m]);
-        }
-      }
-      finalResult.push(lastArray);
-      lastArray=[];
-    }
-
-    let checkResult = fileterResultArray(finalResult);
-    return checkResult;
+    return doneByDays;
   });
 }
+//
+// export function getFastSLowByDays(speed, days) {
+//   return Order.findAll({where: {status: "Deliveried"}}).then(function(orders) {
+//
+//     var oneDay = 24*60*60*1000;
+//     var doneByDays = [];
+//     var lastArray=[];
+//     var finalResult=[];
+//
+//     for (var x = 0; x < orders.length; x++) {
+//       var diffDays = Math.round(Math.abs((new Date(orders[x].createdAt)).getTime() - (orders[x].updatedAt).getTime())/oneDay);
+//       if (diffDays < days ) {
+//         doneByDays.push(orders[x]);
+//       }
+//     }
+//     function fileterResultArray(arrays) {
+//       var defaultArray = [arrays[0]];
+//       var result =[];
+//       for (var i = 1; i < arrays.length; i++) {
+//         if (arrays[i].length > arrays[i-1].length) {
+//           defaultArray.push(arrays[i]);
+//         }
+//       }
+//
+//       defaultArray.sort(function(a, b){
+//         if (speed === 'slowest') {
+//           return (a.length - b.length);
+//         } else {
+//           return (b.length - a.length);
+//         }
+//
+//       });
+//       result = defaultArray[0];
+//       return result;
+//     }
+//
+//     for (var j = 0; j < doneByDays.length; j++) {
+//       for (var m = j; m < doneByDays.length; m++) {
+//         if ((Math.round(Math.abs(((doneByDays[m].updatedAt).getTime() - (doneByDays[j].updatedAt).getTime())/(oneDay)))) < days ) {
+//           lastArray.push(doneByDays[m]);
+//         }
+//       }
+//       finalResult.push(lastArray);
+//       lastArray=[];
+//     }
+//
+//     let checkResult = fileterResultArray(finalResult);
+//     return checkResult;
+//   });
+// }
 
 
  export function getAllOrders(order_number, created_at, status, fromDate, toDate) {

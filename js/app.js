@@ -60,7 +60,7 @@ function prepareOrderRangeHomeParams(params, route) {
 function prepareOrderFastandSlowParams(params, route) {
   return {
     ...params,
-    days:params.days,
+    daterange:params.daterange,
     speed:params.speed,
   };
 };
@@ -125,7 +125,7 @@ ReactDOM.render(
         <Route path="/logistics" component={LogisticsList} queries={ViewerQueries} />
         <Route path="/logistics/:days" component={LogisticsList} queries={ViewerQueries} prepareParams={prepareLogsticsStatisticParams}/>
         <Route path="/logistics/:from/:to" component={LogisticsList} queries={ViewerQueries} prepareParams={prepareOrderRangeHomeParams}/>
-        <Route path="/speedcheck/:speed/:days" component={SpeedByDays} queries={ViewerQueries} prepareParams={prepareOrderFastandSlowParams}/>
+        <Route path="/speedcheck/:speed/:daterange" component={SpeedByDays} queries={ViewerQueries} prepareParams={prepareOrderFastandSlowParams}/>
       </Route>
     </Router>
   </MuiThemeProvider>,

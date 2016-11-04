@@ -200,7 +200,7 @@
                   "defaultValue": "\"any\""
                 },
                 {
-                  "name": "days",
+                  "name": "daterange",
                   "description": null,
                   "type": {
                     "kind": "SCALAR",

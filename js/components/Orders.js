@@ -13,7 +13,7 @@ import Paper from 'material-ui/Paper';
 import DatePicker from 'material-ui/DatePicker';
 import FooterNavigation from './Footer';
 import NavbarInstance from './Navigationbar';
-import SearchBox from './Search'
+import SearchForm from './SearchForm'
 
 
 const style = {
@@ -116,7 +116,6 @@ class OrderList extends React.Component {
       {type: 'orders', status: 'Deliveried', orderAmount: filtedDeliveriedResult.length, color: '#ff8c00'},
     ]
 
-
     return(
 
       <div className = "row" >
@@ -124,9 +123,9 @@ class OrderList extends React.Component {
         <NavbarInstance click = {this.state}/>
           <div className = "col-xs-offset-1 col-xs-10 allButtons">
             <RaisedButton className = "mainBtn" label = "Processing Longer Than 7 Days" primary = {true} href = {`#/longorders/${sevenDaysDate}`}/>
-            <RaisedButton className = "mainBtn" label = "Fastest 3 Days" primary = {true} href = "#/speedcheck/fastest/3"/>
-            <RaisedButton className = "mainBtn" label = "Slowest 7 Days" primary = {true} href = "#/speedcheck/slowest/7"/>
-            <SearchBox />
+            <RaisedButton className = "mainBtn" label = "Fastest 3 Days" primary = {true} href = {`#/speedcheck/fastest/${dateRange}`}/>
+            <RaisedButton className = "mainBtn" label = "Slowest 7 Days" primary = {true} href = {`#/speedcheck/slowest/${dateRange}`}/>
+            <SearchForm />
           </div>
           <div className = "col-xs-offset-1 col-xs-10 allButtons">
             <Paper zDepth = { 1 } style={ style.bottomPaper }>

@@ -6,6 +6,7 @@ import moment from 'moment';
 import {Table, TableBody, TableHeader, TableHeaderColumn, TableRow, TableRowColumn} from 'material-ui/Table';
 import FooterNavigation from './Footer';
 import NavbarInstance from './Navigationbar';
+import SearchForm from './SearchForm'
 
 const style = {
   bottomPaper: {
@@ -30,7 +31,11 @@ class OrderDetails extends React.Component {
         <NavbarInstance />
         <div className="order">
         {this.props.viewer.orders.edges.length===0 &&
-          <div>Sorry! Order Number {this.props.id} not exist</div>
+          <div>
+            <div>Your search - {this.props.id} - did not match any orders.</div>
+            <SearchForm />
+          </div>
+
         }
           {this.props.viewer.orders.edges
             .map(edge =>

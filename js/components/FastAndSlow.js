@@ -123,13 +123,13 @@ export default Relay.createContainer(SpeedByDays, {
     before: null,
     next: true,
     prev: false,
-    days: null,
     speed: null,
+    daterange: null,
   },
   fragments: {
     viewer: () => Relay.QL`
       fragment on User {
-        next: speedByDays(speed: $speed,days: $days, first: $first, after: $after) @include(if: $next) {
+        next: speedByDays(speed: $speed, daterange: $daterange, first: $first, after: $after) @include(if: $next) {
           edges {
             cursor,
             node {
@@ -153,7 +153,7 @@ export default Relay.createContainer(SpeedByDays, {
         deliveryOrdersAmount,
 
 
-        prev: speedByDays(speed: $speed,days: $days ,last: $last, before: $before) @include(if: $prev) {
+        prev: speedByDays(speed: $speed, daterange: $daterange ,last: $last, before: $before) @include(if: $prev) {
           edges {
             cursor,
             node {
