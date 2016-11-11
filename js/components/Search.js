@@ -59,7 +59,7 @@ import SearchForm from './SearchForm'
             <TableBody displayRowCheckbox = {this.props.showCheckboxes}>
               <TableRow>
                 <TableRowColumn>Order Number:</TableRowColumn>
-                <TableRowColumn>{edge.node.order_number}</TableRowColumn>
+                <TableRowColumn>{edge.node.invoice_number}</TableRowColumn>
               </TableRow>
               <TableRow>
                 <TableRowColumn>Order Status:</TableRowColumn>
@@ -67,7 +67,7 @@ import SearchForm from './SearchForm'
               </TableRow>
               <TableRow>
                 <TableRowColumn>Created At:</TableRowColumn>
-                <TableRowColumn>{moment(edge.node.created_at).format('ll')}</TableRowColumn>
+                <TableRowColumn>{moment(edge.node.createdAt).format('ll')}</TableRowColumn>
               </TableRow>
             </TableBody>
           </Table>
@@ -125,8 +125,8 @@ export default Relay.createContainer(SearchBox, {
           edges {
             node {
               id,
-              order_number,
-              created_at,
+              invoice_number,
+              createdAt,
               status,
               searchparcels(keyword: $keyword first: 9999) {
                 edges {

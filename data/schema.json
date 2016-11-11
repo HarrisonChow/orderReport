@@ -85,7 +85,7 @@
               "description": null,
               "args": [
                 {
-                  "name": "order_number",
+                  "name": "invoiceNumber",
                   "description": null,
                   "type": {
                     "kind": "SCALAR",
@@ -95,7 +95,7 @@
                   "defaultValue": "\"any\""
                 },
                 {
-                  "name": "created_at",
+                  "name": "invoiceDate",
                   "description": null,
                   "type": {
                     "kind": "SCALAR",
@@ -295,7 +295,7 @@
                   "defaultValue": "\"any\""
                 },
                 {
-                  "name": "logistic_name",
+                  "name": "logistic_id",
                   "description": null,
                   "type": {
                     "kind": "SCALAR",
@@ -481,6 +481,53 @@
               "isDeprecated": false,
               "deprecationReason": null
             },
+
+            {
+              "name": "fastCount",
+              "description": null,
+              "args": [
+                {
+                  "name": "fromDate",
+                  "description": null,
+                  "type": {
+                    "kind": "SCALAR",
+                    "name": "String",
+                    "ofType": null
+                  },
+                  "defaultValue": "\"any\""
+                }],
+              "type": {
+                "kind": "SCALAR",
+                "name": "Int",
+                "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "name": "slowCount",
+              "description": null,
+              "args": [
+                {
+                  "name": "fromDate",
+                  "description": null,
+                  "type": {
+                    "kind": "SCALAR",
+                    "name": "String",
+                    "ofType": null
+                  },
+                  "defaultValue": "\"any\""
+                }],
+              "type": {
+                "kind": "SCALAR",
+                "name": "Int",
+                "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+
+
             {
               "name": "completedCount",
               "description": null,
@@ -829,7 +876,19 @@
               "deprecationReason": null
             },
             {
-              "name": "order_number",
+              "name": "invoice_number",
+              "description": null,
+              "args": [],
+              "type": {
+                "kind": "SCALAR",
+                "name": "String",
+                "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "name": "invoice_date",
               "description": null,
               "args": [],
               "type": {
@@ -1062,7 +1121,7 @@
               "args": [],
               "type": {
                 "kind": "SCALAR",
-                "name": "Int",
+                "name": "String",
                 "ofType": null
               },
               "isDeprecated": false,

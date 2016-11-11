@@ -7,7 +7,7 @@ export default class Bar extends React.Component {
 
   drawBar(){
     let deliverydays = (this.props.status === "Less than 2 days") ? 2 : (this.props.status === "3 to 5 days") ? 3 : 5;
-    let links = (this.props.dateRange && this.props.dateRange!== 'customize') ? '#/allOrders/'+this.props.dateRange+'/'+this.props.status : (this.props.dateRange === 'customize') ? '#/OrdersByRange/'+this.props.status+'/'+this.props.fromDate+'/'+this.props.toDate : '#/parcels/'+ deliverydays +'/' +this.props.type;
+    let links = (this.props.dateRange && this.props.dateRange!== 'customize') ? '#/allOrders/'+this.props.dateRange+'/'+this.props.status : (this.props.dateRange === 'customize') ? '#/OrdersByRange/'+this.props.status+'/'+this.props.fromDate+'/'+this.props.toDate : '#/parcels/'+ deliverydays +'/' +this.props.index;
 
     var bars = d3.selectAll("."+this.props.type +"");
     var barsLink = bars.append("a")

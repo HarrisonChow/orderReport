@@ -91,7 +91,6 @@ class ParcelList extends React.Component {
         <div className = "row pageButton">
           { prevButton }
           { nextButton }
-
         </div>
         <FooterNavigation/>
 
@@ -122,14 +121,14 @@ export default Relay.createContainer(ParcelList, {
     next: true,
     prev: false,
     created_at: null,
-    logistic_name: null,
+    logistic_id: null,
     delivery_time: null
   },
 
   fragments: {
     viewer: () => Relay.QL`
       fragment on User {
-        next: parcels(created_at: $created_at, logistic_name: $logistic_name, delivery_time: $delivery_time, first: $first, after: $after) @include(if: $next) {
+        next: parcels(created_at: $created_at, logistic_id: $logistic_id, delivery_time: $delivery_time, first: $first, after: $after) @include(if: $next) {
           edges {
             cursor,
             node {
@@ -139,15 +138,6 @@ export default Relay.createContainer(ParcelList, {
               created_at,
               updated_at,
               delivery_time,
-              logistic {
-                name,
-              },
-              order{
-                id,
-                order_number,
-                status,
-                created_at,
-              }
             }
           },
           pageInfo{
@@ -158,7 +148,7 @@ export default Relay.createContainer(ParcelList, {
           }
         },
 
-        prev: parcels(created_at: $created_at,logistic_name: $logistic_name, delivery_time: $delivery_time,last: $last, before: $before) @include(if: $prev){
+        prev: parcels(created_at: $created_at,logistic_id: $logistic_id, delivery_time: $delivery_time,last: $last, before: $before) @include(if: $prev){
           edges {
             cursor,
             node {
@@ -168,15 +158,6 @@ export default Relay.createContainer(ParcelList, {
               created_at,
               updated_at,
               delivery_time,
-              logistic {
-                name,
-              },
-              order{
-                id,
-                order_number,
-                status,
-                created_at,
-              }
             }
           },
           pageInfo{

@@ -26,6 +26,7 @@ class OrderDetails extends React.Component {
   }
 
   render() {
+    console.log(this);
     return (
       <div>
         <NavbarInstance />
@@ -51,13 +52,14 @@ class OrderDetails extends React.Component {
 class Detail extends React.Component {
   render() {
     var edge = this.props.edge;
+    console.log(this.props.edge);
     return (
       <div>
         <Table>
           <TableBody displayRowCheckbox = {this.props.showCheckboxes}>
             <TableRow>
               <TableRowColumn>Order Number:</TableRowColumn>
-              <TableRowColumn>{edge.node.order_number}</TableRowColumn>
+              <TableRowColumn>{edge.node.invoice_number}</TableRowColumn>
             </TableRow>
             <TableRow>
               <TableRowColumn>Order Status:</TableRowColumn>
@@ -111,17 +113,17 @@ class Parcel extends React.Component {
 
 export default Relay.createContainer(OrderDetails, {
   initialVariables: {
-    order_number: null,
+    invoiceNumber: null,
   },
 
   fragments: {
     viewer: () => Relay.QL`
       fragment on User {
-        orders(order_number: $order_number, first: 9999) {
+        orders(invoiceNumber: $invoiceNumber, first: 9999) {
           edges {
             node {
               id,
-              order_number,
+              invoice_number,
               created_at,
               status,
               parcels(first: 9999) {

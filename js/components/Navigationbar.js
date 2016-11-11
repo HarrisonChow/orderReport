@@ -11,8 +11,10 @@ import ActionHome from 'material-ui/svg-icons/action/home';
 export default class NavbarInstance extends React.Component {
   changeState = () => {
     window.location = '#/';
-    this.props.click.displayDatePicker = false;
-    this.props.click.value = 7
+    if (this.props.click) {
+      this.props.click.displayDatePicker = false;
+      this.props.click.value = 7
+    }
   }
   render() {
 

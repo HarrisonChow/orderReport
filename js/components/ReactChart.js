@@ -32,7 +32,7 @@ export default class ReactChart extends React.Component {
           ])
 
       } else {
-          bars.push([<Bar key = {index} col = {datum.color} status = {datum.status} type = {datum.type} amount = {datum.orderAmount} x = {length} y = {30} width = {40} height = {x(datum.orderAmount)} dateRange = {this.props.dateR} />,
+          bars.push([<Bar key = {index} col = {datum.color} status = {datum.status} type = {datum.type} logisticId = {datum.logisticId} amount = {datum.orderAmount} x = {length} y = {30} width = {40} height = {x(datum.orderAmount)} dateRange = {this.props.dateR} />,
             <g>
             <text x = {155*index+20} y = "20" fontSize = "12" fill = "black" > {datum.status} : {datum.orderAmount} </text>
             <rect x = {155*index} y = "10" height = "10" width = "10" fill = {datum.color} fillOpacity = "0.6" />

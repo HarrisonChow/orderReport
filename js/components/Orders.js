@@ -100,9 +100,12 @@ class OrderList extends React.Component {
     let minD = this.state.minDate;
     let maxD = this.state.maxDate;
     let finalResult = this.props.viewer.orders.edges;
-    let filtedDeliveriedResult = finalResult.filter(edge => {return edge.node.status === 'Deliveried'});
-    let filtedDeliveryResult = finalResult.filter(edge => {return edge.node.status === 'Delivery'});
-    let filtedProcessingResult = finalResult.filter(edge => {return edge.node.status === 'Processing'});
+    let fastCountNumber = this.props.viewer.fastCount;
+    let slowCountNumber = this.props.viewer.slowCount;
+
+    let filtedProcessingResult = finalResult.filter(edge => {return edge.node.status === '1'});
+    let filtedDeliveryResult = finalResult.filter(edge => {return edge.node.status === '2'});
+    let filtedDeliveriedResult = finalResult.filter(edge => {return edge.node.status === '3'});
 
     let selectDays = (!event) ? 7 : dateRange;
     let sevenDaysDate = 7;
@@ -111,9 +114,9 @@ class OrderList extends React.Component {
     let buttonhrefTwo = (dateRange === 'customize') ? '#/OrdersByRange/'+ moment(minD).format('ll') + '/'+ moment(maxD).format('ll') : '#/allOrders/' + dateRange + '/any';
 
     let data = [
-      {type: 'orders', status: 'Processing', orderAmount: filtedProcessingResult.length, color: '#98abc5'},
-      {type: 'orders', status: 'Delivery', orderAmount: filtedDeliveryResult.length, color: '#a05d56'},
-      {type: 'orders', status: 'Deliveried', orderAmount: filtedDeliveriedResult.length, color: '#ff8c00'},
+      {type: 'orders', status: 1, orderAmount: filtedProcessingResult.length, color: '#98abc5'},
+      {type: 'orders', status: 2, orderAmount: filtedDeliveryResult.length, color: '#a05d56'},
+      {type: 'orders', status: 3, orderAmount: filtedDeliveriedResult.length, color: '#ff8c00'},
     ]
 
     return(
@@ -123,8 +126,8 @@ class OrderList extends React.Component {
         <NavbarInstance click = {this.state}/>
           <div className = "col-xs-offset-1 col-xs-10 allButtons">
             <RaisedButton className = "mainBtn" label = "Processing Longer Than 7 Days" primary = {true} href = {`#/longorders/${sevenDaysDate}`}/>
-            <RaisedButton className = "mainBtn" label = "Fastest 3 Days" primary = {true} href = {`#/speedcheck/fastest/${dateRange}`}/>
-            <RaisedButton className = "mainBtn" label = "Slowest 7 Days" primary = {true} href = {`#/speedcheck/slowest/${dateRange}`}/>
+            <RaisedButton className = "mainBtn" label = {`Fastest ${fastCountNumber} Days`} primary = {true} href = {`#/speedcheck/fastest/${dateRange}`}/>
+            <RaisedButton className = "mainBtn" label = {`Slowest ${slowCountNumber} Days`} primary = {true} href = {`#/speedcheck/slowest/${dateRange}`}/>
             <SearchForm />
           </div>
           <div className = "col-xs-offset-1 col-xs-10 allButtons">
@@ -204,7 +207,7 @@ export default Relay.createContainer(OrderList, {
             cursor,
             node {
               id,
-              order_number,
+              invoice_number,
               created_at,
               updated_at,
               status,
@@ -217,6 +220,8 @@ export default Relay.createContainer(OrderList, {
             startCursor,
           }
         },
+        fastCount(fromDate: $fromDate),
+        slowCount(fromDate: $fromDate),
         ordersAmount,
         processingOrdersAmount,
         deliveriedOrdersAmount,

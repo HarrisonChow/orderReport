@@ -25,7 +25,7 @@ const mountNode = document.getElementById('root');
 function prepareOrderParams(params, route) {
   return {
     ...params,
-    order_number:params.id
+    invoiceNumber:params.id
   };
 };
 
@@ -34,7 +34,7 @@ function prepareOrderdateParams(params, route) {
   let selectDaysDate = moment(selectDaysDates).format();
   return {
     ...params,
-    created_at:selectDaysDate,
+    invoiceDate:selectDaysDate,
     status:params.status
   };
 };
@@ -67,18 +67,18 @@ function prepareOrderFastandSlowParams(params, route) {
 
 
 function prepareParceldateParams(params, route) {
-  let sevenDaysDates = moment().subtract(params.created_at, 'days').calendar();
+  let sevenDaysDates = moment().subtract(params.createdAt, 'days').calendar();
   let sevenDaysDate = moment(sevenDaysDates).format();
   return {
     ...params,
-    created_at:sevenDaysDate
+    createdAt:sevenDaysDate
   };
 };
 
 function prepareParcelbyLogisticdateParams(params, route) {
   return {
     ...params,
-    logistic_name: params.logistic,
+    logistic_id: params.logistic,
     delivery_time: params.days
   };
 };
@@ -99,9 +99,9 @@ function prepareIndexParams(params, route) {
   let getFromDate = getFromDates.toString();
   return {
     ...params,
-    order_number: 'any',
-    created_at: 'any',
-    status: 'any',
+    invoiceNumber: 'any',
+    createdAt: 'any',
+    status: null,
     toDate: getToDate,
     fromDate: getFromDate
   };
@@ -114,12 +114,12 @@ ReactDOM.render(
         <IndexRoute component={OrderList} queries={ViewerQueries} prepareParams={prepareIndexParams}/>
         <Route path="/orders/:id" component={Order} queries={ViewerQueries} prepareParams={prepareOrderParams}/>
         <Route path="/orders/:from/:to" component={OrderList} queries={ViewerQueries} prepareParams={prepareOrderRangeHomeParams}/>
-        <Route path="/allOrders" component={AllOrders} queries={ViewerQueries} prepareParams={params => ({ ...params, days: 'any', status: 'any',  fromDate: 'any', toDate: 'any'  })}/>
+        <Route path="/allOrders" component={AllOrders} queries={ViewerQueries} prepareParams={params => ({ ...params, days: 'any', status: null,  fromDate: 'any', toDate: 'any'  })}/>
         <Route path="/allOrders/:days/:status" component={AllOrders} queries={ViewerQueries} prepareParams={prepareOrderdateParams}/>
         <Route path="/OrdersByRange/:status/:from/:to" component={AllOrders} queries={ViewerQueries} prepareParams={prepareOrderRangeParams}/>
         <Route path="/OrdersByRange/:from/:to" component={AllOrders} queries={ViewerQueries} prepareParams={prepareOrderRangeHomeParams}/>
-        <Route path="/longorders/:created_at" component={Parcels} queries={ViewerQueries} prepareParams={prepareParceldateParams}/>
-        <Route path="/parcels" component={Parcels} queries={ViewerQueries} prepareParams={params => ({ ...params, logistic_name: 'any', delivery_time: 'any'})}/>
+        <Route path="/longorders/:createdAt" component={Parcels} queries={ViewerQueries} prepareParams={prepareParceldateParams}/>
+        <Route path="/parcels" component={Parcels} queries={ViewerQueries} prepareParams={params => ({ ...params, logistic_id: 'any', delivery_time: 'any'})}/>
         <Route path="/parcels/:days/:logistic" component={Parcels} queries={ViewerQueries} prepareParams={prepareParcelbyLogisticdateParams}/>
         <Route path="/parcels/:id" component={Parcel} queries={ViewerQueries} prepareParams={params => ({...params, tracking_number: params.id})}/>
         <Route path="/logistics" component={LogisticsList} queries={ViewerQueries} />

@@ -65,7 +65,7 @@ class Detail extends React.Component {
             </TableRow>
             <TableRow>
               <TableRowColumn>Order Number:</TableRowColumn>
-              <TableRowColumn><Link to = {`/orders/${edge.node.order.order_number}`}>{edge.node.order.order_number}</Link></TableRowColumn>
+              <TableRowColumn><Link to = {`/orders/${edge.node.order.invoice_number}`}>{edge.node.order.invoice_number}</Link></TableRowColumn>
             </TableRow>
           </TableBody>
         </Table>
@@ -94,7 +94,7 @@ export default Relay.createContainer(ParcelDetails, {
                 name
               },
               order{
-                order_number
+                invoice_number
               },
             }
           }

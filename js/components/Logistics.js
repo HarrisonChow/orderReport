@@ -45,17 +45,28 @@ class Logistic extends React.Component {
 
   render() {
     var logistic = this.props.edge.node;
+
     let filterData = logistic.filterparcels.edges;
-    let lessTwo = filterData.filter(edge=>{return (edge.node.delivery_time && edge.node.delivery_time <= 2 && edge.node.logistic.name ===this.props.name)});
-    let ThreeToFive = filterData.filter(edge=>{return (edge.node.delivery_time && edge.node.delivery_time > 2 && edge.node.delivery_time <= 5 && edge.node.logistic.name ===this.props.name)});
-    let fiveMore = filterData.filter(edge=>{return (edge.node.delivery_time && edge.node.delivery_time > 5 && edge.node.logistic.name ===this.props.name)});
-    let x = (this.props.days || this.props.fromDate) ? lessTwo.length : logistic.lessTwo;
-    let y = (this.props.days || this.props.fromDate) ? ThreeToFive.length : logistic.ThreeToFive;
-    let z = (this.props.days || this.props.fromDate) ? fiveMore.length : logistic.fiveMore;
+    function filterCondition(days,name) {
+      return filterData.filter(edge=>{
+        let checkDays = (new Date(edge.node.delivery_time).getTime()- new Date(edge.node.order.invoice_date).getTime())/(1000*60*60*24);
+        let filterCons = (days===2)? checkDays<=2 : (days===3)? (checkDays>=3 && checkDays<=5) : checkDays>5;
+        return (edge.node.delivery_time && filterCons && edge.node.logistic.name ===name)});
+    }
+    let lessTwo =filterCondition(2, this.props.name);
+    let ThreeToFive =filterCondition(3, this.props.name);
+    let fiveMore =filterCondition(5, this.props.name);
+
+    let amountOfLessThree = (this.props.days || this.props.fromDate) ? lessTwo.length : logistic.lessTwo;
+    let amountOfThreeToFive = (this.props.days || this.props.fromDate) ? ThreeToFive.length : logistic.ThreeToFive;
+    let amountOfFiveMore = (this.props.days || this.props.fromDate) ? fiveMore.length : logistic.fiveMore;
+    function getIndex(id) {
+      return window.atob(id).match(/\d+$/)[0];
+    }
     let data = [
-      {type: logistic.name, status: 'Less than 2 days', orderAmount: x, color: '#00749F'},
-      {type: logistic.name, status: '3 to 5 days', orderAmount: y, color: '#73C774'},
-      {type: logistic.name, status: 'more than 5 days', orderAmount: z, color: '#C7754C'},
+      {type: logistic.name, logisticId: getIndex(logistic.id), status: 'Less than 2 days', orderAmount: amountOfLessThree, color: '#00749F'},
+      {type: logistic.name, logisticId: getIndex(logistic.id), status: '3 to 5 days', orderAmount: amountOfThreeToFive, color: '#73C774'},
+      {type: logistic.name, logisticId: getIndex(logistic.id), status: 'more than 5 days', orderAmount: amountOfFiveMore, color: '#C7754C'},
       ]
     if (data[0].orderAmount ===0 && data[1].orderAmount ===0 && data[2].orderAmount ===0) {
       return (
@@ -103,6 +114,9 @@ export default Relay.createContainer(LogisticsList, {
                     delivery_time,
                     created_at,
                     status,
+                    order{
+                      invoice_date
+                    }
                     logistic{
                       name
                     }

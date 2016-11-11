@@ -113,7 +113,7 @@ const Order = props => {
   return (
     <TableRow hoverable = {props.state.hoverable} onCellClick = {props.cellClicked}>
       <TableRowColumn>{window.atob(props.id).match(/\d+$/)[0]}</TableRowColumn>
-      <TableRowColumn>{props.order_number}</TableRowColumn>
+      <TableRowColumn>{props.invoice_number}</TableRowColumn>
       <TableRowColumn>{props.status}</TableRowColumn>
       <TableRowColumn>{moment(props.created_at).format('LL')}</TableRowColumn>
     </TableRow>
@@ -128,7 +128,7 @@ export default Relay.createContainer(AllOrders, {
     before: null,
     next: true,
     prev: false,
-    created_at: null,
+    invoiceDate: null,
     status: null,
     fromDate: null,
     toDate: null,
@@ -136,12 +136,12 @@ export default Relay.createContainer(AllOrders, {
   fragments: {
     viewer: () => Relay.QL`
       fragment on User {
-        next: orders(created_at: $created_at, status: $status, fromDate: $fromDate,toDate: $toDate, first: $first, after: $after) @include(if: $next) {
+        next: orders(invoiceDate: $invoiceDate, status: $status, fromDate: $fromDate,toDate: $toDate, first: $first, after: $after) @include(if: $next) {
           edges {
             cursor,
             node {
               id,
-              order_number,
+              invoice_number,
               created_at,
               updated_at,
               status,
@@ -160,12 +160,12 @@ export default Relay.createContainer(AllOrders, {
         deliveryOrdersAmount,
 
 
-        prev: orders(created_at: $created_at, status: $status, fromDate: $fromDate,toDate: $toDate, last: $last, before: $before) @include(if: $prev) {
+        prev: orders(invoiceDate: $invoiceDate, status: $status, fromDate: $fromDate,toDate: $toDate, last: $last, before: $before) @include(if: $prev) {
           edges {
             cursor,
             node {
               id,
-              order_number,
+              invoice_number,
               created_at,
               updated_at,
               status,

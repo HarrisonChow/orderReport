@@ -53,6 +53,7 @@ import {
   Logistic,
   getAllOrders,
   getFastSLowByDays,
+  getFast,
   getFilterParcels,
   getAllLogistics,
   getAllParcels,
@@ -125,17 +126,21 @@ const GraphQLOrder = new GraphQLObjectType({
         type: GraphQLString,
         resolve: (obj) => obj.status,
       },
-      order_number: {
+      invoice_number: {
         type: GraphQLString,
-        resolve: (obj) => obj.orderNumber,
+        resolve: (obj) => obj.invoice_number,
+      },
+      invoice_date: {
+        type: GraphQLString,
+        resolve: (obj) => obj.invoice_date,
       },
       created_at: {
         type: GraphQLString,
-        resolve: (obj) => obj.createdAt,
+        resolve: (obj) => obj.created_at,
       },
       updated_at:{
         type:GraphQLString,
-        resolve: (obj) => obj.updatedAt,
+        resolve: (obj) => obj.updated_at,
       },
       parcels: {
         args: connectionArgs,
@@ -159,11 +164,11 @@ const GraphQLParcel = new GraphQLObjectType({
       },
       tracking_number: {
         type: GraphQLString,
-        resolve: (obj) => obj.trackingNumber,
+        resolve: (obj) => obj.tracking_number,
       },
       delivery_time: {
-        type: GraphQLInt,
-        resolve: (obj) => obj.deliveryTime,
+        type: GraphQLString,
+        resolve: (obj) => obj.delivery_time,
       },
       logistic: {
         type: GraphQLLogistic,
@@ -175,11 +180,11 @@ const GraphQLParcel = new GraphQLObjectType({
       },
       created_at: {
         type: GraphQLString,
-        resolve: (obj) => obj.createdAt,
+        resolve: (obj) => obj.created_at,
       },
       updated_at: {
         type: GraphQLString,
-        resolve: (obj) => obj.updatedAt,
+        resolve: (obj) => obj.updated_at,
       }
     }),
   interfaces: [nodeInterface],
@@ -249,11 +254,11 @@ const GraphQLUser = new GraphQLObjectType({
     orders: {
       type: OrdersConnection,
       args: {
-        order_number: {
+        invoiceNumber: {
           type: GraphQLString,
           defaultValue: 'any',
         },
-        created_at: {
+        invoiceDate: {
           type: GraphQLString,
           defaultValue: 'any',
         },
@@ -271,8 +276,8 @@ const GraphQLUser = new GraphQLObjectType({
         },
         ...connectionArgs,
       },
-      resolve: (obj, {order_number,created_at,status,fromDate,toDate, ...args}) =>
-        connectionFromPromisedArray(getAllOrders(order_number,created_at,status,fromDate,toDate,), args)
+      resolve: (obj, {invoiceNumber,invoiceDate,status,fromDate,toDate, ...args}) =>
+        connectionFromPromisedArray(getAllOrders(invoiceNumber,invoiceDate,status,fromDate,toDate,), args)
     },
 
     speedByDays: {
@@ -307,14 +312,14 @@ const GraphQLUser = new GraphQLObjectType({
           type: GraphQLString,
           defaultValue: 'any',
         },
-        logistic_name: {
+        logistic_id: {
           type: GraphQLString,
           defaultValue: 'any',
         },
         ...connectionArgs,
       },
-      resolve: (obj, {tracking_number,created_at,delivery_time,logistic_name, ...args}) =>
-        connectionFromPromisedArray(getAllParcels(tracking_number,created_at,delivery_time,logistic_name), args)
+      resolve: (obj, {tracking_number,created_at,delivery_time,logistic_id, ...args}) =>
+        connectionFromPromisedArray(getAllParcels(tracking_number,created_at,delivery_time,logistic_id), args)
     },
 
     logistics: {
@@ -338,6 +343,28 @@ const GraphQLUser = new GraphQLObjectType({
       resolve: (obj, {status, ...args}) =>
         connectionFromArray(getTodos(status), args),
     },
+    fastCount: {
+      type: GraphQLInt,
+      args: {
+        fromDate: {
+          type: GraphQLString,
+          defaultValue: 'any',
+        },
+        ...connectionArgs,
+      },
+      resolve: (obj, { fromDate,...args}) => getFast('fastest',fromDate)
+    },
+    slowCount: {
+      type: GraphQLInt,
+      args: {
+        fromDate: {
+          type: GraphQLString,
+          defaultValue: 'any',
+        },
+        ...connectionArgs,
+      },
+      resolve: (obj, { fromDate,...args}) => getFast('slowest',fromDate)
+    },
 
     totalCount: {
       type: GraphQLInt,
@@ -353,15 +380,15 @@ const GraphQLUser = new GraphQLObjectType({
     },
     processingOrdersAmount: {
       type: GraphQLInt,
-      resolve: () => getAmountByStatus('Processing'),
+      resolve: () => getAmountByStatus(1),
     },
     deliveryOrdersAmount: {
       type: GraphQLInt,
-      resolve: () => getAmountByStatus('Delivery'),
+      resolve: () => getAmountByStatus(2),
     },
     deliveriedOrdersAmount: {
       type: GraphQLInt,
-      resolve: () => getAmountByStatus('Deliveried'),
+      resolve: () => getAmountByStatus(3),
     },
   },
   interfaces: [nodeInterface],
