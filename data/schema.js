@@ -300,26 +300,26 @@ const GraphQLUser = new GraphQLObjectType({
     parcels: {
       type: ParcelsConnection,
       args: {
-        tracking_number: {
+        trackingNumber: {
           type: GraphQLString,
           defaultValue: 'any',
         },
-        created_at: {
+        createdAt: {
           type: GraphQLString,
           defaultValue: 'any',
         },
-        delivery_time: {
+        deliveryTime: {
           type: GraphQLString,
           defaultValue: 'any',
         },
-        logistic_id: {
+        logisticId: {
           type: GraphQLString,
           defaultValue: 'any',
         },
         ...connectionArgs,
       },
-      resolve: (obj, {tracking_number,created_at,delivery_time,logistic_id, ...args}) =>
-        connectionFromPromisedArray(getAllParcels(tracking_number,created_at,delivery_time,logistic_id), args)
+      resolve: (obj, {trackingNumber,createdAt,deliveryTime,logisticId, ...args}) =>
+        connectionFromPromisedArray(getAllParcels(trackingNumber,createdAt,deliveryTime,logisticId), args)
     },
 
     logistics: {

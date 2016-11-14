@@ -6,6 +6,7 @@ import {Table, TableBody, TableHeader, TableHeaderColumn, TableRow, TableRowColu
 import {IndexLink, Link} from 'react-router';
 import FooterNavigation from './Footer';
 import NavbarInstance from './Navigationbar';
+import moment from 'moment';
 
 const style = {
   bottomPaper: {
@@ -43,6 +44,9 @@ class ParcelDetails extends React.Component {
 class Detail extends React.Component {
   render() {
     var edge = this.props.edge;
+    let statusShow = (edge.node.status === '1')? "Processing" : (edge.node.status === '2')? "Delivery" : "Deliveried";
+    var deliveryTimeShow = moment(edge.node.delivery_time).format('YYYY-MM-DD');
+
     return (
       <div>
         <Table>
@@ -53,11 +57,11 @@ class Detail extends React.Component {
             </TableRow>
             <TableRow>
               <TableRowColumn>Parcel Status:</TableRowColumn>
-              <TableRowColumn>{edge.node.status}</TableRowColumn>
+              <TableRowColumn>{statusShow}</TableRowColumn>
             </TableRow>
             <TableRow>
               <TableRowColumn>Delivery Time:</TableRowColumn>
-              <TableRowColumn>{edge.node.delivery_time}</TableRowColumn>
+                <TableRowColumn>{deliveryTimeShow}</TableRowColumn>
             </TableRow>
             <TableRow>
               <TableRowColumn>Logistic Name:</TableRowColumn>
@@ -76,13 +80,13 @@ class Detail extends React.Component {
 
 export default Relay.createContainer(ParcelDetails, {
   initialVariables: {
-    tracking_number: null,
+    trackingNumber: null,
   },
 
   fragments: {
     viewer: () => Relay.QL`
       fragment on User {
-        parcels(tracking_number: $tracking_number, first: 9999) {
+        parcels(trackingNumber: $trackingNumber, first: 9999) {
           edges {
             node {
               id,

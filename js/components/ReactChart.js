@@ -24,9 +24,11 @@ export default class ReactChart extends React.Component {
 
     data.forEach((datum, index) => {
       if (datum.type === 'orders') {
+        let statusShow = (datum.status === '1')? "Processing " : (datum.status === '2')? "Delivery " : "Deliveried "
+
           bars.push([<Bar key = {index} col = {datum.color} status = {datum.status} type = {datum.type} amount = {datum.orderAmount} x = {length} y = {5} width = {40} height = {x(datum.orderAmount)} fromDate = {this.props.fromDate} toDate = {this.props.toDate} dateRange = {this.props.dateR} />,
             <g>
-            <text x = {125*index+20} y = "-10" fontSize = "12" fill = "black" > {datum.status} : {datum.orderAmount} </text>
+            <text x = {125*index+20} y = "-10" fontSize = "12" fill = "black" > {statusShow} : {datum.orderAmount} </text>
             <rect x = {125*index} y = "-20" height = "10" width = "10" fill = {datum.color} fillOpacity = "0.6"/>
             </g>
           ])

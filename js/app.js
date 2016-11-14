@@ -78,8 +78,8 @@ function prepareParceldateParams(params, route) {
 function prepareParcelbyLogisticdateParams(params, route) {
   return {
     ...params,
-    logistic_id: params.logistic,
-    delivery_time: params.days
+    logisticId: params.logistic,
+    deliveryTime: params.days
   };
 };
 
@@ -119,9 +119,9 @@ ReactDOM.render(
         <Route path="/OrdersByRange/:status/:from/:to" component={AllOrders} queries={ViewerQueries} prepareParams={prepareOrderRangeParams}/>
         <Route path="/OrdersByRange/:from/:to" component={AllOrders} queries={ViewerQueries} prepareParams={prepareOrderRangeHomeParams}/>
         <Route path="/longorders/:createdAt" component={Parcels} queries={ViewerQueries} prepareParams={prepareParceldateParams}/>
-        <Route path="/parcels" component={Parcels} queries={ViewerQueries} prepareParams={params => ({ ...params, logistic_id: 'any', delivery_time: 'any'})}/>
+        <Route path="/parcels" component={Parcels} queries={ViewerQueries} prepareParams={params => ({ ...params, logisticId: 'any', deliveryTime: 'any'})}/>
         <Route path="/parcels/:days/:logistic" component={Parcels} queries={ViewerQueries} prepareParams={prepareParcelbyLogisticdateParams}/>
-        <Route path="/parcels/:id" component={Parcel} queries={ViewerQueries} prepareParams={params => ({...params, tracking_number: params.id})}/>
+        <Route path="/parcels/:id" component={Parcel} queries={ViewerQueries} prepareParams={params => ({...params, trackingNumber: params.id})}/>
         <Route path="/logistics" component={LogisticsList} queries={ViewerQueries} />
         <Route path="/logistics/:days" component={LogisticsList} queries={ViewerQueries} prepareParams={prepareLogsticsStatisticParams}/>
         <Route path="/logistics/:from/:to" component={LogisticsList} queries={ViewerQueries} prepareParams={prepareOrderRangeHomeParams}/>

@@ -265,7 +265,7 @@
               "description": null,
               "args": [
                 {
-                  "name": "tracking_number",
+                  "name": "trackingNumber",
                   "description": null,
                   "type": {
                     "kind": "SCALAR",
@@ -275,7 +275,7 @@
                   "defaultValue": "\"any\""
                 },
                 {
-                  "name": "created_at",
+                  "name": "createdAt",
                   "description": null,
                   "type": {
                     "kind": "SCALAR",
@@ -285,7 +285,7 @@
                   "defaultValue": "\"any\""
                 },
                 {
-                  "name": "delivery_time",
+                  "name": "deliveryTime",
                   "description": null,
                   "type": {
                     "kind": "SCALAR",
@@ -295,7 +295,7 @@
                   "defaultValue": "\"any\""
                 },
                 {
-                  "name": "logistic_id",
+                  "name": "logisticId",
                   "description": null,
                   "type": {
                     "kind": "SCALAR",

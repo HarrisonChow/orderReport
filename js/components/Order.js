@@ -52,7 +52,8 @@ class OrderDetails extends React.Component {
 class Detail extends React.Component {
   render() {
     var edge = this.props.edge;
-    console.log(this.props.edge);
+    let statusShow = (edge.node.status === '1')? "Processing" : (edge.node.status === '2')? "Delivery" : "Deliveried"
+
     return (
       <div>
         <Table>
@@ -63,7 +64,7 @@ class Detail extends React.Component {
             </TableRow>
             <TableRow>
               <TableRowColumn>Order Status:</TableRowColumn>
-              <TableRowColumn>{edge.node.status}</TableRowColumn>
+              <TableRowColumn>{statusShow}</TableRowColumn>
             </TableRow>
             <TableRow>
               <TableRowColumn>Created At:</TableRowColumn>
@@ -84,6 +85,12 @@ class Detail extends React.Component {
 class Parcel extends React.Component {
   render() {
     var edge = this.props.edge;
+    if (edge.node.delivery_time) {
+      var deliveryTimeShow = moment(edge.node.delivery_time).format('YYYY-MM-DD');
+    } else {
+      var deliveryTimeShow = '';
+    }
+    let statusShow = (edge.node.status === '1')? "Processing" : (edge.node.status === '2')? "Delivery" : "Deliveried"
     return (
       <Paper zDepth={2} style = {style.bottomPaper}>
         <Table>
@@ -94,11 +101,11 @@ class Parcel extends React.Component {
             </TableRow>
             <TableRow>
               <TableRowColumn>Parcel Status:</TableRowColumn>
-              <TableRowColumn>{edge.node.status}</TableRowColumn>
+              <TableRowColumn>{statusShow}</TableRowColumn>
             </TableRow>
             <TableRow>
               <TableRowColumn>Parcel Delivery Time:</TableRowColumn>
-              <TableRowColumn>{edge.node.delivery_time}</TableRowColumn>
+              <TableRowColumn>{deliveryTimeShow}</TableRowColumn>
             </TableRow>
             <TableRow>
               <TableRowColumn>Logistic Company Name:</TableRowColumn>

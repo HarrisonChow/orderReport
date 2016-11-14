@@ -125,10 +125,10 @@ class OrderList extends React.Component {
         <div className = "row">
         <NavbarInstance click = {this.state}/>
           <div className = "col-xs-offset-1 col-xs-10 allButtons">
-            <RaisedButton className = "mainBtn" label = "Processing Longer Than 7 Days" primary = {true} href = {`#/longorders/${sevenDaysDate}`}/>
+            {/*  <RaisedButton className = "mainBtn" label = "Processing Longer Than 7 Days" primary = {true} href = {`#/longorders/${sevenDaysDate}`}/>*/}
             <RaisedButton className = "mainBtn" label = {`Fastest ${fastCountNumber} Days`} primary = {true} href = {`#/speedcheck/fastest/${dateRange}`}/>
             <RaisedButton className = "mainBtn" label = {`Slowest ${slowCountNumber} Days`} primary = {true} href = {`#/speedcheck/slowest/${dateRange}`}/>
-            <SearchForm />
+            {/* <SearchForm />*/}
           </div>
           <div className = "col-xs-offset-1 col-xs-10 allButtons">
             <Paper zDepth = { 1 } style={ style.bottomPaper }>

@@ -289,21 +289,21 @@ export function getLogisticDeliveryTime(num, id){
         })
 }
 
-export function getAllParcels(tracking_number, created_at, delivery_time,logistic_id) {
+export function getAllParcels(trackingNumber, createdAt, deliveryTime,logisticId) {
     var selectConditionTwo =
-        (delivery_time === '2') ?
+        (deliveryTime === '2') ?
         "DATE_PART('day', parcels.delivery_time::timestamp - orders.invoice_date::timestamp) <=2" :
-        (delivery_time === '3') ?
+        (deliveryTime === '3') ?
         "DATE_PART('day', parcels.delivery_time::timestamp - orders.invoice_date::timestamp) <= 5 AND DATE_PART('day', parcels.delivery_time::timestamp - orders.invoice_date::timestamp) >= 3" :
         "DATE_PART('day', parcels.delivery_time::timestamp - orders.invoice_date::timestamp) >5";
 
     var selectConditionOne =
-        (tracking_number != 'any') ? { where: { tracking_number: tracking_number } } :
-        (created_at != 'any') ? { where: { created_at: {$lt: created_at}, status: {$ne: 3} } } :
+        (trackingNumber != 'any') ? { where: { tracking_number: trackingNumber } } :
+        (createdAt != 'any') ? { where: {status: {$ne: 3}}, include:[{model: Order, where: {invoice_date: {$lt: createdAt}}}] } :
         {order: '"id" ASC'};
 
-    if (delivery_time != 'any' && logistic_id != 'any') {
-        return Parcel.sequelize.query("SELECT * FROM parcels RIGHT JOIN orders ON orders.id = parcels.order_id WHERE parcels.logistic_id=" + logistic_id+" AND " + selectConditionTwo , {type: Sequelize.QueryTypes.SELECT}).then(function(parcelsResult)
+    if (deliveryTime != 'any' && logisticId != 'any') {
+        return Parcel.sequelize.query("SELECT * FROM parcels RIGHT JOIN orders ON orders.id = parcels.order_id WHERE parcels.logistic_id=" + logisticId+" AND " + selectConditionTwo , {type: Sequelize.QueryTypes.SELECT}).then(function(parcelsResult)
             {
                 return parcelsResult;
             })

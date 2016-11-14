@@ -101,11 +101,12 @@ class ParcelList extends React.Component {
 
 
 const Parcel = props => {
+  let statusShow = (props.status === '1')? "Processing" : (props.status === '2')? "Delivery" : "Deliveried"
   return (
     <TableRow hoverable = {props.state.hoverable} onCellClick = {props.cellClicked}>
       <TableRowColumn>{window.atob(props.id).match(/\d+$/)[0]}</TableRowColumn>
       <TableRowColumn>{props.tracking_number}</TableRowColumn>
-      <TableRowColumn>{props.status}</TableRowColumn>
+      <TableRowColumn>{statusShow}</TableRowColumn>
       <TableRowColumn>{moment(props.created_at).format('LL')}</TableRowColumn>
     </TableRow>
   )
@@ -120,15 +121,15 @@ export default Relay.createContainer(ParcelList, {
     before: null,
     next: true,
     prev: false,
-    created_at: null,
-    logistic_id: null,
-    delivery_time: null
+    createdAt: null,
+    logisticId: null,
+    deliveryTime: null
   },
 
   fragments: {
     viewer: () => Relay.QL`
       fragment on User {
-        next: parcels(created_at: $created_at, logistic_id: $logistic_id, delivery_time: $delivery_time, first: $first, after: $after) @include(if: $next) {
+        next: parcels(createdAt: $createdAt, logisticId: $logisticId, deliveryTime: $deliveryTime, first: $first, after: $after) @include(if: $next) {
           edges {
             cursor,
             node {
@@ -148,7 +149,7 @@ export default Relay.createContainer(ParcelList, {
           }
         },
 
-        prev: parcels(created_at: $created_at,logistic_id: $logistic_id, delivery_time: $delivery_time,last: $last, before: $before) @include(if: $prev){
+        prev: parcels(createdAt: $createdAt,logisticId: $logisticId, deliveryTime: $deliveryTime,last: $last, before: $before) @include(if: $prev){
           edges {
             cursor,
             node {

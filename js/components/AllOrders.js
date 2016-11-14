@@ -75,11 +75,11 @@ class AllOrders extends React.Component {
         <Table>
           <TableHeader displaySelectAll = {this.state.showCheckboxes}
             adjustForCheckbox = {this.state.showCheckboxes}>
-            <TableRow>
+            {/* <TableRow>
               <TableHeaderColumn colSpan = "4" style = {{textAlign: 'center', fontSize: 15}}>
                 <SearchForm />
               </TableHeaderColumn>
-            </TableRow>
+            </TableRow> */}
             <TableRow>
               <TableHeaderColumn colSpan = "4" style = {{textAlign: 'center', fontSize: 15}}>
                 {pageTitle}
@@ -110,12 +110,13 @@ class AllOrders extends React.Component {
 }
 
 const Order = props => {
+  let statusShow = (props.status === '1')? "Processing" : (props.status === '2')? "Delivery" : "Deliveried"
   return (
     <TableRow hoverable = {props.state.hoverable} onCellClick = {props.cellClicked}>
       <TableRowColumn>{window.atob(props.id).match(/\d+$/)[0]}</TableRowColumn>
       <TableRowColumn>{props.invoice_number}</TableRowColumn>
-      <TableRowColumn>{props.status}</TableRowColumn>
-      <TableRowColumn>{moment(props.created_at).format('LL')}</TableRowColumn>
+      <TableRowColumn>{statusShow}</TableRowColumn>
+      <TableRowColumn>{moment(props.invoice_date).format('LL')}</TableRowColumn>
     </TableRow>
   )
 }
@@ -142,8 +143,7 @@ export default Relay.createContainer(AllOrders, {
             node {
               id,
               invoice_number,
-              created_at,
-              updated_at,
+              invoice_date,
               status,
             }
           },
@@ -166,8 +166,7 @@ export default Relay.createContainer(AllOrders, {
             node {
               id,
               invoice_number,
-              created_at,
-              updated_at,
+              invoice_date,
               status,
             }
           },
