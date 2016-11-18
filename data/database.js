@@ -255,55 +255,91 @@ deleteCsv('parcels');
 var ordersInputFile='data/orders.csv';
 var parcelsInputFile='data/parcels.csv';
 
+// Check if the csv file have data already saved or not
+function checkDuplicateData(tables,value) {
+  return tables.count({ where: { invoice_number: value } })
+    .then(count => {
+      if (count != 0) {
+        return false;
+      }
+      return true;
+  });
+}
+
 // read orders.csv and save to database then read parcels.csv and save to database as well.
+
+//create order table with orders.csv file
 var ordersParser = parse({delimiter: ','}, function (err, data) {
     async.eachSeries(data, function (line, callback) {
+
         var orderField = ['invoice_number', 'invoice_date', 'billing_firstname', 'billing_lastname', 'billing_email', 'billing_phone', 'billing_street', 'billing_suburb', 'billing_postcode', 'billing_state', 'grand_total', 'shipping_amount'];
-        var orderTable = orderField.reduce(function(allContent, index, key, arr){
+        var orderTable = orderField.reduce(function(allContent, index, key){
             allContent[index] = line[key+1];
             return allContent
         },{});
-        return Order.create(
-          orderTable
-      ).then(function() {
-            callback();
+
+        checkDuplicateData(Order, line[1]).then(notExist => {
+            if (notExist) {
+                return Order.create(
+                orderTable
+                ).then(function() {
+                callback();
+                });
+            } else {
+                callback();
+            }
         });
+
     }, function done() {
+      // delete orders.csv file
+        fs.unlinkSync(ordersInputFile);
+      // start to read parcels.csv file and create parcel table
         if (fs.existsSync(parcelsInputFile)) {
             fs.createReadStream(parcelsInputFile).pipe(parcelsParser);
+            //back up parcels.csv file to ParcelCsvBak folder
             backupCsv('parcels');
-            fs.unlinkSync(parcelsInputFile);
         }
     })
 })
 
+
+// create parcel table with parcels.csv file
 var parcelsParser = parse({delimiter: ','}, function (err, data) {
     async.eachSeries(data, function (line, callback) {
+
         let logisticID = (line[4]==='TNT') ? 1 : (line[4]==='TOLL') ? 2 : 3;
 
-        Order.find({where: {invoice_number:line[1]}}).then(function (idd) {
-            let orderID = JSON.stringify(idd.id);
-
-            var parcelField = ['invoice_number', 'tracking_number', 'created_datetime', 'carrier', 'weight', 'width', 'length', 'height', 'packed_by', 'shipping_firstname', 'shipping_lastname', 'shipping_email', 'shipping_phone', 'shipping_street', 'shipping_suburb', 'shipping_postcode', 'shipping_state'];
-            var parcelTable = parcelField.reduce(function(allContent, index, key, arr){
-                allContent[index] = line[key+1];
-                return allContent
-            },{});
-            parcelTable.logistic_id = logisticID;
-            parcelTable.order_id = orderID;
-            return Parcel.create(
-                parcelTable
-            );
-        }).then(function() {
-            callback();
-        });
+        checkDuplicateData(Parcel, line[1]).then(notExist => {
+            if (notExist) {
+                Order.find({where: {invoice_number:line[1]}}).then(function (idd) {
+                    let orderID = JSON.stringify(idd.id);
+                    var parcelField = ['invoice_number', 'tracking_number', 'created_datetime', 'carrier', 'weight', 'width', 'length', 'height', 'packed_by', 'shipping_firstname', 'shipping_lastname', 'shipping_email', 'shipping_phone', 'shipping_street', 'shipping_suburb', 'shipping_postcode', 'shipping_state'];
+                    var parcelTable = parcelField.reduce(function(allContent, index, key, arr){
+                        allContent[index] = line[key+1];
+                        return allContent
+                    },{});
+                    parcelTable.logistic_id = logisticID;
+                    parcelTable.order_id = orderID;
+                    return Parcel.create(
+                        parcelTable
+                    );
+                }).then(function() {
+                    callback();
+                });
+            } else {
+                callback();
+            }
+        })
+    }, function done() {
+      // delete the parcels.csv file
+        fs.unlinkSync(parcelsInputFile);
     })
 })
 
 if(fs.existsSync(ordersInputFile)){
     fs.createReadStream(ordersInputFile).pipe(ordersParser);
+    //back up orders.csv file to OrderCsvBak folder
     backupCsv('orders');
-    fs.unlinkSync(ordersInputFile);
 }
 
 
@@ -361,6 +397,7 @@ function getParcelInfo(articleId) {
                 }
             } else {
               Parcel.update(
+
                   { status: 1 },
                   {where: {tracking_number : articleId}}
               ).then(function() {
