@@ -255,12 +255,7 @@ deleteCsv('parcels');
 var ordersInputFile='data/orders.csv';
 var parcelsInputFile='data/parcels.csv';
 
-
-
-// ['invoice_number', 'invoice_date', 'billing_firstname', 'billing_lastname', 'billing_email', 'billing_phone', 'billing_street', 'billing_suburb', 'billing_postcode', 'billing_state', 'grand_total', 'shipping_amount'].reduce(properties, function(row, index) {
-//   return properties[row] = line[index + 1];
-// })
-
+// read orders.csv and save to database then read parcels.csv and save to database as well.
 var ordersParser = parse({delimiter: ','}, function (err, data) {
     async.eachSeries(data, function (line, callback) {
         var orderField = ['invoice_number', 'invoice_date', 'billing_firstname', 'billing_lastname', 'billing_email', 'billing_phone', 'billing_street', 'billing_suburb', 'billing_postcode', 'billing_state', 'grand_total', 'shipping_amount'];
@@ -294,7 +289,6 @@ var parcelsParser = parse({delimiter: ','}, function (err, data) {
                 allContent[index] = line[key+1];
                 return allContent
             },{});
-
             parcelTable.logistic_id = logisticID;
             parcelTable.order_id = orderID;
             return Parcel.create(
@@ -311,18 +305,20 @@ if(fs.existsSync(ordersInputFile)){
     backupCsv('orders');
     fs.unlinkSync(ordersInputFile);
 }
-// if (fs.existsSync(parcelsInputFile)) {
-//   fs.createReadStream(parcelsInputFile).pipe(parcelsParser);
-//   backupCsv('parcels');
-//   fs.unlinkSync(parcelsInputFile);
-// }
-//
-//
 
-// ['parcel_number', 'deliver_time', 'deliver_owner'].reduce(properties, function(row, index) {
-//   return properties[row] = line[index + 1];
-// }, {})
-//
+
+function ParcelCheckStatus() {
+  Parcel.findAll({where: {status: {$or: {$eq: null, $ne: 3}}}}).then(function(filter) {
+    for (var i = 0; i < filter.length; i++) {
+      var trackingNumber = JSON.stringify(filter[i].tracking_number);
+      getParcelInfo(JSON.parse(trackingNumber));
+    }
+  })
+}
+
+
+ParcelCheckStatus();
+
 
 function getParcelInfo(articleId) {
 
@@ -338,87 +334,44 @@ function getParcelInfo(articleId) {
             }
         },
         function (error, response, body) {
-            // console.log("__________________________________________");
-            // console.log(JSON.parse(body).QueryTrackEventsResponse.TrackingResults[0].Consignment.Articles[0]);
-            // console.log(JSON.parse(body).QueryTrackEventsResponse.TrackingResults[0].Consignment.Articles[0].Status);
-            // console.log("__________________________________________");
             let article = JSON.parse(body).QueryTrackEventsResponse.TrackingResults[0].Consignment.Articles[0];
-            let status = article.Status;
-            let dispatchTime = article.Events[article.Events.length-1].EventDateTime;
-            let deliveryTime = (article.Events[0].Status === 'Delivered')? article.Events[0].EventDateTime: null;
-            // console.log("=========================");
-            // console.log(status, dispatchTime, deliveryTime);
-
-            let result = {status, dispatchTime, deliveryTime};
-            // console.log(status);
-
-            // return result;
-
+            if (article) {
+                let status = article.Status;
+                if (status === 'Delivered') {
+                    let deliveryTime = article.Events[0].EventDateTime;
+                    Parcel.update(
+                        { status: 3 , delivery_time: deliveryTime, },
+                        {where: {tracking_number : articleId}}
+                    ).then(function() {
+                        console.log("updated parcel status and delivery time");
+                    })
+                    Parcel.find({where: {tracking_number : articleId}}).then(function(result) {
+                        var orderID = JSON.stringify(result.order_id);
+                        Order.update({status:3}, {where: {id:orderID}}).then(function() {
+                            console.log("updated order status");
+                        })
+                    })
+                } else if (status === 'In transit' || status === 'Started') {
+                  Parcel.update(
+                      { status: 2 },
+                      {where: {tracking_number : articleId}}
+                  ).then(function() {
+                      console.log("updated parcel status to Processing");
+                  })
+                }
+            } else {
+              Parcel.update(
+                  { status: 1 },
+                  {where: {tracking_number : articleId}}
+              ).then(function() {
+                  console.log("updated parcel status to Packing");
+              })
+            }
         }
-    );
+    )
 }
-// let mm = Order.find({where: {invoice_number:line[1]}}).then(function (idd) {
-//   return JSON.stringify(idd.id);
-// })
-//   let article = JSON.parse(body).QueryTrackEventsResponse.TrackingResults[0].Consignment.Articles[0];
-//   let parcelStatus = (article.Status === 'Delivered')? 3:2;
-//   let dispatchTime = article.Events[article.Events.length-1].EventDateTime;
-//   let deliveryTime = (article.Events[0].Status === 'Delivered')? article.Events[0].EventDateTime: null;
-
-// function checkParcelUpdate(articleId) {
-//   Parcel.findAll({where: {order_id: null }}).then (function(result){
-//     for (var i = 0; i < result.length; i++) {
-//       let trackingNumber = JSON.stringify(result[i].tracking_number);
-//       console.log(trackingNumber);
-//       console.log("_________________");
-//       // console.log(getParcelInfo("APP3115931"));
-//       console.log("_________________");
-//     }
-//   })
-// }
-//
 
 
-
-// checkParcelUpdate();
-
-
-// getParcelInfo('S9S306054001000930206');
-// getParcelInfo('APP3115936');
-
-//
-// function checkParcelStatus(articleId) {
-//   var request = require('request'),
-//   url = "http://digitalapi.auspost.com.au/track/v3/search?q="+ articleId,
-//   auth = "Basic cHJvZF90cmFja2FwaTpXZWxjb21lQDEyMw";
-//
-//   request(
-//       {
-//           url : url,
-//           headers : {
-//               "Authorization" : auth
-//           }
-//       },
-//       function (error, response, body) {
-//           let article = JSON.parse(body).QueryTrackEventsResponse.TrackingResults[0].Consignment.Articles[0];
-//           let status = article.Status;
-//           let dispatchTime = article.Events[article.Events.length-1].EventDateTime;
-//           let deliveryTime = (article.Events[0].Status === 'Delivered')? article.Events[0].EventDateTime: null;
-//           Parcel.update(
-//           {
-//             delivery_time: article.Events[0].EventDateTime;
-//           },
-//           {
-//             where: { tracking_number : articleId }
-//           })
-//           .then(function (result) {
-//             console.log("sss");
-//           }, function(rejectedPromiseError){
-//             console.log("error");
-//           });
-//       }
-//   );
-// }
 
 
 
