@@ -29,12 +29,14 @@ class ParcelDetails extends React.Component {
     return (
         <div>
           <NavbarInstance />
-          <div className="parcel">
-            {this.props.viewer.parcels.edges
-              .map(edge =>
-              <Detail showCheckboxes={this.state.showCheckboxes} edge={edge} key={edge.node.id}/>
-            )}
-          </div>
+            <div className = "pagelayout">
+              <div className="parcel">
+                {this.props.viewer.parcels.edges
+                  .map(edge =>
+                  <Detail showCheckboxes={this.state.showCheckboxes} edge={edge} key={edge.node.id}/>
+                )}
+              </div>
+            </div>
           <FooterNavigation />
         </div>
     )
@@ -44,7 +46,7 @@ class ParcelDetails extends React.Component {
 class Detail extends React.Component {
   render() {
     var edge = this.props.edge;
-    let statusShow = (edge.node.status === '1')? "Processing" : (edge.node.status === '2')? "Delivery" : "Deliveried";
+    let statusShow = (edge.node.status === '1')? "Processing" : (edge.node.status === '2')? "Delivery" : "Delivered";
     var deliveryTimeShow = moment(edge.node.delivery_time).format('YYYY-MM-DD');
 
     return (
@@ -62,6 +64,10 @@ class Detail extends React.Component {
             <TableRow>
               <TableRowColumn>Delivery Time:</TableRowColumn>
                 <TableRowColumn>{deliveryTimeShow}</TableRowColumn>
+            </TableRow>
+            <TableRow>
+              <TableRowColumn>Invoice Date:</TableRowColumn>
+              <TableRowColumn>{moment(edge.node.order.invoice_date).format('YYYY-MM-DD')}</TableRowColumn>
             </TableRow>
             <TableRow>
               <TableRowColumn>Logistic Name:</TableRowColumn>
@@ -99,6 +105,7 @@ export default Relay.createContainer(ParcelDetails, {
               },
               order{
                 invoice_number
+                invoice_date
               },
             }
           }

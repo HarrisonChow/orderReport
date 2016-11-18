@@ -15,12 +15,12 @@ const logisticsIcon = <IconLocalShipping />;
 const parcelsIcon = <IconPages />;
 
 export default class FooterNavigation extends Component {
-  state = {
-    selectedIndex: 0,
-  };
+  // state = {
+  //   selectedIndex: 0,
+  // };
 
   select = (index) => {
-    this.setState({selectedIndex: index});
+    // this.setState({selectedIndex: index});
     let urls = (index === 1) ? '#/allOrders' : (index === 2) ? '#/parcels' : (index === 3) ? '#/logistics' : '#/';
     window.location = urls;
     if (this.props.click) {
@@ -32,7 +32,8 @@ export default class FooterNavigation extends Component {
   render() {
     return (
       <Paper zDepth={3}>
-        <BottomNavigation selectedIndex={this.state.selectedIndex}>
+      {/*selectedIndex={this.state.selectedIndex}*/}
+        <BottomNavigation >
             <BottomNavigationItem
               label="Home"
               icon={homeIcon}

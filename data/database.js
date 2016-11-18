@@ -1,5 +1,5 @@
- import Sequelize from 'sequelize';
- import moment from 'moment';
+import Sequelize from 'sequelize';
+import moment from 'moment';
 
  import {
    connectionFromPromisedArray,
@@ -117,6 +117,18 @@ export const Parcel = Conn.define('parcel',
         delivery_time: {
             type: Sequelize.DATE
         },
+        dispatch_time: {
+            type: Sequelize.DATE
+        },
+        packing_time: {
+            type: Sequelize.DATE
+        },
+        created_datetime: {
+            type: Sequelize.DATE
+        },
+        carrier: {
+          type: Sequelize.STRING
+        },
         weight: {
             type: Sequelize.INTEGER
         },
@@ -193,6 +205,224 @@ Parcel.belongsTo(Order);
 Logistic.hasMany(Parcel);
 
 Parcel.belongsTo(Logistic);
+
+
+var fs = require('fs');
+var parse = require('csv-parse');
+var async = require('async');
+var csv = require("fast-csv");
+var http = require('http');
+
+
+// create backup files and save to 'data/'
+function backupCsv(files) {
+  let filesCondition = (files === 'orders')? "data/OrderCsvBak/ordersCsvBak" : "data/ParcelCsvBak/parcelsCsvBak";
+  // backup files name format
+  function myDateSTring(){
+    var timeInMs = new Date();
+    var dateTime = moment(timeInMs).format("YYYY-MM-DD HH:mm:ss");
+    return dateTime;
+  }
+  csv
+    .fromPath("data/"+files+".csv")
+    .pipe(csv.createWriteStream())
+    .pipe(fs.createWriteStream(filesCondition+myDateSTring()+".csv", {encoding: "utf8"}));
+}
+
+
+//delete backup files if the file modified date is longer than 15 days
+function deleteCsv(files) {
+  let deleteCondition = (files === 'orders')? "data/OrderCsvBak/" : "data/ParcelCsvBak/";
+  var allFile = fs.readdirSync(deleteCondition);
+  for (var i = 0; i < allFile.length; i++) {
+    try {
+      var stats = fs.statSync(deleteCondition+allFile[i]).mtime.getTime();
+      var today = new Date().getTime();
+      var setDeleteTime = (today - stats)/(1000*60*60*24);
+      if (setDeleteTime >= 15) {
+        fs.unlinkSync(deleteCondition+allFile[i]);
+      }
+    }
+    catch(err) {
+        console.log('it does not exist');
+    }
+  }
+}
+deleteCsv('orders');
+deleteCsv('parcels');
+
+
+var ordersInputFile='data/orders.csv';
+var parcelsInputFile='data/parcels.csv';
+
+
+
+// ['invoice_number', 'invoice_date', 'billing_firstname', 'billing_lastname', 'billing_email', 'billing_phone', 'billing_street', 'billing_suburb', 'billing_postcode', 'billing_state', 'grand_total', 'shipping_amount'].reduce(properties, function(row, index) {
+//   return properties[row] = line[index + 1];
+// })
+
+var ordersParser = parse({delimiter: ','}, function (err, data) {
+    async.eachSeries(data, function (line, callback) {
+        var orderField = ['invoice_number', 'invoice_date', 'billing_firstname', 'billing_lastname', 'billing_email', 'billing_phone', 'billing_street', 'billing_suburb', 'billing_postcode', 'billing_state', 'grand_total', 'shipping_amount'];
+        var orderTable = orderField.reduce(function(allContent, index, key, arr){
+            allContent[index] = line[key+1];
+            return allContent
+        },{});
+        return Order.create(
+          orderTable
+      ).then(function() {
+            callback();
+        });
+    }, function done() {
+        if (fs.existsSync(parcelsInputFile)) {
+            fs.createReadStream(parcelsInputFile).pipe(parcelsParser);
+            backupCsv('parcels');
+            fs.unlinkSync(parcelsInputFile);
+        }
+    })
+})
+
+var parcelsParser = parse({delimiter: ','}, function (err, data) {
+    async.eachSeries(data, function (line, callback) {
+        let logisticID = (line[4]==='TNT') ? 1 : (line[4]==='TOLL') ? 2 : 3;
+
+        Order.find({where: {invoice_number:line[1]}}).then(function (idd) {
+            let orderID = JSON.stringify(idd.id);
+
+            var parcelField = ['invoice_number', 'tracking_number', 'created_datetime', 'carrier', 'weight', 'width', 'length', 'height', 'packed_by', 'shipping_firstname', 'shipping_lastname', 'shipping_email', 'shipping_phone', 'shipping_street', 'shipping_suburb', 'shipping_postcode', 'shipping_state'];
+            var parcelTable = parcelField.reduce(function(allContent, index, key, arr){
+                allContent[index] = line[key+1];
+                return allContent
+            },{});
+
+            parcelTable.logistic_id = logisticID;
+            parcelTable.order_id = orderID;
+            return Parcel.create(
+                parcelTable
+            );
+        }).then(function() {
+            callback();
+        });
+    })
+})
+
+if(fs.existsSync(ordersInputFile)){
+    fs.createReadStream(ordersInputFile).pipe(ordersParser);
+    backupCsv('orders');
+    fs.unlinkSync(ordersInputFile);
+}
+// if (fs.existsSync(parcelsInputFile)) {
+//   fs.createReadStream(parcelsInputFile).pipe(parcelsParser);
+//   backupCsv('parcels');
+//   fs.unlinkSync(parcelsInputFile);
+// }
+//
+//
+
+// ['parcel_number', 'deliver_time', 'deliver_owner'].reduce(properties, function(row, index) {
+//   return properties[row] = line[index + 1];
+// }, {})
+//
+
+function getParcelInfo(articleId) {
+
+    var request = require('request'),
+    url = "http://digitalapi.auspost.com.au/track/v3/search?q="+ articleId,
+    auth = "Basic cHJvZF90cmFja2FwaTpXZWxjb21lQDEyMw";
+
+    request(
+        {
+            url : url,
+            headers : {
+                "Authorization" : auth
+            }
+        },
+        function (error, response, body) {
+            // console.log("__________________________________________");
+            // console.log(JSON.parse(body).QueryTrackEventsResponse.TrackingResults[0].Consignment.Articles[0]);
+            // console.log(JSON.parse(body).QueryTrackEventsResponse.TrackingResults[0].Consignment.Articles[0].Status);
+            // console.log("__________________________________________");
+            let article = JSON.parse(body).QueryTrackEventsResponse.TrackingResults[0].Consignment.Articles[0];
+            let status = article.Status;
+            let dispatchTime = article.Events[article.Events.length-1].EventDateTime;
+            let deliveryTime = (article.Events[0].Status === 'Delivered')? article.Events[0].EventDateTime: null;
+            // console.log("=========================");
+            // console.log(status, dispatchTime, deliveryTime);
+
+            let result = {status, dispatchTime, deliveryTime};
+            // console.log(status);
+
+            // return result;
+
+        }
+    );
+}
+// let mm = Order.find({where: {invoice_number:line[1]}}).then(function (idd) {
+//   return JSON.stringify(idd.id);
+// })
+//   let article = JSON.parse(body).QueryTrackEventsResponse.TrackingResults[0].Consignment.Articles[0];
+//   let parcelStatus = (article.Status === 'Delivered')? 3:2;
+//   let dispatchTime = article.Events[article.Events.length-1].EventDateTime;
+//   let deliveryTime = (article.Events[0].Status === 'Delivered')? article.Events[0].EventDateTime: null;
+
+// function checkParcelUpdate(articleId) {
+//   Parcel.findAll({where: {order_id: null }}).then (function(result){
+//     for (var i = 0; i < result.length; i++) {
+//       let trackingNumber = JSON.stringify(result[i].tracking_number);
+//       console.log(trackingNumber);
+//       console.log("_________________");
+//       // console.log(getParcelInfo("APP3115931"));
+//       console.log("_________________");
+//     }
+//   })
+// }
+//
+
+
+
+// checkParcelUpdate();
+
+
+// getParcelInfo('S9S306054001000930206');
+// getParcelInfo('APP3115936');
+
+//
+// function checkParcelStatus(articleId) {
+//   var request = require('request'),
+//   url = "http://digitalapi.auspost.com.au/track/v3/search?q="+ articleId,
+//   auth = "Basic cHJvZF90cmFja2FwaTpXZWxjb21lQDEyMw";
+//
+//   request(
+//       {
+//           url : url,
+//           headers : {
+//               "Authorization" : auth
+//           }
+//       },
+//       function (error, response, body) {
+//           let article = JSON.parse(body).QueryTrackEventsResponse.TrackingResults[0].Consignment.Articles[0];
+//           let status = article.Status;
+//           let dispatchTime = article.Events[article.Events.length-1].EventDateTime;
+//           let deliveryTime = (article.Events[0].Status === 'Delivered')? article.Events[0].EventDateTime: null;
+//           Parcel.update(
+//           {
+//             delivery_time: article.Events[0].EventDateTime;
+//           },
+//           {
+//             where: { tracking_number : articleId }
+//           })
+//           .then(function (result) {
+//             console.log("sss");
+//           }, function(rejectedPromiseError){
+//             console.log("error");
+//           });
+//       }
+//   );
+// }
+
+
+
+
 
 
 

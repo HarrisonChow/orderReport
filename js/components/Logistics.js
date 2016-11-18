@@ -31,10 +31,12 @@ class LogisticsList extends React.Component {
     return(
       <div>
         <NavbarInstance />
-          <div className="logistic"><h4> {title} </h4></div>
-          {this.props.viewer.logistics.edges.map(edge =>
-            <Logistic edge={edge} name={edge.node.name} days={this.props.days} titleDays={this.props.params.days} fromDate={this.props.fromDate} toDate={this.props.toDate} key={edge.node.id} />
-          )}
+          <div className = "pagelayout">
+            <div className="logisticTitle"><h4> {title} </h4></div>
+            {this.props.viewer.logistics.edges.map(edge =>
+              <Logistic edge={edge} name={edge.node.name} days={this.props.days} titleDays={this.props.params.days} fromDate={this.props.fromDate} toDate={this.props.toDate} key={edge.node.id} />
+            )}
+          </div>
         <FooterNavigation/>
       </div>
     )

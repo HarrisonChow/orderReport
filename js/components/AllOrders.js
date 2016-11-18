@@ -71,38 +71,40 @@ class AllOrders extends React.Component {
 
     return (
       <div>
-      <NavbarInstance />
-        <Table>
-          <TableHeader displaySelectAll = {this.state.showCheckboxes}
-            adjustForCheckbox = {this.state.showCheckboxes}>
-            {/* <TableRow>
-              <TableHeaderColumn colSpan = "4" style = {{textAlign: 'center', fontSize: 15}}>
-                <SearchForm />
-              </TableHeaderColumn>
-            </TableRow> */}
-            <TableRow>
-              <TableHeaderColumn colSpan = "4" style = {{textAlign: 'center', fontSize: 15}}>
-                {pageTitle}
-              </TableHeaderColumn>
-            </TableRow>
-            <TableRow>
-              <TableHeaderColumn>ID</TableHeaderColumn>
-              <TableHeaderColumn>Order Number</TableHeaderColumn>
-              <TableHeaderColumn>Status</TableHeaderColumn>
-              <TableHeaderColumn>Created At</TableHeaderColumn>
-            </TableRow>
-          </TableHeader>
-          <TableBody displayRowCheckbox = {this.state.showCheckboxes}
-            deselectOnClickaway = {this.state.deselectOnClickaway}
-            showRowHover = {this.state.showRowHover}
-            stripedRows = {this.state.stripedRows}>
-            { this.orderEdges().map(edge => <Order cellClicked={this.cellClicked} state={this.state} {...edge.node} key = { edge.node.__dataID__ } />) }
-          </TableBody>
-        </Table>
-        <div className="row pageButton">
-          { prevButton }
-          { nextButton }
-        </div>
+        <NavbarInstance />
+          <div className = "pagelayout">
+            <Table>
+              <TableHeader displaySelectAll = {this.state.showCheckboxes}
+                adjustForCheckbox = {this.state.showCheckboxes}>
+                {/* <TableRow>
+                  <TableHeaderColumn colSpan = "4" style = {{textAlign: 'center', fontSize: 15}}>
+                    <SearchForm />
+                  </TableHeaderColumn>
+                </TableRow> */}
+                <TableRow>
+                  <TableHeaderColumn colSpan = "4" style = {{textAlign: 'center', fontSize: 15}}>
+                    {pageTitle}
+                  </TableHeaderColumn>
+                </TableRow>
+                <TableRow>
+                  <TableHeaderColumn>ID</TableHeaderColumn>
+                  <TableHeaderColumn>Order Number</TableHeaderColumn>
+                  <TableHeaderColumn>Status</TableHeaderColumn>
+                  <TableHeaderColumn>Invoice Date</TableHeaderColumn>
+                </TableRow>
+              </TableHeader>
+              <TableBody displayRowCheckbox = {this.state.showCheckboxes}
+                deselectOnClickaway = {this.state.deselectOnClickaway}
+                showRowHover = {this.state.showRowHover}
+                stripedRows = {this.state.stripedRows}>
+                { this.orderEdges().map(edge => <Order cellClicked={this.cellClicked} state={this.state} {...edge.node} key = { edge.node.__dataID__ } />) }
+              </TableBody>
+            </Table>
+            <div className="row pageButton">
+              { prevButton }
+              { nextButton }
+            </div>
+          </div>
         <FooterNavigation />
       </div>
     );
@@ -110,7 +112,7 @@ class AllOrders extends React.Component {
 }
 
 const Order = props => {
-  let statusShow = (props.status === '1')? "Processing" : (props.status === '2')? "Delivery" : "Deliveried"
+  let statusShow = (props.status === '1')? "Processing" : (props.status === '2')? "Delivery" : "Delivered"
   return (
     <TableRow hoverable = {props.state.hoverable} onCellClick = {props.cellClicked}>
       <TableRowColumn>{window.atob(props.id).match(/\d+$/)[0]}</TableRowColumn>
@@ -156,7 +158,7 @@ export default Relay.createContainer(AllOrders, {
         },
         ordersAmount,
         processingOrdersAmount,
-        deliveriedOrdersAmount,
+        deliveredOrdersAmount,
         deliveryOrdersAmount,
 
 
@@ -179,7 +181,7 @@ export default Relay.createContainer(AllOrders, {
         },
         ordersAmount,
         processingOrdersAmount,
-        deliveriedOrdersAmount,
+        deliveredOrdersAmount,
         deliveryOrdersAmount,
       }
     `

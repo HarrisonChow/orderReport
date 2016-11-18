@@ -20,13 +20,15 @@ export default class ReactChart extends React.Component {
 
     let bars = []
     let length = 0
-    let datatype
+    let datatype,origintype
 
     data.forEach((datum, index) => {
-      if (datum.type === 'orders') {
-        let statusShow = (datum.status === '1')? "Processing " : (datum.status === '2')? "Delivery " : "Deliveried "
+      let typeReFormat = (datum.type).split(" ").join("");
 
-          bars.push([<Bar key = {index} col = {datum.color} status = {datum.status} type = {datum.type} amount = {datum.orderAmount} x = {length} y = {5} width = {40} height = {x(datum.orderAmount)} fromDate = {this.props.fromDate} toDate = {this.props.toDate} dateRange = {this.props.dateR} />,
+      if (datum.type === 'orders') {
+        let statusShow = (datum.status === '1')? "Processing " : (datum.status === '2')? "Delivery " : "Delivered "
+
+          bars.push([<Bar key = {index} col = {datum.color} status = {datum.status} type = {typeReFormat} amount = {datum.orderAmount} x = {length} y = {5} width = {40} height = {x(datum.orderAmount)} fromDate = {this.props.fromDate} toDate = {this.props.toDate} dateRange = {this.props.dateR} />,
             <g>
             <text x = {125*index+20} y = "-10" fontSize = "12" fill = "black" > {statusShow} : {datum.orderAmount} </text>
             <rect x = {125*index} y = "-20" height = "10" width = "10" fill = {datum.color} fillOpacity = "0.6"/>
@@ -34,7 +36,7 @@ export default class ReactChart extends React.Component {
           ])
 
       } else {
-          bars.push([<Bar key = {index} col = {datum.color} status = {datum.status} type = {datum.type} logisticId = {datum.logisticId} amount = {datum.orderAmount} x = {length} y = {30} width = {40} height = {x(datum.orderAmount)} dateRange = {this.props.dateR} />,
+          bars.push([<Bar key = {index} col = {datum.color} status = {datum.status} type = {typeReFormat} logisticId = {datum.logisticId} amount = {datum.orderAmount} x = {length} y = {30} width = {40} height = {x(datum.orderAmount)} dateRange = {this.props.dateR} />,
             <g>
             <text x = {155*index+20} y = "20" fontSize = "12" fill = "black" > {datum.status} : {datum.orderAmount} </text>
             <rect x = {155*index} y = "10" height = "10" width = "10" fill = {datum.color} fillOpacity = "0.6" />
@@ -42,7 +44,8 @@ export default class ReactChart extends React.Component {
       }
 
       length = length + x(datum.orderAmount)
-      datatype = datum.type
+      origintype = datum.type
+      datatype = typeReFormat
     })
 
     let total = d3.sum(data, (d) => d.orderAmount);
@@ -55,7 +58,7 @@ export default class ReactChart extends React.Component {
         }
         {datatype != 'orders' &&
         <g>
-          <text x = "0" y = "0" fontSize = "13" fill = "black"> {datatype} </text>,
+          <text x = "0" y = "0" fontSize = "13" fill = "black"> {origintype} </text>,
           <text x = "560" y = "20" fontSize = "12" fill = "black" > Total: {total}  </text>
         </g>
         }

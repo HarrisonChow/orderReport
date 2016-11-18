@@ -65,33 +65,35 @@ class ParcelList extends React.Component {
     let title = (this.props.created_at) ? "Parcel Processing longer than 7 days" : "All parcels list"
     return (
       <div>
-      <NavbarInstance />
-        <Table>
-          <TableHeader displaySelectAll = {this.state.showCheckboxes}
-            adjustForCheckbox = {this.state.showCheckboxes}>
-            <TableRow>
-              <TableHeaderColumn colSpan = "4" style = {{textAlign: 'center', fontSize: 15}}>
-                {title}
-              </TableHeaderColumn>
-            </TableRow>
-            <TableRow>
-              <TableHeaderColumn>ID</TableHeaderColumn>
-              <TableHeaderColumn>Tracking Number</TableHeaderColumn>
-              <TableHeaderColumn>Status</TableHeaderColumn>
-              <TableHeaderColumn>Created At</TableHeaderColumn>
-            </TableRow>
-          </TableHeader>
-          <TableBody displayRowCheckbox = {this.state.showCheckboxes}
-            deselectOnClickaway = {this.state.deselectOnClickaway}
-            showRowHover = {this.state.showRowHover}
-            stripedRows = {this.state.stripedRows}>
-            { this.parcelEdges().map(edge => <Parcel cellClicked = {this.cellClicked} state = {this.state} {...edge.node} key = { edge.node.__dataID__ } />) }
-          </TableBody>
-        </Table>
-        <div className = "row pageButton">
-          { prevButton }
-          { nextButton }
-        </div>
+        <NavbarInstance />
+          <div className = "pagelayout">
+            <Table>
+              <TableHeader displaySelectAll = {this.state.showCheckboxes}
+                adjustForCheckbox = {this.state.showCheckboxes}>
+                <TableRow>
+                  <TableHeaderColumn colSpan = "4" style = {{textAlign: 'center', fontSize: 15}}>
+                    {title}
+                  </TableHeaderColumn>
+                </TableRow>
+                <TableRow>
+                  <TableHeaderColumn>ID</TableHeaderColumn>
+                  <TableHeaderColumn>Tracking Number</TableHeaderColumn>
+                  <TableHeaderColumn>Status</TableHeaderColumn>
+                  <TableHeaderColumn>Created At</TableHeaderColumn>
+                </TableRow>
+              </TableHeader>
+              <TableBody displayRowCheckbox = {this.state.showCheckboxes}
+                deselectOnClickaway = {this.state.deselectOnClickaway}
+                showRowHover = {this.state.showRowHover}
+                stripedRows = {this.state.stripedRows}>
+                { this.parcelEdges().map(edge => <Parcel cellClicked = {this.cellClicked} state = {this.state} {...edge.node} key = { edge.node.__dataID__ } />) }
+              </TableBody>
+            </Table>
+            <div className = "row pageButton">
+              { prevButton }
+              { nextButton }
+            </div>
+          </div>
         <FooterNavigation/>
 
       </div>
@@ -101,13 +103,13 @@ class ParcelList extends React.Component {
 
 
 const Parcel = props => {
-  let statusShow = (props.status === '1')? "Processing" : (props.status === '2')? "Delivery" : "Deliveried"
+  let statusShow = (props.status === '1')? "Processing" : (props.status === '2')? "Delivery" : "Delivered"
   return (
     <TableRow hoverable = {props.state.hoverable} onCellClick = {props.cellClicked}>
       <TableRowColumn>{window.atob(props.id).match(/\d+$/)[0]}</TableRowColumn>
       <TableRowColumn>{props.tracking_number}</TableRowColumn>
       <TableRowColumn>{statusShow}</TableRowColumn>
-      <TableRowColumn>{moment(props.created_at).format('LL')}</TableRowColumn>
+      <TableRowColumn>{moment(props.order.invoice_date).format('LL')}</TableRowColumn>
     </TableRow>
   )
 }
@@ -139,6 +141,9 @@ export default Relay.createContainer(ParcelList, {
               created_at,
               updated_at,
               delivery_time,
+              order {
+                invoice_date
+              }
             }
           },
           pageInfo{
@@ -159,6 +164,9 @@ export default Relay.createContainer(ParcelList, {
               created_at,
               updated_at,
               delivery_time,
+              order {
+                invoice_date
+              }
             }
           },
           pageInfo{

@@ -26,23 +26,24 @@ class OrderDetails extends React.Component {
   }
 
   render() {
-    console.log(this);
     return (
       <div>
         <NavbarInstance />
-        <div className="order">
-        {this.props.viewer.orders.edges.length===0 &&
-          <div>
-            <div>Your search - {this.props.id} - did not match any orders.</div>
-            <SearchForm />
-          </div>
+          <div className = "pagelayout">
+            <div className="order">
+            {this.props.viewer.orders.edges.length===0 &&
+              <div>
+                <div>Your search - {this.props.id} - did not match any orders.</div>
+                <SearchForm />
+              </div>
 
-        }
-          {this.props.viewer.orders.edges
-            .map(edge =>
-            <Detail showCheckboxes={this.state.showCheckboxes} edge={edge} key={edge.node.id}/>
-          )}
-        </div>
+            }
+              {this.props.viewer.orders.edges
+                .map(edge =>
+                <Detail showCheckboxes={this.state.showCheckboxes} edge={edge} key={edge.node.id}/>
+              )}
+            </div>
+          </div>
         <FooterNavigation />
       </div>
     )
@@ -52,7 +53,7 @@ class OrderDetails extends React.Component {
 class Detail extends React.Component {
   render() {
     var edge = this.props.edge;
-    let statusShow = (edge.node.status === '1')? "Processing" : (edge.node.status === '2')? "Delivery" : "Deliveried"
+    let statusShow = (edge.node.status === '1')? "Processing" : (edge.node.status === '2')? "Delivery" : "Delivered"
 
     return (
       <div>
@@ -68,7 +69,7 @@ class Detail extends React.Component {
             </TableRow>
             <TableRow>
               <TableRowColumn>Created At:</TableRowColumn>
-              <TableRowColumn>{moment(edge.node.created_at).format('ll')}</TableRowColumn>
+              <TableRowColumn>{moment(edge.node.invoice_date).format('ll')}</TableRowColumn>
             </TableRow>
           </TableBody>
         </Table>
@@ -90,7 +91,7 @@ class Parcel extends React.Component {
     } else {
       var deliveryTimeShow = '';
     }
-    let statusShow = (edge.node.status === '1')? "Processing" : (edge.node.status === '2')? "Delivery" : "Deliveried"
+    let statusShow = (edge.node.status === '1')? "Processing" : (edge.node.status === '2')? "Delivery" : "Delivered"
     return (
       <Paper zDepth={2} style = {style.bottomPaper}>
         <Table>
@@ -131,7 +132,7 @@ export default Relay.createContainer(OrderDetails, {
             node {
               id,
               invoice_number,
-              created_at,
+              invoice_date,
               status,
               parcels(first: 9999) {
                 edges {

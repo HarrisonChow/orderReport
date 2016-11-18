@@ -149,7 +149,7 @@ export default Relay.createContainer(SpeedByDays, {
         },
         ordersAmount,
         processingOrdersAmount,
-        deliveriedOrdersAmount,
+        deliveredOrdersAmount,
         deliveryOrdersAmount,
 
 
@@ -173,7 +173,7 @@ export default Relay.createContainer(SpeedByDays, {
         },
         ordersAmount,
         processingOrdersAmount,
-        deliveriedOrdersAmount,
+        deliveredOrdersAmount,
         deliveryOrdersAmount,
       }
     `

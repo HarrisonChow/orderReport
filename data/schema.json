@@ -577,7 +577,7 @@
               "deprecationReason": null
             },
             {
-              "name": "deliveriedOrdersAmount",
+              "name": "deliveredOrdersAmount",
               "description": null,
               "args": [],
               "type": {
@@ -1117,6 +1117,42 @@
             },
             {
               "name": "delivery_time",
+              "description": null,
+              "args": [],
+              "type": {
+                "kind": "SCALAR",
+                "name": "String",
+                "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "name": "dispatch_time",
+              "description": null,
+              "args": [],
+              "type": {
+                "kind": "SCALAR",
+                "name": "String",
+                "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "name": "packing_time",
+              "description": null,
+              "args": [],
+              "type": {
+                "kind": "SCALAR",
+                "name": "String",
+                "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
+            },
+            {
+              "name": "created_datetime",
               "description": null,
               "args": [],
               "type": {

@@ -7,12 +7,6 @@ import injectTapEventPlugin from 'react-tap-event-plugin';
 
 injectTapEventPlugin();
 
-const style = {
-  bottomPaper: {
-    height:'80vh'
-  }
-};
-
 export default class OrderReportApp extends React.Component {
 
   render() {

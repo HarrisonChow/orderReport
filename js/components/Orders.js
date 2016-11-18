@@ -46,6 +46,7 @@ class OrderList extends React.Component {
       autoOk: true,
       disableYearSelection: false,
       displayDatePicker: false,
+      selectedIndex: 0
     };
   }
   reRender( x, y ){
@@ -105,7 +106,7 @@ class OrderList extends React.Component {
 
     let filtedProcessingResult = finalResult.filter(edge => {return edge.node.status === '1'});
     let filtedDeliveryResult = finalResult.filter(edge => {return edge.node.status === '2'});
-    let filtedDeliveriedResult = finalResult.filter(edge => {return edge.node.status === '3'});
+    let filtedDeliveredResult = finalResult.filter(edge => {return edge.node.status === '3'});
 
     let selectDays = (!event) ? 7 : dateRange;
     let sevenDaysDate = 7;
@@ -116,7 +117,7 @@ class OrderList extends React.Component {
     let data = [
       {type: 'orders', status: 1, orderAmount: filtedProcessingResult.length, color: '#98abc5'},
       {type: 'orders', status: 2, orderAmount: filtedDeliveryResult.length, color: '#a05d56'},
-      {type: 'orders', status: 3, orderAmount: filtedDeliveriedResult.length, color: '#ff8c00'},
+      {type: 'orders', status: 3, orderAmount: filtedDeliveredResult.length, color: '#ff8c00'},
     ]
 
     return(
@@ -124,67 +125,69 @@ class OrderList extends React.Component {
       <div className = "row" >
         <div className = "row">
         <NavbarInstance click = {this.state}/>
-          <div className = "col-xs-offset-1 col-xs-10 allButtons">
-            {/*  <RaisedButton className = "mainBtn" label = "Processing Longer Than 7 Days" primary = {true} href = {`#/longorders/${sevenDaysDate}`}/>*/}
-            <RaisedButton className = "mainBtn" label = {`Fastest ${fastCountNumber} Days`} primary = {true} href = {`#/speedcheck/fastest/${dateRange}`}/>
-            <RaisedButton className = "mainBtn" label = {`Slowest ${slowCountNumber} Days`} primary = {true} href = {`#/speedcheck/slowest/${dateRange}`}/>
-            {/* <SearchForm />*/}
-          </div>
-          <div className = "col-xs-offset-1 col-xs-10 allButtons">
-            <Paper zDepth = { 1 } style={ style.bottomPaper }>
-            { this.state.displayDatePicker ?
-                <div>
-                  <div className = "col-xs-3">
-                    <DatePicker
-                      onChange = { this.handleChangeDate.bind( this, 'minDate' ) }
-                      autoOk = { this.state.autoOk }
-                      floatingLabelText = "From"
-                      defaultDate = { this.state.minDate }
-                      disableYearSelection = { this.state.disableYearSelection }
-                      style = {{ fontWeight: 800 }}
-                      textFieldStyle = {{ top: -11 }}
-                    />
+          <div className = "pagelayout">
+            <div className = "col-xs-offset-1 col-xs-10 allButtons">
+              {/*  <RaisedButton className = "mainBtn" label = "Processing Longer Than 7 Days" primary = {true} href = {`#/longorders/${sevenDaysDate}`}/>*/}
+              <RaisedButton className = "mainBtn" label = {`Fastest ${fastCountNumber} Days`} primary = {true} href = {`#/speedcheck/fastest/${dateRange}`}/>
+              <RaisedButton className = "mainBtn" label = {`Slowest ${slowCountNumber} Days`} primary = {true} href = {`#/speedcheck/slowest/${dateRange}`}/>
+              {/* <SearchForm />*/}
+            </div>
+            <div className = "col-xs-offset-1 col-xs-10 allButtons">
+              <Paper zDepth = { 1 } style={ style.bottomPaper }>
+              { this.state.displayDatePicker ?
+                  <div>
+                    <div className = "col-xs-3">
+                      <DatePicker
+                        onChange = { this.handleChangeDate.bind( this, 'minDate' ) }
+                        autoOk = { this.state.autoOk }
+                        floatingLabelText = "From"
+                        defaultDate = { this.state.minDate }
+                        disableYearSelection = { this.state.disableYearSelection }
+                        style = {{ fontWeight: 800 }}
+                        textFieldStyle = {{ top: -11 }}
+                      />
+                    </div>
+                    <div className = "col-xs-3">
+                      <DatePicker
+                        onChange = { this.handleChangeDate.bind(this, 'maxDate') }
+                        autoOk = { this.state.autoOk }
+                        floatingLabelText = "To"
+                        defaultDate = { this.state.maxDate }
+                        disableYearSelection = { this.state.disableYearSelection }
+                        style = {{ fontWeight: 800 }}
+                        textFieldStyle = {{ top: -11 }}
+                      />
+                    </div>
                   </div>
-                  <div className = "col-xs-3">
-                    <DatePicker
-                      onChange = { this.handleChangeDate.bind(this, 'maxDate') }
-                      autoOk = { this.state.autoOk }
-                      floatingLabelText = "To"
-                      defaultDate = { this.state.maxDate }
-                      disableYearSelection = { this.state.disableYearSelection }
-                      style = {{ fontWeight: 800 }}
-                      textFieldStyle = {{ top: -11 }}
-                    />
+              : null }
+
+                <DropDownMenu
+                  value = { this.state.value }
+                  onChange = { this.handleChange.bind(this) }
+                  animation = { PopoverAnimationVertical }
+                  className = "mainBtns"
+                  style = {{ width: "30%", fontSize: "20px" }}
+                >
+                  <MenuItem value = { 7 } primaryText = "Last 7 Days" />
+                  <MenuItem value = { 10 } primaryText = "Last 10 Days" />
+                  <MenuItem value = { 27 } primaryText = "Last 27 Days" />
+                  <MenuItem value = { 30 } primaryText = "Last 30 Days" />
+                  <MenuItem value = { 60 } primaryText = "Last 60 Days" />
+                  <MenuItem value = { 180 } primaryText = "Last 180 Days" />
+                  <MenuItem value = { 'customize' } primaryText = "Customization" />
+                </DropDownMenu>
+
+                {finalResult.length != 0 &&
+                <div className = "orderStastic">
+                  <ReactChart width = { 650 } height = { 120 } data = { data } dateR = { dateRange } fromDate = {( new Date( minD ) )} toDate={( new Date( maxD ) )}/>
+                  <div>
+                    <RaisedButton label = { `Logistic Stastics ` + buttonText } primary = { true } className = 'badges' href = { buttonhrefOne }/>
+                    <RaisedButton label = { `Orders List `+ buttonText } secondary={ true } className = 'badges' href = { buttonhrefTwo }/>
                   </div>
                 </div>
-            : null }
-
-              <DropDownMenu
-                value = { this.state.value }
-                onChange = { this.handleChange.bind(this) }
-                animation = { PopoverAnimationVertical }
-                className = "mainBtns"
-                style = {{ width: "30%", fontSize: "20px" }}
-              >
-                <MenuItem value = { 7 } primaryText = "Last 7 Days" />
-                <MenuItem value = { 10 } primaryText = "Last 10 Days" />
-                <MenuItem value = { 27 } primaryText = "Last 27 Days" />
-                <MenuItem value = { 30 } primaryText = "Last 30 Days" />
-                <MenuItem value = { 60 } primaryText = "Last 60 Days" />
-                <MenuItem value = { 180 } primaryText = "Last 180 Days" />
-                <MenuItem value = { 'customize' } primaryText = "Customization" />
-              </DropDownMenu>
-
-              {finalResult.length != 0 &&
-              <div className = "orderStastic">
-                <ReactChart width = { 650 } height = { 120 } data = { data } dateR = { dateRange } fromDate = {( new Date( minD ) )} toDate={( new Date( maxD ) )}/>
-                <div>
-                  <RaisedButton label = { `Logistic Stastics ` + buttonText } primary = { true } className = 'badges' href = { buttonhrefOne }/>
-                  <RaisedButton label = { `Orders List `+ buttonText } secondary={ true } className = 'badges' href = { buttonhrefTwo }/>
-                </div>
-              </div>
-            }
-            </Paper>
+              }
+              </Paper>
+            </div>
           </div>
           <FooterNavigation click = {this.state}/>
         </div>
@@ -224,7 +227,7 @@ export default Relay.createContainer(OrderList, {
         slowCount(fromDate: $fromDate),
         ordersAmount,
         processingOrdersAmount,
-        deliveriedOrdersAmount,
+        deliveredOrdersAmount,
         deliveryOrdersAmount,
       }
     `

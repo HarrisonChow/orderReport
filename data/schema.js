@@ -170,6 +170,18 @@ const GraphQLParcel = new GraphQLObjectType({
         type: GraphQLString,
         resolve: (obj) => obj.delivery_time,
       },
+      dispatch_time: {
+        type: GraphQLString,
+        resolve: (obj) => obj.dispatch_time,
+      },
+      packing_time: {
+        type: GraphQLString,
+        resolve: (obj) => obj.packing_time,
+      },
+      created_datetime: {
+        type: GraphQLString,
+        resolve: (obj) => obj.created_datetime,
+      },
       logistic: {
         type: GraphQLLogistic,
         resolve: (obj) => obj.getLogistic(),
@@ -386,7 +398,7 @@ const GraphQLUser = new GraphQLObjectType({
       type: GraphQLInt,
       resolve: () => getAmountByStatus(2),
     },
-    deliveriedOrdersAmount: {
+    deliveredOrdersAmount: {
       type: GraphQLInt,
       resolve: () => getAmountByStatus(3),
     },
