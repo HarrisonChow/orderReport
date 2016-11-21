@@ -345,21 +345,19 @@ if(fs.existsSync(ordersInputFile)){
 
 function ParcelCheckStatus() {
   Parcel.findAll({where: {status: {$or: {$eq: null, $ne: 3}}}}).then(function(filter) {
-    for (var i = 0; i < filter.length; i++) {
-      var trackingNumber = JSON.stringify(filter[i].tracking_number);
-      getParcelInfo(JSON.parse(trackingNumber));
-    }
+      filter.forEach(function (parcel) {
+          getParcelInfoFromAustralianPost(parcel);
+          getParcelInfoFromCouriersPLease(parcel);
+      });
   })
 }
-
 
 ParcelCheckStatus();
 
 
-function getParcelInfo(articleId) {
-
+function getParcelInfoFromAustralianPost(parcel) {
     var request = require('request'),
-    url = "http://digitalapi.auspost.com.au/track/v3/search?q="+ articleId,
+    url = "http://digitalapi.auspost.com.au/track/v3/search?q="+ parcel.tracking_number,
     auth = "Basic cHJvZF90cmFja2FwaTpXZWxjb21lQDEyMw";
 
     request(
@@ -372,48 +370,63 @@ function getParcelInfo(articleId) {
         function (error, response, body) {
             let article = JSON.parse(body).QueryTrackEventsResponse.TrackingResults[0].Consignment.Articles[0];
             if (article) {
-                let status = article.Status;
-                if (status === 'Delivered') {
-                    let deliveryTime = article.Events[0].EventDateTime;
-                    Parcel.update(
-                        { status: 3 , delivery_time: deliveryTime, },
-                        {where: {tracking_number : articleId}}
-                    ).then(function() {
-                        console.log("updated parcel status and delivery time");
-                    })
-                    Parcel.find({where: {tracking_number : articleId}}).then(function(result) {
-                        var orderID = JSON.stringify(result.order_id);
-                        Order.update({status:3}, {where: {id:orderID}}).then(function() {
-                            console.log("updated order status");
-                        })
-                    })
-                } else if (status === 'In transit' || status === 'Started') {
-                  Parcel.update(
-                      { status: 2 },
-                      {where: {tracking_number : articleId}}
-                  ).then(function() {
-                      console.log("updated parcel status to Processing");
-                  })
-                }
+              let statusCode = (article.Status==='Delivered')? 3 : -1;
+              let deliveryTime = article.Events[0].EventDateTime;
+              updateParcelInfo(parcel, statusCode, deliveryTime);
             } else {
-              Parcel.update(
-
-                  { status: 1 },
-                  {where: {tracking_number : articleId}}
-              ).then(function() {
-                  console.log("updated parcel status to Packing");
-              })
+              console.log('no scan events found');
             }
         }
     )
 }
 
 
+function getParcelInfoFromCouriersPLease(parcel) {
 
+    var request = require('request')
+    var postData = {strClientCode: "CPPLW", strServiceCode: 123, strCode: parcel.tracking_number};
+    var url = 'https://www.couriersplease.com.au/DesktopModules/EzyTrack/EzyTrackHandler/CPPL_EzyTrackHandler.ashx?Type=TrakingJsonUser_v2';
+    var options = {
+      method: 'post',
+      body: postData,
+      json: true,
+      url: url,
+    }
 
+    request(options, function (err, res, body) {
+      if (err) {
+        console.log('Error :', err)
+        return
+      }
+      var result = JSON.stringify(body);
+      var checkEvent = JSON.parse(result).MainRootNode.Root;
 
+      if (checkEvent[0]) {
+        var parcelStatus = JSON.parse(result).MainRootNode.Root[0].TrakingInfo;
+        var statusResult = parcelStatus[parcelStatus.length-1].Action.search("delivered");
+        var deliveryTime = parcelStatus[parcelStatus.length-1].Date;
+        updateParcelInfo(parcel, statusResult, deliveryTime);
+      } else {
+        console.log('no scan events found');
+      }
+    });
+}
 
+function updateParcelInfo(parcel, statusCode, deliveryTime) {
 
+    if (statusCode === -1) {
+        parcel.update({status: 2}).then(function() {
+            console.log("updated parcel status to Processing");
+        })
+    } else {
+        parcel.update({ status: 3 , delivery_time: deliveryTime}).then(function() {
+            console.log("updated parcel status and delivery time");
+        });
+        Order.update({status:3}, {where: {id:parcel.order_id}}).then(function() {
+            console.log("updated order status");
+        })
+    }
+}
 
 
 export function getOrder(id) {
