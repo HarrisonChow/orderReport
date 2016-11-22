@@ -66,8 +66,24 @@ class Detail extends React.Component {
                 <TableRowColumn>{deliveryTimeShow}</TableRowColumn>
             </TableRow>
             <TableRow>
-              <TableRowColumn>Invoice Date:</TableRowColumn>
-              <TableRowColumn>{moment(edge.node.order.invoice_date).format('YYYY-MM-DD')}</TableRowColumn>
+              <TableRowColumn>Packed by:</TableRowColumn>
+                <TableRowColumn>{edge.node.packed_by}</TableRowColumn>
+            </TableRow>
+            <TableRow>
+              <TableRowColumn>Shipping Name:</TableRowColumn>
+                <TableRowColumn>{edge.node.shipping_firstname} {edge.node.shipping_lastname}</TableRowColumn>
+            </TableRow>
+            <TableRow>
+              <TableRowColumn>Shipping Email:</TableRowColumn>
+                <TableRowColumn>{edge.node.shipping_email}</TableRowColumn>
+            </TableRow>
+            <TableRow>
+              <TableRowColumn>Shipping Phone:</TableRowColumn>
+                <TableRowColumn>{edge.node.shipping_phone}</TableRowColumn>
+            </TableRow>
+            <TableRow>
+              <TableRowColumn>Shipping address:</TableRowColumn>
+                <TableRowColumn>{edge.node.shipping_street} {edge.node.shipping_suburb} {edge.node.shipping_postcode} {edge.node.shipping_state}</TableRowColumn>
             </TableRow>
             <TableRow>
               <TableRowColumn>Logistic Name:</TableRowColumn>
@@ -76,6 +92,10 @@ class Detail extends React.Component {
             <TableRow>
               <TableRowColumn>Order Number:</TableRowColumn>
               <TableRowColumn><Link to = {`/orders/${edge.node.order.invoice_number}`}>{edge.node.order.invoice_number}</Link></TableRowColumn>
+            </TableRow>
+            <TableRow>
+              <TableRowColumn>Order Invoice Date:</TableRowColumn>
+              <TableRowColumn>{moment(edge.node.order.invoice_date).format('YYYY-MM-DD')}</TableRowColumn>
             </TableRow>
           </TableBody>
         </Table>
@@ -99,7 +119,15 @@ export default Relay.createContainer(ParcelDetails, {
               tracking_number,
               status,
               delivery_time,
-              created_at,
+              packed_by,
+              shipping_firstname,
+              shipping_lastname,
+              shipping_email,
+              shipping_phone,
+              shipping_street,
+              shipping_suburb,
+              shipping_postcode,
+              shipping_state,
               logistic{
                 name
               },

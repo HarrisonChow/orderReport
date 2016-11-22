@@ -62,7 +62,7 @@ class AllOrders extends React.Component {
 
   render() {
     var titleDays = this.props.params.days;
-    var titleStatus = this.props.params.status ==='any'? 'All':this.props.params.status;
+    var titleStatus = (this.props.params.status ==='any') ? 'All': (this.props.params.status === '1') ? 'Processing' : (this.props.params.status === '2') ? 'Delivery' : 'Delivered' ;
     var pageTitle = (this.props.params.status && !this.props.from) ? titleStatus + " orders list in last " + titleDays + " days":
                     (this.props.params.status && this.props.from) ? titleStatus + " orders list from " + moment(this.props.from).format('ll') + " to " + moment(this.props.to).format('ll') :
                     "All orders list";

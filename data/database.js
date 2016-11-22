@@ -451,13 +451,14 @@ export function getLogistic(id) {
     });
 };
 
-export function getFastSLowByDays(speed, daterange) {
-    let getDates = moment().subtract(daterange, 'days').calendar();
-    let getDate = moment(getDates).format('YYYY-MM-DD');
+export function getFastSLowByDays(speed, fromDate, toDate) {
+
+    var newFromDate = moment(fromDate).format('YYYY-MM-DD');
+    var newToDate = moment(toDate).format('YYYY-MM-DD');
     var condition = (speed === 'fastest') ? "MIN" : "MAX";
 
     return  Order.sequelize.query(
-    "SELECT * FROM orders RIGHT JOIN parcels ON orders.id = parcels.order_id WHERE (DATE_PART('day', parcels.delivery_time::timestamp - orders.invoice_date::timestamp) = (SELECT " + condition + "(DATE_PART('day', filterResults.delivery_time::timestamp - filterResults.invoice_date::timestamp)) FROM (SELECT * FROM orders RIGHT JOIN parcels ON orders.id = parcels.order_id WHERE orders.invoice_date >='"+ getDate +"') AS filterResults)) ",
+    "SELECT * FROM orders RIGHT JOIN parcels ON orders.id = parcels.order_id WHERE (DATE_PART('day', parcels.delivery_time::timestamp - orders.invoice_date::timestamp) = (SELECT " + condition + "(DATE_PART('day', filterResults.delivery_time::timestamp - filterResults.invoice_date::timestamp)) FROM (SELECT * FROM orders RIGHT JOIN parcels ON orders.id = parcels.order_id WHERE orders.invoice_date >='"+ newFromDate +"' AND orders.invoice_date <='"+ newToDate +"') AS filterResults)) ",
     { type: Sequelize.QueryTypes.SELECT}).then(function(orders)
         {
             return orders;
@@ -467,9 +468,10 @@ export function getFastSLowByDays(speed, daterange) {
 export function getFast(speed, fromDate, toDate) {
     var condition = (speed === 'fastest') ? "MIN" : "MAX";
     var newFromDate = moment(fromDate).format('YYYY-MM-DD');
+    var newToDate = moment(toDate).format('YYYY-MM-DD');
 
     return  Order.sequelize.query(
-      "SELECT " + condition + "(DATE_PART('day', filterResults.delivery_time::timestamp - filterResults.invoice_date::timestamp)) FROM (SELECT * FROM orders RIGHT JOIN parcels ON orders.id = parcels.order_id WHERE orders.invoice_date >='"+ newFromDate +"') AS filterResults",
+      "SELECT " + condition + "(DATE_PART('day', filterResults.delivery_time::timestamp - filterResults.invoice_date::timestamp)) FROM (SELECT * FROM orders RIGHT JOIN parcels ON orders.id = parcels.order_id WHERE orders.invoice_date >='"+ newFromDate +"' AND orders.invoice_date <='"+ newToDate +"') AS filterResults",
       { type: Sequelize.QueryTypes.SELECT}).then(function(orders)
           {
               var returnResult =
@@ -541,7 +543,7 @@ export function getAllParcels(trackingNumber, createdAt, deliveryTime,logisticId
                 return parcelsResult;
             })
     } else {
-        return Parcel.findAll(selectConditionOne)
+        return Parcel.findAll(selectConditionOne);
     }
 }
 

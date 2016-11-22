@@ -5,6 +5,7 @@ import Paper from 'material-ui/Paper';
 import moment from 'moment';
 import {Table, TableBody, TableHeader, TableHeaderColumn, TableRow, TableRowColumn} from 'material-ui/Table';
 import FooterNavigation from './Footer';
+import {IndexLink, Link} from 'react-router';
 import NavbarInstance from './Navigationbar';
 import SearchForm from './SearchForm'
 
@@ -68,9 +69,34 @@ class Detail extends React.Component {
               <TableRowColumn>{statusShow}</TableRowColumn>
             </TableRow>
             <TableRow>
-              <TableRowColumn>Created At:</TableRowColumn>
+              <TableRowColumn>Invoice Date:</TableRowColumn>
               <TableRowColumn>{moment(edge.node.invoice_date).format('ll')}</TableRowColumn>
             </TableRow>
+            <TableRow>
+              <TableRowColumn>Grand Total:</TableRowColumn>
+              <TableRowColumn>{edge.node.grand_total}</TableRowColumn>
+            </TableRow>
+            <TableRow>
+              <TableRowColumn>Shipping Amount:</TableRowColumn>
+              <TableRowColumn>{edge.node.shipping_amount}</TableRowColumn>
+            </TableRow>
+            <TableRow >
+              <TableRowColumn>Billing Name:</TableRowColumn>
+              <TableRowColumn>{edge.node.billing_firstname} {edge.node.billing_lastname}</TableRowColumn>
+            </TableRow>
+            <TableRow>
+              <TableRowColumn>Billing Email:</TableRowColumn>
+              <TableRowColumn>{edge.node.billing_email}</TableRowColumn>
+            </TableRow>
+            <TableRow>
+              <TableRowColumn>Billing Phone:</TableRowColumn>
+              <TableRowColumn>{edge.node.billing_phone}</TableRowColumn>
+            </TableRow>
+            <TableRow>
+              <TableRowColumn>Billing Address:</TableRowColumn>
+              <TableRowColumn>{edge.node.billing_street} {edge.node.billing_suburb} {edge.node.billing_postcode} {edge.node.billing_state}</TableRowColumn>
+            </TableRow>
+
           </TableBody>
         </Table>
         <div className = "moreDetails">
@@ -86,11 +112,6 @@ class Detail extends React.Component {
 class Parcel extends React.Component {
   render() {
     var edge = this.props.edge;
-    if (edge.node.delivery_time) {
-      var deliveryTimeShow = moment(edge.node.delivery_time).format('YYYY-MM-DD');
-    } else {
-      var deliveryTimeShow = '';
-    }
     let statusShow = (edge.node.status === '1')? "Processing" : (edge.node.status === '2')? "Delivery" : "Delivered"
     return (
       <Paper zDepth={2} style = {style.bottomPaper}>
@@ -98,15 +119,11 @@ class Parcel extends React.Component {
           <TableBody displayRowCheckbox = {this.props.showCheckboxes}>
             <TableRow>
               <TableRowColumn>Parcel Tracking Number:</TableRowColumn>
-              <TableRowColumn>{edge.node.tracking_number}</TableRowColumn>
+              <TableRowColumn><Link to = {`/parcels/${edge.node.tracking_number}`}>{edge.node.tracking_number}</Link></TableRowColumn>
             </TableRow>
             <TableRow>
               <TableRowColumn>Parcel Status:</TableRowColumn>
               <TableRowColumn>{statusShow}</TableRowColumn>
-            </TableRow>
-            <TableRow>
-              <TableRowColumn>Parcel Delivery Time:</TableRowColumn>
-              <TableRowColumn>{deliveryTimeShow}</TableRowColumn>
             </TableRow>
             <TableRow>
               <TableRowColumn>Logistic Company Name:</TableRowColumn>
@@ -134,13 +151,22 @@ export default Relay.createContainer(OrderDetails, {
               invoice_number,
               invoice_date,
               status,
+              billing_firstname,
+              billing_lastname,
+              billing_email,
+              billing_phone,
+              billing_street,
+              billing_suburb,
+              billing_postcode,
+              billing_state,
+              grand_total,
+              shipping_amount,
               parcels(first: 9999) {
                 edges {
                   node {
                     id,
                     tracking_number,
                     status,
-                    delivery_time,
                     logistic{
                       name
                     }

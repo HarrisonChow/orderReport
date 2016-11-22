@@ -65,8 +65,10 @@ class SpeedByDays extends React.Component {
     const nextButton = this.hasNextPage ? <RaisedButton className="nextButton" primary={true}  label="Next"  onClick={ this.nextPage.bind(this) }/> : '';
 
     let speed = this.props.speed
-    let day = this.props.days
-    let title = (speed ==='fastest') ? 'Fast ' + day + ' days order list' : 'Slow ' + day + ' days order list';
+    let froms = moment(this.props.from).format('YYYY-MM-DD')
+    let tos = moment(this.props.to).format('YYYY-MM-DD')
+
+    let title = (speed ==='fastest') ? 'Fastest Orders from ' + froms + ' to ' + tos : 'Slowest Orders from ' + froms + ' to ' + tos;
 
     return (
       <div>
@@ -125,11 +127,13 @@ export default Relay.createContainer(SpeedByDays, {
     prev: false,
     speed: null,
     daterange: null,
+    toDate: null,
+    fromDate:null,
   },
   fragments: {
     viewer: () => Relay.QL`
       fragment on User {
-        next: speedByDays(speed: $speed, daterange: $daterange, first: $first, after: $after) @include(if: $next) {
+        next: speedByDays(speed: $speed, fromDate: $fromDate, toDate: $toDate, first: $first, after: $after) @include(if: $next) {
           edges {
             cursor,
             node {
@@ -153,7 +157,7 @@ export default Relay.createContainer(SpeedByDays, {
         deliveryOrdersAmount,
 
 
-        prev: speedByDays(speed: $speed, daterange: $daterange ,last: $last, before: $before) @include(if: $prev) {
+        prev: speedByDays(speed: $speed,fromDate: $fromDate, toDate: $toDate ,last: $last, before: $before) @include(if: $prev) {
           edges {
             cursor,
             node {

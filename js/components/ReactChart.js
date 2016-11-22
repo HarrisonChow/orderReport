@@ -26,7 +26,7 @@ export default class ReactChart extends React.Component {
       let typeReFormat = (datum.type).split(" ").join("");
 
       if (datum.type === 'orders') {
-        let statusShow = (datum.status === '1')? "Processing " : (datum.status === '2')? "Delivery " : "Delivered "
+        let statusShow = (datum.status === 1)? "Processing " : (datum.status === 2)? "Delivery " : "Delivered "
 
           bars.push([<Bar key = {index} col = {datum.color} status = {datum.status} type = {typeReFormat} amount = {datum.orderAmount} x = {length} y = {5} width = {40} height = {x(datum.orderAmount)} fromDate = {this.props.fromDate} toDate = {this.props.toDate} dateRange = {this.props.dateR} />,
             <g>

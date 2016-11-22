@@ -134,6 +134,46 @@ const GraphQLOrder = new GraphQLObjectType({
         type: GraphQLString,
         resolve: (obj) => obj.invoice_date,
       },
+      billing_firstname: {
+        type: GraphQLString,
+        resolve: (obj) => obj.billing_firstname,
+      },
+      billing_lastname: {
+        type: GraphQLString,
+        resolve: (obj) => obj.billing_lastname,
+      },
+      billing_email: {
+        type: GraphQLString,
+        resolve: (obj) => obj.billing_email,
+      },
+      billing_phone: {
+        type: GraphQLString,
+        resolve: (obj) => obj.billing_phone,
+      },
+      billing_street: {
+        type: GraphQLString,
+        resolve: (obj) => obj.billing_street,
+      },
+      billing_suburb: {
+        type: GraphQLString,
+        resolve: (obj) => obj.billing_suburb,
+      },
+      billing_postcode: {
+        type: GraphQLString,
+        resolve: (obj) => obj.billing_postcode,
+      },
+      billing_state: {
+        type: GraphQLString,
+        resolve: (obj) => obj.billing_state,
+      },
+      grand_total: {
+        type: GraphQLString,
+        resolve: (obj) => obj.grand_total,
+      },
+      shipping_amount: {
+        type: GraphQLString,
+        resolve: (obj) => obj.shipping_amount,
+      },
       created_at: {
         type: GraphQLString,
         resolve: (obj) => obj.created_at,
@@ -190,6 +230,43 @@ const GraphQLParcel = new GraphQLObjectType({
         type: GraphQLOrder,
         resolve: (obj) => obj.getOrder(),
       },
+      packed_by: {
+        type: GraphQLString,
+        resolve: (obj) => obj.packed_by,
+      },
+      shipping_firstname: {
+        type: GraphQLString,
+        resolve: (obj) => obj.shipping_firstname,
+      },
+      shipping_lastname: {
+        type: GraphQLString,
+        resolve: (obj) => obj.shipping_lastname,
+      },
+      shipping_email: {
+        type: GraphQLString,
+        resolve: (obj) => obj.shipping_email,
+      },
+      shipping_phone: {
+        type: GraphQLString,
+        resolve: (obj) => obj.shipping_phone,
+      },
+      shipping_street: {
+        type: GraphQLString,
+        resolve: (obj) => obj.shipping_street,
+      },
+      shipping_suburb: {
+        type: GraphQLString,
+        resolve: (obj) => obj.shipping_suburb,
+      },
+      shipping_postcode: {
+        type: GraphQLString,
+        resolve: (obj) => obj.shipping_postcode,
+      },
+      shipping_state: {
+        type: GraphQLString,
+        resolve: (obj) => obj.shipping_state,
+      },
+
       created_at: {
         type: GraphQLString,
         resolve: (obj) => obj.created_at,
@@ -299,14 +376,19 @@ const GraphQLUser = new GraphQLObjectType({
           type: GraphQLString,
           defaultValue: 'any',
         },
-        daterange: {
+        fromDate: {
           type: GraphQLString,
           defaultValue: 'any',
         },
+        toDate: {
+          type: GraphQLString,
+          defaultValue: 'any',
+        },
+
         ...connectionArgs,
       },
-      resolve: (obj, { speed,daterange,...args}) =>
-        connectionFromPromisedArray(getFastSLowByDays(speed,daterange), args)
+      resolve: (obj, { speed,fromDate,toDate,...args}) =>
+        connectionFromPromisedArray(getFastSLowByDays(speed,fromDate,toDate), args)
     },
 
     parcels: {
@@ -362,9 +444,13 @@ const GraphQLUser = new GraphQLObjectType({
           type: GraphQLString,
           defaultValue: 'any',
         },
+        toDate: {
+          type: GraphQLString,
+          defaultValue: 'any',
+        },
         ...connectionArgs,
       },
-      resolve: (obj, { fromDate,...args}) => getFast('fastest',fromDate)
+      resolve: (obj, { fromDate,toDate, ...args}) => getFast('fastest', fromDate, toDate)
     },
     slowCount: {
       type: GraphQLInt,
@@ -373,9 +459,13 @@ const GraphQLUser = new GraphQLObjectType({
           type: GraphQLString,
           defaultValue: 'any',
         },
+        toDate: {
+          type: GraphQLString,
+          defaultValue: 'any',
+        },
         ...connectionArgs,
       },
-      resolve: (obj, { fromDate,...args}) => getFast('slowest',fromDate)
+      resolve: (obj, { fromDate, toDate, ...args}) => getFast('slowest', fromDate, toDate)
     },
 
     totalCount: {

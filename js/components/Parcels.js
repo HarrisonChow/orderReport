@@ -62,7 +62,10 @@ class ParcelList extends React.Component {
   render() {
     const prevButton = this.hasPreviousPage ? <FlatButton className = "backButton" label = "Back" onClick = { this.prevPage.bind(this) }/> : '';
     const nextButton = this.hasNextPage ? <RaisedButton className = "nextButton" primary = {true}  label = "Next"  onClick = { this.nextPage.bind(this) }/> : '';
-    let title = (this.props.created_at) ? "Parcel Processing longer than 7 days" : "All parcels list"
+    let logisticName = (this.props.logisticId === '1') ? 'TNT' : (this.props.logisticId === '2') ? 'TOLL' : 'Australia Post';
+    let times = (this.props.days === '2') ? 'less than three days' : (this.props.days === '3') ? 'between three and five days' : 'more than five days';
+
+    let title = (this.props.days) ? 'Parcels delivered by ' + logisticName + ' ' + times : 'All parcels list';
     return (
       <div>
         <NavbarInstance />
@@ -103,13 +106,13 @@ class ParcelList extends React.Component {
 
 
 const Parcel = props => {
-  let statusShow = (props.status === '1')? "Processing" : (props.status === '2')? "Delivery" : "Delivered"
+  let statusShow = (props.status === 1)? "Processing" : (props.status === 2)? "Delivery" : "Delivered"
   return (
     <TableRow hoverable = {props.state.hoverable} onCellClick = {props.cellClicked}>
       <TableRowColumn>{window.atob(props.id).match(/\d+$/)[0]}</TableRowColumn>
       <TableRowColumn>{props.tracking_number}</TableRowColumn>
       <TableRowColumn>{statusShow}</TableRowColumn>
-      <TableRowColumn>{moment(props.order.invoice_date).format('LL')}</TableRowColumn>
+      <TableRowColumn>{moment(props.created_datetime).format('LL')}</TableRowColumn>
     </TableRow>
   )
 }
@@ -141,9 +144,7 @@ export default Relay.createContainer(ParcelList, {
               created_at,
               updated_at,
               delivery_time,
-              order {
-                invoice_date
-              }
+              created_datetime,
             }
           },
           pageInfo{
@@ -164,9 +165,7 @@ export default Relay.createContainer(ParcelList, {
               created_at,
               updated_at,
               delivery_time,
-              order {
-                invoice_date
-              }
+              created_datetime,
             }
           },
           pageInfo{
