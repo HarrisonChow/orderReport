@@ -23,10 +23,6 @@ const style = {
   }
 };
 
-moment.createFromInputFallback = function(config) {
-  config._d = new Date(config._i);
-};
-
 class OrderList extends React.Component {
 
   constructor(props) {

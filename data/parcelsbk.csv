@@ -28,3 +28,17 @@
 8,SKU2107,APP3115939,2016-10-31,Australia Post,22,23,32,35,John,Osp,J,Osp@gmail.com,0430289018,smith st,wollongong,2500,NSW
 7,SKU2108,CPWSAV900010102,2016-11-01,Australia Post,22,23,32,35,John,Terry,J,Terry@gmail.com,0430289019,smith st,wollongong,2500,NSW
 8,SKU2109,CPWSAV900010103,2016-11-03,Australia Post,22,23,32,35,John,Cook,J,Cook@gmail.com,0430289029,smith st,wollongong,2500,NSW
+
+
+
+invoice_number,trackingnumber,created_datetime,carrier,weight,width,length,height,packed_by,shipping_firstname,shipping_lastname,shipping_email,shipping_phone,shipping_street,shipping_suburb,shipping_postcode,shipping_state
+SKU2100,APP3115936,2016-10-24,TNT,22,23,32,35,John,Fcm,J,Fcm@gmail.com,0430289011,smith st,wollongong,2500,NSW
+SKU2101,APP3115937,2016-10-25,TOLL,22,23,32,35,John,Mok,J,Mok@gmail.com,0430289012,smith st,wollongong,2500,NSW
+SKU2102,APP3115938,2016-10-26,Australia Post,22,23,32,35,John,Dile,J,Dile@gmail.com,0430289013,smith st,wollongong,2500,NSW
+SKU2103,APP3115935,2016-10-27,TNT,22,23,32,35,John,Low,J,Low@gmail.com,0430289014,smith st,wollongong,2500,NSW
+SKU2104,APP3115934,2016-10-28,TOLL,22,23,32,35,John,Owen,J,Owen@gmail.com,0430289015,smith st,wollongong,2500,NSW
+SKU2105,APP3115933,2016-10-29,Australia Post,22,23,32,35,John,Helle,J,Helle@gmail.com,0430289016,smith st,wollongong,2500,NSW
+SKU2106,APP3115931,2016-10-31,Australia Post,22,23,32,35,John,Peter,J,Peter@gmail.com,0430289017,smith st,wollongong,2500,NSW
+SKU2107,APP3115939,2016-10-31,Australia Post,22,23,32,35,John,Osp,J,Osp@gmail.com,0430289018,smith st,wollongong,2500,NSW
+SKU2108,CPWSAV900010102,2016-11-01,Australia Post,22,23,32,35,John,Terry,J,Terry@gmail.com,0430289019,smith st,wollongong,2500,NSW
+SKU2109,CPWSAV900010103,2016-11-03,Australia Post,22,23,32,35,John,Cook,J,Cook@gmail.com,0430289029,smith st,wollongong,2500,NSW

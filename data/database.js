@@ -1,5 +1,8 @@
-import Sequelize from 'sequelize';
-import moment from 'moment';
+  import Sequelize from 'sequelize';
+  import moment from 'moment';
+  moment.createFromInputFallback = function(config) {
+    config._d = new Date(config._i);
+  };
 
  import {
    connectionFromPromisedArray,
@@ -207,12 +210,17 @@ Logistic.hasMany(Parcel);
 Parcel.belongsTo(Logistic);
 
 
+
+
+
+
+
+
+
 var fs = require('fs');
-var parse = require('csv-parse');
-var async = require('async');
 var csv = require("fast-csv");
 var http = require('http');
-
+var parser = require('csv-parser');
 
 // create backup files and save to 'data/'
 function backupCsv(files) {
@@ -266,81 +274,56 @@ function checkDuplicateData(tables,value) {
   });
 }
 
-// read orders.csv and save to database then read parcels.csv and save to database as well.
-
-//create order table with orders.csv file
-var ordersParser = parse({delimiter: ','}, function (err, data) {
-    async.eachSeries(data, function (line, callback) {
-
-        var orderField = ['invoice_number', 'invoice_date', 'billing_firstname', 'billing_lastname', 'billing_email', 'billing_phone', 'billing_street', 'billing_suburb', 'billing_postcode', 'billing_state', 'grand_total', 'shipping_amount'];
-        var orderTable = orderField.reduce(function(allContent, index, key){
-            allContent[index] = line[key+1];
-            return allContent
-        },{});
-
-        checkDuplicateData(Order, line[1]).then(notExist => {
-            if (notExist) {
-                return Order.create(
-                orderTable
-                ).then(function() {
-                callback();
-                });
-            } else {
-                callback();
-            }
-        });
-
-    }, function done() {
-      // delete orders.csv file
+if(fs.existsSync(ordersInputFile)){
+    fs.createReadStream(ordersInputFile)
+    .pipe(parser({strict: true, separator: ','}))
+    .on('data', function (data) {
+      checkDuplicateData(Order, data.invoice_number).then(notExist => {
+          if (notExist) {
+              var keys = Object.keys(data);
+              var allData = {};
+              for (var i = 0; i < keys.length; i++) {
+                  allData[keys[i]] = data[keys[i]];
+              }
+              return Order.create(allData);
+          }
+      })
+    })
+    .on('end', function () {
+        backupCsv('orders');
         fs.unlinkSync(ordersInputFile);
-      // start to read parcels.csv file and create parcel table
         if (fs.existsSync(parcelsInputFile)) {
-            fs.createReadStream(parcelsInputFile).pipe(parcelsParser);
-            //back up parcels.csv file to ParcelCsvBak folder
-            backupCsv('parcels');
+            fs.createReadStream(parcelsInputFile)
+            .pipe(parser({strict: true, separator: ','}))
+            .on('data', function (data) {
+                checkDuplicateData(Parcel, data.invoice_number).then(notExist => {
+                    if (notExist) {
+                        Order.find({where: {invoice_number:data.invoice_number}}).then(function (result) {
+                            let orderID = JSON.stringify(result.id);
+                            let logisticID = (data.carrier==='TNT') ? 1 : (data.carrier==='TOLL') ? 2 : 3;
+                            var keys = Object.keys(data);
+                            var allDatas = {};
+                            allDatas.logistic_id = logisticID;
+                            allDatas.order_id = orderID;
+                            for (var i = 0; i < keys.length; i++) {
+                                allDatas[keys[i]] = data[keys[i]];
+                            }
+                            return Parcel.create(allDatas);
+                        });
+                    }
+                })
+            })
+            .on('end', function() {
+                backupCsv('parcels');
+                fs.unlinkSync(parcelsInputFile);
+            })
         }
     })
-})
-
-
-// create parcel table with parcels.csv file
-var parcelsParser = parse({delimiter: ','}, function (err, data) {
-    async.eachSeries(data, function (line, callback) {
-
-        let logisticID = (line[4]==='TNT') ? 1 : (line[4]==='TOLL') ? 2 : 3;
-
-        checkDuplicateData(Parcel, line[1]).then(notExist => {
-            if (notExist) {
-                Order.find({where: {invoice_number:line[1]}}).then(function (idd) {
-                    let orderID = JSON.stringify(idd.id);
-                    var parcelField = ['invoice_number', 'tracking_number', 'created_datetime', 'carrier', 'weight', 'width', 'length', 'height', 'packed_by', 'shipping_firstname', 'shipping_lastname', 'shipping_email', 'shipping_phone', 'shipping_street', 'shipping_suburb', 'shipping_postcode', 'shipping_state'];
-                    var parcelTable = parcelField.reduce(function(allContent, index, key, arr){
-                        allContent[index] = line[key+1];
-                        return allContent
-                    },{});
-                    parcelTable.logistic_id = logisticID;
-                    parcelTable.order_id = orderID;
-                    return Parcel.create(
-                        parcelTable
-                    );
-                }).then(function() {
-                    callback();
-                });
-            } else {
-                callback();
-            }
-        })
-    }, function done() {
-      // delete the parcels.csv file
-        fs.unlinkSync(parcelsInputFile);
-    })
-})
-
-if(fs.existsSync(ordersInputFile)){
-    fs.createReadStream(ordersInputFile).pipe(ordersParser);
-    //back up orders.csv file to OrderCsvBak folder
-    backupCsv('orders');
 }
+
+
+
+
 
 
 function ParcelCheckStatus() {
@@ -353,7 +336,6 @@ function ParcelCheckStatus() {
 }
 
 ParcelCheckStatus();
-
 
 function getParcelInfoFromAustralianPost(parcel) {
     var request = require('request'),
@@ -368,13 +350,18 @@ function getParcelInfoFromAustralianPost(parcel) {
             }
         },
         function (error, response, body) {
-            let article = JSON.parse(body).QueryTrackEventsResponse.TrackingResults[0].Consignment.Articles[0];
-            if (article) {
-              let statusCode = (article.Status==='Delivered')? 3 : -1;
-              let deliveryTime = article.Events[0].EventDateTime;
-              updateParcelInfo(parcel, statusCode, deliveryTime);
-            } else {
-              console.log('no scan events found');
+            let descriptions = JSON.parse(body).QueryTrackEventsResponse.TrackingResults[0].ReturnMessage.Description;
+            if (descriptions === 'Item Does not Exists') {
+              console.log(parcel.tracking_number + " not exist");
+            } else if (descriptions === 'Success') {
+              let article = JSON.parse(body).QueryTrackEventsResponse.TrackingResults[0].Consignment.Articles[0];
+              if (article) {
+                let statusCode = (article.Status==='Delivered')? 3 : -1;
+                let deliveryTime = article.Events[0].EventDateTime;
+                updateParcelInfo(parcel, statusCode, deliveryTime);
+              } else {
+                console.log('no scan events found');
+              }
             }
         }
     )
@@ -383,32 +370,33 @@ function getParcelInfoFromAustralianPost(parcel) {
 
 function getParcelInfoFromCouriersPLease(parcel) {
 
-    var request = require('request')
-    var postData = {strClientCode: "CPPLW", strServiceCode: 123, strCode: parcel.tracking_number};
-    var url = 'https://www.couriersplease.com.au/DesktopModules/EzyTrack/EzyTrackHandler/CPPL_EzyTrackHandler.ashx?Type=TrakingJsonUser_v2';
-    var options = {
-      method: 'post',
-      body: postData,
-      json: true,
-      url: url,
-    }
+    var request = require('request'),
+        postData = {strClientCode: "CPPLW", strServiceCode: 123, strCode: parcel.tracking_number },
+        url = 'https://www.couriersplease.com.au/DesktopModules/EzyTrack/EzyTrackHandler/CPPL_EzyTrackHandler.ashx?Type=TrakingJsonUser_v2',
+        options = {
+            method: 'post',
+            body: postData,
+            json: true,
+            url: url,
+        };
 
     request(options, function (err, res, body) {
-      if (err) {
-        console.log('Error :', err)
-        return
-      }
-      var result = JSON.stringify(body);
-      var checkEvent = JSON.parse(result).MainRootNode.Root;
-
-      if (checkEvent[0]) {
-        var parcelStatus = JSON.parse(result).MainRootNode.Root[0].TrakingInfo;
-        var statusResult = parcelStatus[parcelStatus.length-1].Action.search("delivered");
-        var deliveryTime = parcelStatus[parcelStatus.length-1].Date;
-        updateParcelInfo(parcel, statusResult, deliveryTime);
-      } else {
-        console.log('no scan events found');
-      }
+        if (err) {
+            console.log('Error :', err)
+            return
+        }
+        var result = JSON.stringify(body);
+        if (!JSON.parse(result).Status) {
+            var checkEvent = JSON.parse(result).MainRootNode.Root;
+            if (checkEvent[0]) {
+                var parcelStatus = JSON.parse(result).MainRootNode.Root[0].TrakingInfo;
+                var statusResult = parcelStatus[parcelStatus.length-1].Action.search("delivered");
+                var deliveryTime = parcelStatus[parcelStatus.length-1].Date;
+                updateParcelInfo(parcel, statusResult, deliveryTime);
+            } else {
+                console.log('no scan events found');
+            }
+        }
     });
 }
 
@@ -417,13 +405,25 @@ function updateParcelInfo(parcel, statusCode, deliveryTime) {
     if (statusCode === -1) {
         parcel.update({status: 2}).then(function() {
             console.log("updated parcel status to Processing");
+        }).catch(function(e) {
+            console.log("Parcel update failed !");
+        });
+        Order.update({status:2}, {where: {id:parcel.order_id}}).then(function() {
+            console.log("updated order status");
+        }).catch(function(e) {
+            console.log("Order update failed !");
         })
+
     } else {
         parcel.update({ status: 3 , delivery_time: deliveryTime}).then(function() {
             console.log("updated parcel status and delivery time");
+        }).catch(function(e) {
+            console.log("Parcel update failed !");
         });
         Order.update({status:3}, {where: {id:parcel.order_id}}).then(function() {
             console.log("updated order status");
+        }).catch(function(e) {
+            console.log("Order update failed !");
         })
     }
 }
@@ -491,9 +491,9 @@ export function getAllOrders(invoiceNumber, invoiceDate, status, fromDate, toDat
         (invoiceDate != 'any' && status != 'any') ?
             {where: { invoice_date: {$gt: invoiceDate}, status: status }} :
         (fromDate != 'any' && toDate != 'any' && status === 'any') ?
-            {where: { invoice_date: {$gt: moment(fromDate).format('YYYY-MM-DD'), $lt: moment(toDate).format('YYYY-MM-DD')}}} :
+            {where: { invoice_date: {$gt: fromDate, $lte: toDate}}} :
         (fromDate != 'any' && toDate != 'any' && status != 'any') ?
-            {where: { invoice_date: {$gt: moment(fromDate).format('YYYY-MM-DD'), $lt: moment(toDate).format('YYYY-MM-DD')},  status: status}} :
+            {where: { invoice_date: {$gt: fromDate, $lte: toDate},  status: status}} :
         {order: '"id" ASC'};
     return Order.findAll( selectCondition );
     }
