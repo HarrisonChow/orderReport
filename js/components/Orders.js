@@ -13,14 +13,16 @@ import Paper from 'material-ui/Paper';
 import DatePicker from 'material-ui/DatePicker';
 import FooterNavigation from './Footer';
 import NavbarInstance from './Navigationbar';
-import SearchForm from './SearchForm'
-
 
 const style = {
   bottomPaper: {
     textAlign: 'center',
     padding: 25
   }
+};
+
+moment.createFromInputFallback = function(config) {
+  config._d = new Date(config._i);
 };
 
 class OrderList extends React.Component {
@@ -135,7 +137,6 @@ class OrderList extends React.Component {
               {/*  <RaisedButton className = "mainBtn" label = "Processing Longer Than 7 Days" primary = {true} href = {`#/longorders/${sevenDaysDate}`}/>*/}
                 <RaisedButton className = "mainBtn" label = {`Fastest ${fastCountNumber} Days`} primary = {true} href = {`#/speedcheck/fastest/${minD}/${maxD}`}/>
                 <RaisedButton className = "mainBtn" label = {`Slowest ${slowCountNumber} Days`} primary = {true} href = {`#/speedcheck/slowest/${minD}/${maxD}`}/>
-              {/* <SearchForm />*/}
             </div>
           : <div className = "col-xs-offset-1 col-xs-10 allButtons">
               <RaisedButton className = "mainBtn" label = {`Fastest ${fastCountNumber} DSays`} primary = {true} href = {`#/speedcheck/fastest/${fromDate}/${toDate}`}/>

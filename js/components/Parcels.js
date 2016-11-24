@@ -62,7 +62,7 @@ class ParcelList extends React.Component {
   render() {
     const prevButton = this.hasPreviousPage ? <FlatButton className = "backButton" label = "Back" onClick = { this.prevPage.bind(this) }/> : '';
     const nextButton = this.hasNextPage ? <RaisedButton className = "nextButton" primary = {true}  label = "Next"  onClick = { this.nextPage.bind(this) }/> : '';
-    let logisticName = (this.props.logisticId === '1') ? 'TNT' : (this.props.logisticId === '2') ? 'TOLL' : 'Australia Post';
+    let logisticName = (this.props.logisticId === '1') ? 'Australia Post' : (this.props.logisticId === '2') ? 'Couriers Please' : 'TNT';
     let times = (this.props.days === '2') ? 'less than three days' : (this.props.days === '3') ? 'between three and five days' : 'more than five days';
 
     let title = (this.props.days) ? 'Parcels delivered by ' + logisticName + ' ' + times : 'All parcels list';

@@ -274,51 +274,61 @@ function checkDuplicateData(tables,value) {
   });
 }
 
-if(fs.existsSync(ordersInputFile)){
-    fs.createReadStream(ordersInputFile)
-    .pipe(parser({strict: true, separator: ','}))
-    .on('data', function (data) {
-      checkDuplicateData(Order, data.invoice_number).then(notExist => {
-          if (notExist) {
-              var keys = Object.keys(data);
-              var allData = {};
-              for (var i = 0; i < keys.length; i++) {
-                  allData[keys[i]] = data[keys[i]];
-              }
-              return Order.create(allData);
-          }
-      })
-    })
-    .on('end', function () {
-        backupCsv('orders');
-        fs.unlinkSync(ordersInputFile);
-        if (fs.existsSync(parcelsInputFile)) {
-            fs.createReadStream(parcelsInputFile)
-            .pipe(parser({strict: true, separator: ','}))
-            .on('data', function (data) {
-                checkDuplicateData(Parcel, data.invoice_number).then(notExist => {
-                    if (notExist) {
-                        Order.find({where: {invoice_number:data.invoice_number}}).then(function (result) {
-                            let orderID = JSON.stringify(result.id);
-                            let logisticID = (data.carrier==='TNT') ? 1 : (data.carrier==='TOLL') ? 2 : 3;
-                            var keys = Object.keys(data);
-                            var allDatas = {};
-                            allDatas.logistic_id = logisticID;
-                            allDatas.order_id = orderID;
-                            for (var i = 0; i < keys.length; i++) {
-                                allDatas[keys[i]] = data[keys[i]];
-                            }
-                            return Parcel.create(allDatas);
-                        });
-                    }
-                })
-            })
-            .on('end', function() {
-                backupCsv('parcels');
-                fs.unlinkSync(parcelsInputFile);
-            })
+
+function insertOrderTable(ordersInputFile){
+  fs.createReadStream(ordersInputFile)
+  .pipe(parser({strict: true, separator: ','}))
+  .on('data', function (data) {
+    checkDuplicateData(Order, data.invoice_number).then(notExist => {
+        if (notExist) {
+            var keys = Object.keys(data);
+            var allData = {};
+            for (var i = 0; i < keys.length; i++) {
+                allData[keys[i]] = data[keys[i]];
+            }
+            return Order.create(allData);
         }
     })
+  })
+  .on('end', function () {
+      backupCsv('orders');
+      fs.unlinkSync(ordersInputFile);
+      if (fs.existsSync(parcelsInputFile)) {
+          insertParcelTable(parcelsInputFile);
+      }
+  })
+}
+
+function insertParcelTable(parcelsInputFile){
+  fs.createReadStream(parcelsInputFile)
+  .pipe(parser({strict: true, separator: ','}))
+  .on('data', function (data) {
+      checkDuplicateData(Parcel, data.invoice_number).then(notExist => {
+          if (notExist) {
+              Order.find({where: {invoice_number:data.invoice_number}}).then(function (result) {
+                  let orderID = JSON.stringify(result.id);
+                  let logisticID = (data.carrier==='Australia Post') ? 1 : (data.carrier==='Couriers Please') ? 2 : 3;
+                  var keys = Object.keys(data);
+                  var allDatas = {};
+                  allDatas.logistic_id = logisticID;
+                  allDatas.order_id = orderID;
+                  for (var i = 0; i < keys.length; i++) {
+                      allDatas[keys[i]] = data[keys[i]];
+                  }
+                  return Parcel.create(allDatas);
+              });
+          }
+      })
+  })
+  .on('end', function() {
+      backupCsv('parcels');
+      fs.unlinkSync(parcelsInputFile);
+  })
+}
+
+
+if(fs.existsSync(ordersInputFile)){
+    insertOrderTable(ordersInputFile);
 }
 
 
@@ -402,31 +412,26 @@ function getParcelInfoFromCouriersPLease(parcel) {
 
 function updateParcelInfo(parcel, statusCode, deliveryTime) {
 
-    if (statusCode === -1) {
-        parcel.update({status: 2}).then(function() {
-            console.log("updated parcel status to Processing");
+    function updates(argument1,argument2) {
+        parcel.update(argument1).then(function() {
+            console.log("updated parcel status !");
         }).catch(function(e) {
             console.log("Parcel update failed !");
         });
-        Order.update({status:2}, {where: {id:parcel.order_id}}).then(function() {
-            console.log("updated order status");
-        }).catch(function(e) {
-            console.log("Order update failed !");
-        })
-
-    } else {
-        parcel.update({ status: 3 , delivery_time: deliveryTime}).then(function() {
-            console.log("updated parcel status and delivery time");
-        }).catch(function(e) {
-            console.log("Parcel update failed !");
-        });
-        Order.update({status:3}, {where: {id:parcel.order_id}}).then(function() {
+        Order.update(argument2, {where: {id:parcel.order_id}}).then(function() {
             console.log("updated order status");
         }).catch(function(e) {
             console.log("Order update failed !");
         })
     }
+
+    let argument1 = (statusCode === -1) ? { status: 2 } : { status: 3 , delivery_time: deliveryTime };
+    let argument2 = (statusCode === -1) ? { status: 2 } : { status:3 };
+
+    updates(argument1,argument2);
 }
+
+
 
 
 export function getOrder(id) {
