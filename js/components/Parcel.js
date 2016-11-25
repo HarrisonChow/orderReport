@@ -10,7 +10,7 @@ import Dialog from 'material-ui/Dialog';
 import FlatButton from 'material-ui/FlatButton';
 import RaisedButton from 'material-ui/RaisedButton';
 import moment from 'moment';
-
+import trackingDetails from '../../scripts/showTrackingDetails';
 
 const style = {
   bottomPaper: {
@@ -33,6 +33,7 @@ class ParcelDetails extends React.Component {
   }
 
   handleOpen = () => {
+    trackingDetails(this.props.id);
     this.setState({open: true});
   };
 
@@ -64,14 +65,15 @@ class ParcelDetails extends React.Component {
                 )}
               </div>
               <Dialog
-              title="Scrollable Dialog"
-              actions={actions}
-              modal={false}
-              open={this.state.open}
-              onRequestClose={this.handleClose}
-              autoScrollBodyContent={true}
-            >
-            </Dialog>
+                title="Delivery tracking details"
+                actions={actions}
+                modal={false}
+                open={this.state.open}
+                onRequestClose={this.handleClose}
+                autoScrollBodyContent={true}
+              >
+                <div id = "details"></div>
+              </Dialog>
             </div>
           <FooterNavigation />
         </div>
@@ -85,10 +87,6 @@ class Detail extends React.Component {
     let statusShow = (edge.node.status === '1')? "Processing" : (edge.node.status === '2')? "Delivery" : "Delivered";
     var deliveryTimeShow = moment(edge.node.delivery_time).format('YYYY-MM-DD');
 
-    // var misc = require('../../data/showTrackingDetails');
-    // misc(edge.node.tracking_number);
-
-
     return (
       <div>
         <Table>
@@ -96,10 +94,6 @@ class Detail extends React.Component {
             <TableRow>
               <TableRowColumn>Parcel Tracking Number:</TableRowColumn>
               <TableRowColumn>{edge.node.tracking_number} <RaisedButton label="Check delivery Process" onTouchTap={this.props.handleOpen} /></TableRowColumn>
-            </TableRow>
-            <TableRow>
-              <TableRowColumn>Parcel Tracking Number:</TableRowColumn>
-              <TableRowColumn><div id="output"></div> </TableRowColumn>
             </TableRow>
             <TableRow>
               <TableRowColumn>Parcel Status:</TableRowColumn>

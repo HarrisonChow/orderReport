@@ -1,24 +1,24 @@
-  import Sequelize from 'sequelize';
-  import moment from 'moment';
-  moment.createFromInputFallback = function(config) {
+import Sequelize from 'sequelize';
+import moment from 'moment';
+moment.createFromInputFallback = function(config) {
     config._d = new Date(config._i);
-  };
+};
 
- import {
-   connectionFromPromisedArray,
- } from 'graphql-relay';
+import {
+    connectionFromPromisedArray,
+} from 'graphql-relay';
 
- export const Conn = new Sequelize(
-   'orders_report',
-   'postgres',
-   'postgres',
-   {
-     dialect: 'postgres',
-     host: 'localhost'
-   }
- );
+export const Conn = new Sequelize(
+    'orders_report',
+    'postgres',
+    'postgres',
+    {
+        dialect: 'postgres',
+        host: 'localhost'
+    }
+);
 
- export const Order = Conn.define('order',
+export const Order = Conn.define('order',
     {
         invoice_number: {
             type: Sequelize.STRING
@@ -71,7 +71,7 @@
     }
 );
 
- export const Item = Conn.define('order_item',
+export const Item = Conn.define('order_item',
     {
         invoice_number: {
             type: Sequelize.STRING
