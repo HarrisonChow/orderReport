@@ -6,7 +6,11 @@ import {Table, TableBody, TableHeader, TableHeaderColumn, TableRow, TableRowColu
 import {IndexLink, Link} from 'react-router';
 import FooterNavigation from './Footer';
 import NavbarInstance from './Navigationbar';
+import Dialog from 'material-ui/Dialog';
+import FlatButton from 'material-ui/FlatButton';
+import RaisedButton from 'material-ui/RaisedButton';
 import moment from 'moment';
+
 
 const style = {
   bottomPaper: {
@@ -14,6 +18,7 @@ const style = {
     margin:20,
   }
 };
+
 
 class ParcelDetails extends React.Component {
   constructor(props) {
@@ -23,9 +28,31 @@ class ParcelDetails extends React.Component {
       stripedRows: true,
       showRowHover: false,
       showCheckboxes: false,
+      open: false,
     };
   }
+
+  handleOpen = () => {
+    this.setState({open: true});
+  };
+
+  handleClose = () => {
+    this.setState({open: false});
+  };
   render() {
+    const actions = [
+      <FlatButton
+        label="Cancel"
+        primary={true}
+        onTouchTap={this.handleClose}
+      />,
+      <FlatButton
+        label="Submit"
+        primary={true}
+        keyboardFocused={true}
+        onTouchTap={this.handleClose}
+      />,
+    ];
     return (
         <div>
           <NavbarInstance />
@@ -33,9 +60,18 @@ class ParcelDetails extends React.Component {
               <div className="parcel">
                 {this.props.viewer.parcels.edges
                   .map(edge =>
-                  <Detail showCheckboxes={this.state.showCheckboxes} edge={edge} key={edge.node.id}/>
+                  <Detail showCheckboxes={this.state.showCheckboxes} handleOpen={this.handleOpen} edge={edge} key={edge.node.id}/>
                 )}
               </div>
+              <Dialog
+              title="Scrollable Dialog"
+              actions={actions}
+              modal={false}
+              open={this.state.open}
+              onRequestClose={this.handleClose}
+              autoScrollBodyContent={true}
+            >
+            </Dialog>
             </div>
           <FooterNavigation />
         </div>
@@ -49,13 +85,21 @@ class Detail extends React.Component {
     let statusShow = (edge.node.status === '1')? "Processing" : (edge.node.status === '2')? "Delivery" : "Delivered";
     var deliveryTimeShow = moment(edge.node.delivery_time).format('YYYY-MM-DD');
 
+    // var misc = require('../../data/showTrackingDetails');
+    // misc(edge.node.tracking_number);
+
+
     return (
       <div>
         <Table>
           <TableBody displayRowCheckbox = {this.props.showCheckboxes}>
             <TableRow>
               <TableRowColumn>Parcel Tracking Number:</TableRowColumn>
-              <TableRowColumn>{edge.node.tracking_number}</TableRowColumn>
+              <TableRowColumn>{edge.node.tracking_number} <RaisedButton label="Check delivery Process" onTouchTap={this.props.handleOpen} /></TableRowColumn>
+            </TableRow>
+            <TableRow>
+              <TableRowColumn>Parcel Tracking Number:</TableRowColumn>
+              <TableRowColumn><div id="output"></div> </TableRowColumn>
             </TableRow>
             <TableRow>
               <TableRowColumn>Parcel Status:</TableRowColumn>

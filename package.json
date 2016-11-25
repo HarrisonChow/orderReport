@@ -3,6 +3,7 @@
   "scripts": {
     "start": "babel-node ./server.js",
     "update-schema": "babel-node ./scripts/updateSchema.js",
+    "track-parcels": "babel-node ./scripts/trackParcels.js",
     "build": "webpack --config webpack.config.js"
   },
   "dependencies": {
@@ -15,12 +16,17 @@
     "babel-relay-plugin": "0.9.2",
     "babel-runtime": "^6.11.6",
     "classnames": "2.2.5",
+    "csv-parser": "^1.11.0",
     "express": "4.14.0",
     "express-graphql": "0.5.3",
+    "fast-csv": "^2.3.0",
+    "file-system": "^2.2.2",
     "graphql": "0.6.2",
     "graphql-relay": "0.4.2",
     "history": "2.1.2",
     "moment": "^2.15.1",
+    "node-fetch": "^1.6.3",
+    "node-schedule": "^1.2.0",
     "react": "^15.3.1",
     "react-addons-transition-group": "^15.3.2",
     "react-bootstrap": "^0.30.5",
@@ -31,12 +37,15 @@
     "react-router-relay": "0.13.4",
     "react-tap-event-plugin": "^1.0.0",
     "reactstrap": "^3.2.2",
+    "request": "^2.79.0",
+    "sequelize": "^3.27.0",
     "sequelize-relay": "^0.1.2",
     "todomvc-app-css": "2.0.6",
     "webpack": "1.13.2",
     "webpack-dev-server": "1.15.0"
   },
   "devDependencies": {
-    "babel-cli": "^6.11.4"
+    "babel-cli": "^6.11.4",
+    "json-loader": "^0.5.4"
   }
 }

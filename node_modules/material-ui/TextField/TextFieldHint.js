@@ -19,8 +19,8 @@ var _transitions2 = _interopRequireDefault(_transitions);
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function getStyles(props) {
-  var hintColor = props.muiTheme.textField.hintColor;
-  var show = props.show;
+  var hintColor = props.muiTheme.textField.hintColor,
+      show = props.show;
 
 
   return {
@@ -35,9 +35,9 @@ function getStyles(props) {
 }
 
 var TextFieldHint = function TextFieldHint(props) {
-  var prepareStyles = props.muiTheme.prepareStyles;
-  var style = props.style;
-  var text = props.text;
+  var prepareStyles = props.muiTheme.prepareStyles,
+      style = props.style,
+      text = props.text;
 
 
   var styles = getStyles(props);
