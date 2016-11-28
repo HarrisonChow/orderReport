@@ -27,28 +27,28 @@ graphQLServer.listen(GRAPHQL_PORT, () => console.log(
 
 // Serve the Relay app
 const compiler = webpack({
-    entry: path.resolve(__dirname, 'js', 'app.js'),
-    module: {
-        loaders: [
-            {
-                exclude: /node_modules/,
-                loader: 'babel',
-                test: /\.js$/,
-            },
-            {
-                test: /\.json$/,
-                loader: "json",
-            },
-        ],
+      entry: path.resolve(__dirname, 'js', 'app.js'),
+      module: {
+          loaders: [
+              {
+                  exclude: /node_modules/,
+                  loader: 'babel',
+                  test: /\.js$/,
+              },
+              {
+                  test: /\.json$/,
+                  loader: "json",
+              },
+          ],
 
-    },
-    output: {filename: 'app.js', path: '/'},
-    node: {
-        console: true,
-        fs: 'empty',
-        net: 'empty',
-        tls: 'empty'
-    }
+      },
+      output: {filename: 'app.js', path: '/'},
+      node: {
+          console: true,
+          fs: 'empty',
+          net: 'empty',
+          tls: 'empty'
+      }
 });
 const app = new WebpackDevServer(compiler, {
     contentBase: '/public/',
