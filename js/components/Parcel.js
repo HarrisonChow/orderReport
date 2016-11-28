@@ -16,7 +16,27 @@ const style = {
   bottomPaper: {
     textAlign: 'center',
     margin:20,
+  },
+  dialogStyle: {
+  position: "absolute",
+  top:0,
+  left: '25vw',
+  right: '25vw',
+  width: '50vw'
+  },
+  trackingButton: {
+    backgroundColor: 'rgba(233, 30, 99, 0.6)',
+    marginLeft: 35,
+    width:'70%'
+  },
+  box: {
+    boxShadow:0
+  },
+  labels : {
+    paddingLeft:0,
+    paddingRight:0
   }
+
 };
 
 
@@ -33,7 +53,8 @@ class ParcelDetails extends React.Component {
   }
 
   handleOpen = () => {
-    trackingDetails(this.props.id);
+    let carrierName = this.props.viewer.parcels.edges[0].node.carrier;
+    trackingDetails(this.props.id, carrierName);
     this.setState({open: true});
   };
 
@@ -58,12 +79,6 @@ class ParcelDetails extends React.Component {
         <div>
           <NavbarInstance />
             <div className = "pagelayout">
-              <div className="parcel">
-                {this.props.viewer.parcels.edges
-                  .map(edge =>
-                  <Detail showCheckboxes={this.state.showCheckboxes} handleOpen={this.handleOpen} edge={edge} key={edge.node.id}/>
-                )}
-              </div>
               <Dialog
                 title="Delivery tracking details"
                 actions={actions}
@@ -71,9 +86,16 @@ class ParcelDetails extends React.Component {
                 open={this.state.open}
                 onRequestClose={this.handleClose}
                 autoScrollBodyContent={true}
+                contentStyle={style.dialogStyle}
               >
                 <div id = "details"></div>
               </Dialog>
+              <div className="parcel">
+                {this.props.viewer.parcels.edges
+                  .map(edge =>
+                  <Detail showCheckboxes={this.state.showCheckboxes} handleOpen={this.handleOpen} edge={edge} key={edge.node.id}/>
+                )}
+              </div>
             </div>
           <FooterNavigation />
         </div>
@@ -93,7 +115,7 @@ class Detail extends React.Component {
           <TableBody displayRowCheckbox = {this.props.showCheckboxes}>
             <TableRow>
               <TableRowColumn>Parcel Tracking Number:</TableRowColumn>
-              <TableRowColumn>{edge.node.tracking_number} <RaisedButton label="Check delivery Process" onTouchTap={this.props.handleOpen} /></TableRowColumn>
+              <TableRowColumn>{edge.node.tracking_number} <RaisedButton style= {style.box} labelStyle={style.labels} buttonStyle={style.trackingButton} label="Track" onTouchTap={this.props.handleOpen} /></TableRowColumn>
             </TableRow>
             <TableRow>
               <TableRowColumn>Parcel Status:</TableRowColumn>
@@ -158,6 +180,7 @@ export default Relay.createContainer(ParcelDetails, {
               status,
               delivery_time,
               packed_by,
+              carrier,
               shipping_firstname,
               shipping_lastname,
               shipping_email,

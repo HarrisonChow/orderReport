@@ -12,7 +12,7 @@ export function ParcelCheckStatus() {
 function getParcelInfoFromAustralianPost(parcel) {
     var request = require('request'),
     url = "http://digitalapi.auspost.com.au/track/v3/search?q="+ parcel.tracking_number,
-    auth = "Basic cHJvZF90cmFja2FwaTpXZWxjb21lQDEyMw";
+    auth = "Basic cHJvZF90cmFja2FwaTpXZWxjb21lQDEyMw==";
 
     request(
         {

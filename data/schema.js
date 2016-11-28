@@ -222,6 +222,10 @@ const GraphQLParcel = new GraphQLObjectType({
         type: GraphQLString,
         resolve: (obj) => obj.created_datetime,
       },
+      carrier: {
+        type: GraphQLString,
+        resolve: (obj) => obj.carrier,
+      },
       logistic: {
         type: GraphQLLogistic,
         resolve: (obj) => obj.getLogistic(),
