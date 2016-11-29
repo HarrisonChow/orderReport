@@ -9,13 +9,13 @@ import {
 } from 'graphql-relay';
 
 export const Conn = new Sequelize(
-    'orders_report',
-    'postgres',
-    'postgres',
-    {
-        dialect: 'postgres',
-        host: 'localhost'
-    }
+  'orders_report',
+  'jchappypig',
+  'sydneytools123',
+  {
+    dialect: 'postgres',
+    host: 'localhost'
+  }
 );
 
 export const Order = Conn.define('order',
