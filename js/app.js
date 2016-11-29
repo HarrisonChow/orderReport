@@ -19,6 +19,8 @@ import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
 import lightBaseTheme from 'material-ui/styles/baseThemes/lightBaseTheme';
 
+
+
 const history = useRouterHistory(createHashHistory)({ queryKey: false });
 const mountNode = document.getElementById('root');
 

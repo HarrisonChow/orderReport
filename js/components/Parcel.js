@@ -10,7 +10,8 @@ import Dialog from 'material-ui/Dialog';
 import FlatButton from 'material-ui/FlatButton';
 import RaisedButton from 'material-ui/RaisedButton';
 import moment from 'moment';
-import trackingDetails from '../../scripts/showTrackingDetails';
+var request = require('request');
+// import trackingDetails from '../../scripts/showTrackingDetails';
 
 const style = {
   bottomPaper: {
@@ -52,9 +53,18 @@ class ParcelDetails extends React.Component {
     };
   }
 
+
+
   handleOpen = () => {
-    let carrierName = this.props.viewer.parcels.edges[0].node.carrier;
-    trackingDetails(this.props.id, carrierName);
+    function track(){
+      request({url: 'http://localhost:3333/post/auspost', method: 'GET'}, function(error,response,body) {
+        console.log(response);
+        console.log(body);
+      });
+    }
+    // let carrierName = this.props.viewer.parcels.edges[0].node.carrier;
+    // trackingDetails(this.props.id, carrierName);
+    track();
     this.setState({open: true});
   };
 

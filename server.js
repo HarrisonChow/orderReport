@@ -6,7 +6,7 @@ import WebpackDevServer from 'webpack-dev-server';
 import {schema} from './data/schema';
 import {parcelChecking} from './scripts/trackParcels'
 import schedule from 'node-schedule';
-
+import ausp from './js/routes/auspost';
 //
 const APP_PORT = 3333;
 const GRAPHQL_PORT = 8080;
@@ -14,11 +14,9 @@ const GRAPHQL_PORT = 8080;
 // Expose a GraphQL endpoint
 const graphQLServer = express();
 
-
-var j = schedule.scheduleJob('* * 22 * * *', function(){
+// var j = schedule.scheduleJob('* * 22 * * *', function(){
     parcelChecking();
-    console.log('The answer to life, the universe, and everything!');
-});
+// });
 
 graphQLServer.use('/', graphQLHTTP({schema, pretty: true, graphiql: true}));
 graphQLServer.listen(GRAPHQL_PORT, () => console.log(
@@ -57,20 +55,8 @@ const app = new WebpackDevServer(compiler, {
     stats: {colors: true},
 });
 // Serve static resources
-
-var allowCrossDomain = function(req, res, next) {
-    if ('OPTIONS' == req.method) {
-      res.header('Access-Control-Allow-Origin', '*');
-      res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,PATCH,OPTIONS');
-      res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization, Content-Length, X-Requested-With');
-      res.send(200);
-    }
-    else {
-      next();
-    }
-};
-app.use(allowCrossDomain);
 app.use('/', express.static(path.resolve(__dirname, 'public')));
+app.use('/post', ausp);
 app.listen(APP_PORT, () => {
     console.log(`App is now running on http://localhost:${APP_PORT}`);
 });
