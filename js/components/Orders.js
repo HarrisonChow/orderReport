@@ -146,30 +146,30 @@ class OrderList extends React.Component {
             <div className = "col-xs-offset-1 col-xs-10 allButtons">
               <Paper zDepth = { 1 } style={ style.bottomPaper }>
               { this.state.displayDatePicker ?
-                  <div>
-                    <div className = "col-xs-3">
-                      <DatePicker
-                        onChange = { this.handleChangeDate.bind( this, 'minDate' ) }
-                        autoOk = { this.state.autoOk }
-                        floatingLabelText = "From"
-                        defaultDate = { this.state.minDate }
-                        disableYearSelection = { this.state.disableYearSelection }
-                        style = {{ fontWeight: 800 }}
-                        textFieldStyle = {{ top: -11 }}
-                      />
-                    </div>
-                    <div className = "col-xs-3">
-                      <DatePicker
-                        onChange = { this.handleChangeDate.bind(this, 'maxDate') }
-                        autoOk = { this.state.autoOk }
-                        floatingLabelText = "To"
-                        defaultDate = { this.state.maxDate }
-                        disableYearSelection = { this.state.disableYearSelection }
-                        style = {{ fontWeight: 800 }}
-                        textFieldStyle = {{ top: -11 }}
-                      />
-                    </div>
+                <div>
+                  <div className = "col-xs-3">
+                    <DatePicker
+                      onChange = { this.handleChangeDate.bind( this, 'minDate' ) }
+                      autoOk = { this.state.autoOk }
+                      floatingLabelText = "From"
+                      defaultDate = { this.state.minDate }
+                      disableYearSelection = { this.state.disableYearSelection }
+                      style = {{ fontWeight: 800 }}
+                      textFieldStyle = {{ top: -11 }}
+                    />
                   </div>
+                  <div className = "col-xs-3">
+                    <DatePicker
+                      onChange = { this.handleChangeDate.bind(this, 'maxDate') }
+                      autoOk = { this.state.autoOk }
+                      floatingLabelText = "To"
+                      defaultDate = { this.state.maxDate }
+                      disableYearSelection = { this.state.disableYearSelection }
+                      style = {{ fontWeight: 800 }}
+                      textFieldStyle = {{ top: -11 }}
+                    />
+                  </div>
+                </div>
               : null }
 
                 <DropDownMenu

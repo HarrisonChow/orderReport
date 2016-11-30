@@ -9,7 +9,7 @@ import {Table, TableBody, TableFooter, TableHeader, TableHeaderColumn, TableRow,
 import FooterNavigation from './Footer';
 import NavbarInstance from './Navigationbar';
 import SearchForm from './SearchForm'
-
+	
 const pageSize = 10;
 
 class AllOrders extends React.Component {

@@ -6,7 +6,9 @@ import WebpackDevServer from 'webpack-dev-server';
 import {schema} from './data/schema';
 import {parcelChecking} from './scripts/trackParcels'
 import schedule from 'node-schedule';
-import ausp from './js/routes/auspost';
+import australiaPost from './js/routes/australiaPost';
+import couriersPlease from './js/routes/couriersPlease';
+
 //
 const APP_PORT = 3333;
 const GRAPHQL_PORT = 8080;
@@ -15,48 +17,49 @@ const GRAPHQL_PORT = 8080;
 const graphQLServer = express();
 
 // var j = schedule.scheduleJob('* * 22 * * *', function(){
-    parcelChecking();
+  parcelChecking();
 // });
 
 graphQLServer.use('/', graphQLHTTP({schema, pretty: true, graphiql: true}));
 graphQLServer.listen(GRAPHQL_PORT, () => console.log(
-    `GraphQL Server is now running on http://localhost:${GRAPHQL_PORT}`
+  `GraphQL Server is now running on http://localhost:${GRAPHQL_PORT}`
 ));
 
 // Serve the Relay app
 const compiler = webpack({
-      entry: path.resolve(__dirname, 'js', 'app.js'),
-      module: {
-          loaders: [
-              {
-                  exclude: /node_modules/,
-                  loader: 'babel',
-                  test: /\.js$/,
-              },
-              {
-                  test: /\.json$/,
-                  loader: "json",
-              },
-          ],
-
+  entry: path.resolve(__dirname, 'js', 'app.js'),
+  module: {
+    loaders: [
+      {
+        exclude: /node_modules/,
+        loader: 'babel',
+        test: /\.js$/,
       },
-      output: {filename: 'app.js', path: '/'},
-      node: {
-          console: true,
-          fs: 'empty',
-          net: 'empty',
-          tls: 'empty'
-      }
+      {
+        test: /\.json$/,
+        loader: "json",
+      },
+    ],
+
+  },
+  output: {filename: 'app.js', path: '/'},
+  node: {
+    console: true,
+    fs: 'empty',
+    net: 'empty',
+    tls: 'empty'
+  }
 });
 const app = new WebpackDevServer(compiler, {
-    contentBase: '/public/',
-    proxy: {'/graphql': `http://localhost:${GRAPHQL_PORT}`},
-    publicPath: '/js/',
-    stats: {colors: true},
+  contentBase: '/public/',
+  proxy: {'/graphql': `http://localhost:${GRAPHQL_PORT}`},
+  publicPath: '/js/',
+  stats: {colors: true},
 });
 // Serve static resources
 app.use('/', express.static(path.resolve(__dirname, 'public')));
-app.use('/post', ausp);
+app.use('/post', australiaPost);
+app.use('/post', couriersPlease);
 app.listen(APP_PORT, () => {
-    console.log(`App is now running on http://localhost:${APP_PORT}`);
+  console.log(`App is now running on http://localhost:${APP_PORT}`);
 });

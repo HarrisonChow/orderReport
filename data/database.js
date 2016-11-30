@@ -1,17 +1,18 @@
 import Sequelize from 'sequelize';
 import moment from 'moment';
+
 moment.createFromInputFallback = function(config) {
-    config._d = new Date(config._i);
+  config._d = new Date(config._i);
 };
 
 import {
-    connectionFromPromisedArray,
+  connectionFromPromisedArray,
 } from 'graphql-relay';
 
 export const Conn = new Sequelize(
   'orders_report',
-  'jchappypig',
-  'sydneytools123',
+  'postgres',
+  'postgres',
   {
     dialect: 'postgres',
     host: 'localhost'
@@ -19,185 +20,185 @@ export const Conn = new Sequelize(
 );
 
 export const Order = Conn.define('order',
-    {
-        invoice_number: {
-            type: Sequelize.STRING
-        },
-        status: {
-            type: Sequelize.INTEGER
-        },
-        invoice_date: {
-            type: Sequelize.DATE
-        },
-        billing_firstname: {
-            type: Sequelize.STRING
-        },
-        billing_lastname: {
-            type: Sequelize.STRING
-        },
-        billing_email: {
-            type: Sequelize.STRING
-        },
-        billing_phone: {
-            type: Sequelize.STRING
-        },
-        billing_street: {
-            type: Sequelize.STRING
-        },
-        billing_suburb: {
-            type: Sequelize.STRING
-        },
-        billing_postcode: {
-            type: Sequelize.STRING
-        },
-        billing_state: {
-            type: Sequelize.STRING
-        },
-        grand_total: {
-            type: Sequelize.INTEGER
-        },
-        shipping_amount: {
-            type: Sequelize.INTEGER
-        },
-        created_at: {
-            type: Sequelize.DATE
-        },
-        updated_at: {
-            type: Sequelize.DATE
-        }
+  {
+    invoice_number: {
+      type: Sequelize.STRING
     },
-    {
-        underscored: true,
+    status: {
+      type: Sequelize.INTEGER
+    },
+    invoice_date: {
+      type: Sequelize.DATE
+    },
+    billing_firstname: {
+      type: Sequelize.STRING
+    },
+    billing_lastname: {
+      type: Sequelize.STRING
+    },
+    billing_email: {
+      type: Sequelize.STRING
+    },
+    billing_phone: {
+      type: Sequelize.STRING
+    },
+    billing_street: {
+      type: Sequelize.STRING
+    },
+    billing_suburb: {
+      type: Sequelize.STRING
+    },
+    billing_postcode: {
+      type: Sequelize.STRING
+    },
+    billing_state: {
+      type: Sequelize.STRING
+    },
+    grand_total: {
+      type: Sequelize.INTEGER
+    },
+    shipping_amount: {
+      type: Sequelize.INTEGER
+    },
+    created_at: {
+      type: Sequelize.DATE
+    },
+    updated_at: {
+      type: Sequelize.DATE
     }
+  },
+  {
+    underscored: true,
+  }
 );
 
 export const Item = Conn.define('order_item',
-    {
-        invoice_number: {
-            type: Sequelize.STRING
-        },
-        name: {
-            type: Sequelize.STRING
-        },
-        model: {
-            type: Sequelize.STRING
-        },
-        aden_code: {
-            type: Sequelize.STRING
-        },
-        qty: {
-            type: Sequelize.INTEGER
-        },
-        unit_price: {
-            type: Sequelize.INTEGER
-        },
-        subtotal: {
-            type: Sequelize.INTEGER
-        },
-        created_at: {
-            type: Sequelize.DATE
-        },
-        updated_at: {
-            type: Sequelize.DATE
-        }
+  {
+    invoice_number: {
+      type: Sequelize.STRING
     },
-    {
-      underscored: true,
+    name: {
+      type: Sequelize.STRING
+    },
+    model: {
+      type: Sequelize.STRING
+    },
+    aden_code: {
+      type: Sequelize.STRING
+    },
+    qty: {
+      type: Sequelize.INTEGER
+    },
+    unit_price: {
+      type: Sequelize.INTEGER
+    },
+    subtotal: {
+      type: Sequelize.INTEGER
+    },
+    created_at: {
+      type: Sequelize.DATE
+    },
+    updated_at: {
+      type: Sequelize.DATE
     }
+  },
+  {
+    underscored: true,
+  }
 );
 
 export const Parcel = Conn.define('parcel',
-    {
-        tracking_number: {
-            type: Sequelize.STRING
-        },
-        invoice_number: {
-            type: Sequelize.STRING
-        },
-        status: {
-            type: Sequelize.INTEGER
-        },
-        delivery_time: {
-            type: Sequelize.DATE
-        },
-        dispatch_time: {
-            type: Sequelize.DATE
-        },
-        packing_time: {
-            type: Sequelize.DATE
-        },
-        created_datetime: {
-            type: Sequelize.DATE
-        },
-        carrier: {
-          type: Sequelize.STRING
-        },
-        weight: {
-            type: Sequelize.INTEGER
-        },
-        width: {
-            type: Sequelize.INTEGER
-        },
-        length: {
-            type: Sequelize.INTEGER
-        },
-        height: {
-            type: Sequelize.INTEGER
-        },
-        packed_by: {
-            type: Sequelize.STRING
-        },
-        shipping_firstname: {
-            type: Sequelize.STRING
-        },
-        shipping_lastname: {
-            type: Sequelize.STRING
-        },
-        shipping_email: {
-            type: Sequelize.STRING
-        },
-        shipping_phone: {
-            type: Sequelize.STRING
-        },
-        shipping_street: {
-            type: Sequelize.STRING
-        },
-        shipping_suburb: {
-            type: Sequelize.STRING
-        },
-        shipping_postcode: {
-            type: Sequelize.STRING
-        },
-        shipping_state: {
-            type: Sequelize.STRING
-        },
-        created_at: {
-            type: Sequelize.DATE
-        },
-        updated_at: {
-            type: Sequelize.DATE
-        }
-        },
-    {
-        underscored: true,
+  {
+    tracking_number: {
+      type: Sequelize.STRING
+    },
+    invoice_number: {
+      type: Sequelize.STRING
+    },
+    status: {
+      type: Sequelize.INTEGER
+    },
+    delivery_time: {
+      type: Sequelize.DATE
+    },
+    dispatch_time: {
+      type: Sequelize.DATE
+    },
+    packing_time: {
+      type: Sequelize.DATE
+    },
+    created_datetime: {
+      type: Sequelize.DATE
+    },
+    carrier: {
+      type: Sequelize.STRING
+    },
+    weight: {
+      type: Sequelize.INTEGER
+    },
+    width: {
+      type: Sequelize.INTEGER
+    },
+    length: {
+      type: Sequelize.INTEGER
+    },
+    height: {
+      type: Sequelize.INTEGER
+    },
+    packed_by: {
+      type: Sequelize.STRING
+    },
+    shipping_firstname: {
+      type: Sequelize.STRING
+    },
+    shipping_lastname: {
+      type: Sequelize.STRING
+    },
+    shipping_email: {
+      type: Sequelize.STRING
+    },
+    shipping_phone: {
+      type: Sequelize.STRING
+    },
+    shipping_street: {
+      type: Sequelize.STRING
+    },
+    shipping_suburb: {
+      type: Sequelize.STRING
+    },
+    shipping_postcode: {
+      type: Sequelize.STRING
+    },
+    shipping_state: {
+      type: Sequelize.STRING
+    },
+    created_at: {
+      type: Sequelize.DATE
+    },
+    updated_at: {
+      type: Sequelize.DATE
     }
+    },
+  {
+    underscored: true,
+  }
 );
 
 export const Logistic = Conn.define('logistic',
-    {
-        name: {
-            type: Sequelize.STRING
-        },
-        created_at: {
-            type: Sequelize.DATE
-        },
-        updated_at: {
-            type: Sequelize.DATE
-        }
+  {
+    name: {
+      type: Sequelize.STRING
     },
-    {
-        underscored: true,
+    created_at: {
+      type: Sequelize.DATE
+    },
+    updated_at: {
+      type: Sequelize.DATE
     }
+  },
+  {
+    underscored: true,
+  }
 );
 
 
@@ -210,137 +211,136 @@ Logistic.hasMany(Parcel);
 Parcel.belongsTo(Logistic);
 
 export function getOrder(id) {
-    const order = Order.findOne({
-        where:{id: id},
-    }).then(function(v) {
-        return order;
-    });
+  const order = Order.findOne({
+    where:{id: id},
+  }).then(function(v) {
+    return order;
+  });
 };
 export function getParcel(id) {
-    const parcel = Parcel.findOne({
-        where:{id: id},
-    }).then(function(v) {
-        return parcel;
-    });
+  const parcel = Parcel.findOne({
+    where:{id: id},
+  }).then(function(v) {
+    return parcel;
+  });
 };
 export function getLogistic(id) {
-    const logistic = Logistic.findOne({
-        where:{id: id},
-    }).then(function(v) {
-        return logistic;
-    });
+  const logistic = Logistic.findOne({
+    where:{id: id},
+  }).then(function(v) {
+    return logistic;
+  });
 };
 
 export function getFastSLowByDays(speed, fromDate, toDate) {
 
-    var newFromDate = moment(fromDate).format('YYYY-MM-DD');
-    var newToDate = moment(toDate).format('YYYY-MM-DD');
-    var condition = (speed === 'fastest') ? "MIN" : "MAX";
+  var newFromDate = moment(fromDate).format('YYYY-MM-DD');
+  var newToDate = moment(toDate).format('YYYY-MM-DD');
+  var condition = (speed === 'fastest') ? "MIN" : "MAX";
 
-    return  Order.sequelize.query(
-    "SELECT * FROM orders RIGHT JOIN parcels ON orders.id = parcels.order_id WHERE (DATE_PART('day', parcels.delivery_time::timestamp - orders.invoice_date::timestamp) = (SELECT " + condition + "(DATE_PART('day', filterResults.delivery_time::timestamp - filterResults.invoice_date::timestamp)) FROM (SELECT * FROM orders RIGHT JOIN parcels ON orders.id = parcels.order_id WHERE orders.invoice_date >='"+ newFromDate +"' AND orders.invoice_date <='"+ newToDate +"') AS filterResults)) ",
-    { type: Sequelize.QueryTypes.SELECT}).then(function(orders)
-        {
-            return orders;
-        })
+  return  Order.sequelize.query(
+  "SELECT * FROM orders RIGHT JOIN parcels ON orders.id = parcels.order_id WHERE (DATE_PART('day', parcels.delivery_time::timestamp - orders.invoice_date::timestamp) = (SELECT " + condition + "(DATE_PART('day', filterResults.delivery_time::timestamp - filterResults.invoice_date::timestamp)) FROM (SELECT * FROM orders RIGHT JOIN parcels ON orders.id = parcels.order_id WHERE orders.invoice_date >='"+ newFromDate +"' AND orders.invoice_date <='"+ newToDate +"') AS filterResults)) ",
+  { type: Sequelize.QueryTypes.SELECT}).then(function(orders)
+    {
+      return orders;
+    })
 }
 
 export function getFast(speed, fromDate, toDate) {
-    var condition = (speed === 'fastest') ? "MIN" : "MAX";
-    var newFromDate = moment(fromDate).format('YYYY-MM-DD');
-    var newToDate = moment(toDate).format('YYYY-MM-DD');
+  var condition = (speed === 'fastest') ? "MIN" : "MAX";
+  var newFromDate = moment(fromDate).format('YYYY-MM-DD');
+  var newToDate = moment(toDate).format('YYYY-MM-DD');
 
-    return  Order.sequelize.query(
-      "SELECT " + condition + "(DATE_PART('day', filterResults.delivery_time::timestamp - filterResults.invoice_date::timestamp)) FROM (SELECT * FROM orders RIGHT JOIN parcels ON orders.id = parcels.order_id WHERE orders.invoice_date >='"+ newFromDate +"' AND orders.invoice_date <='"+ newToDate +"') AS filterResults",
-      { type: Sequelize.QueryTypes.SELECT}).then(function(orders)
-          {
-              var returnResult =
-                  (speed === 'fastest')?
-                  ((orders[0].min)? orders[0].min:0) :
-                  ((orders[0].max)? orders[0].max:0) ;
-              return returnResult;
-          })
+  return Order.sequelize.query("SELECT " + condition + "(DATE_PART('day', filterResults.delivery_time::timestamp - filterResults.invoice_date::timestamp)) FROM (SELECT * FROM orders RIGHT JOIN parcels ON orders.id = parcels.order_id WHERE orders.invoice_date >='"+ newFromDate +"' AND orders.invoice_date <='"+ newToDate +"') AS filterResults", { type: Sequelize.QueryTypes.SELECT }).then(function(orders)
+  {
+    var returnResult =
+      (speed === 'fastest')?
+      ((orders[0].min)? orders[0].min:0) :
+      ((orders[0].max)? orders[0].max:0) ;
+    return returnResult;
+  })
 }
 
 export function getAllOrders(invoiceNumber, invoiceDate, status, fromDate, toDate) {
-    var selectCondition =
-        (invoiceNumber != 'any') ?
-            {where: { invoice_number: invoiceNumber }} :
-        (invoiceDate != 'any' && status === 'any') ?
-            {where: { invoice_date: {$gt: invoiceDate} }} :
-        (invoiceDate != 'any' && status != 'any') ?
-            {where: { invoice_date: {$gt: invoiceDate}, status: status }} :
-        (fromDate != 'any' && toDate != 'any' && status === 'any') ?
-            {where: { invoice_date: {$gt: fromDate, $lte: toDate}}} :
-        (fromDate != 'any' && toDate != 'any' && status != 'any') ?
-            {where: { invoice_date: {$gt: fromDate, $lte: toDate},  status: status}} :
-        {order: '"id" ASC'};
-    return Order.findAll( selectCondition );
-    }
+  var selectCondition =
+    (invoiceNumber != 'any') ?
+      {where: { invoice_number: invoiceNumber }} :
+    (invoiceDate != 'any' && status === 'any') ?
+      {where: { invoice_date: {$gt: invoiceDate} }} :
+    (invoiceDate != 'any' && status != 'any') ?
+      {where: { invoice_date: {$gt: invoiceDate}, status: status }} :
+    (fromDate != 'any' && toDate != 'any' && status === 'any') ?
+      {where: { invoice_date: {$gt: fromDate, $lte: toDate}}} :
+    (fromDate != 'any' && toDate != 'any' && status != 'any') ?
+      {where: { invoice_date: {$gt: fromDate, $lte: toDate}, status: status}} :
+    {order: '"id" ASC'};
+  return Order.findAll( selectCondition );
+}
 
 export function getAmountByStatus(status) {
-    var selectCondition =
-        (status === 1) ? { where: {status: 1} } :
-        (status === 2) ? { where: {status: 2} } :
-        (status === 3) ? { where: {status: 3} } :
-        undefined;
-    return Order.findAndCountAll(selectCondition).then(function(result)
-        {
-            return result.count;
-        });
+  var selectCondition =
+    (status === 1) ? { where: {status: 1} } :
+    (status === 2) ? { where: {status: 2} } :
+    (status === 3) ? { where: {status: 3} } :
+    undefined;
+  return Order.findAndCountAll(selectCondition).then(function(result)
+    {
+      return result.count;
+    });
 }
 
 export function getLogisticDeliveryTime(num, id){
-    var selectCondition =
-        (num === 2) ?
-        "DATE_PART('day', parcels.delivery_time::timestamp - orders.invoice_date::timestamp) <=2" :
-        (num === 3) ?
-        "DATE_PART('day', parcels.delivery_time::timestamp - orders.invoice_date::timestamp) <= 5 AND DATE_PART('day', parcels.delivery_time::timestamp - orders.invoice_date::timestamp) >= 3" :
-        "DATE_PART('day', parcels.delivery_time::timestamp - orders.invoice_date::timestamp) >5";
+  var selectCondition =
+    (num === 2) ?
+    "DATE_PART('day', parcels.delivery_time::timestamp - orders.invoice_date::timestamp) <=2" :
+    (num === 3) ?
+    "DATE_PART('day', parcels.delivery_time::timestamp - orders.invoice_date::timestamp) <= 5 AND DATE_PART('day', parcels.delivery_time::timestamp - orders.invoice_date::timestamp) >= 3" :
+    "DATE_PART('day', parcels.delivery_time::timestamp - orders.invoice_date::timestamp) >5";
 
-    return Parcel.sequelize.query("SELECT * FROM parcels RIGHT JOIN orders ON orders.id = parcels.order_id WHERE parcels.logistic_id=" + id + " AND " + selectCondition , {type: Sequelize.QueryTypes.SELECT}).then(function(parcels)
-        {
-            return parcels.length;
-        })
+  return Parcel.sequelize.query("SELECT * FROM parcels RIGHT JOIN orders ON orders.id = parcels.order_id WHERE parcels.logistic_id=" + id + " AND " + selectCondition , {type: Sequelize.QueryTypes.SELECT}).then(function(parcels)
+  {
+    return parcels.length;
+  })
 }
 
 export function getAllParcels(trackingNumber, createdAt, deliveryTime,logisticId) {
-    var selectConditionTwo =
-        (deliveryTime === '2') ?
-        "DATE_PART('day', parcels.delivery_time::timestamp - orders.invoice_date::timestamp) <=2" :
-        (deliveryTime === '3') ?
-        "DATE_PART('day', parcels.delivery_time::timestamp - orders.invoice_date::timestamp) <= 5 AND DATE_PART('day', parcels.delivery_time::timestamp - orders.invoice_date::timestamp) >= 3" :
-        "DATE_PART('day', parcels.delivery_time::timestamp - orders.invoice_date::timestamp) >5";
+  var selectConditionTwo =
+    (deliveryTime === '2') ?
+    "DATE_PART('day', parcels.delivery_time::timestamp - orders.invoice_date::timestamp) <=2" :
+    (deliveryTime === '3') ?
+    "DATE_PART('day', parcels.delivery_time::timestamp - orders.invoice_date::timestamp) <= 5 AND DATE_PART('day', parcels.delivery_time::timestamp - orders.invoice_date::timestamp) >= 3" :
+    "DATE_PART('day', parcels.delivery_time::timestamp - orders.invoice_date::timestamp) >5";
 
-    var selectConditionOne =
-        (trackingNumber != 'any') ? { where: { tracking_number: trackingNumber } } :
-        (createdAt != 'any') ? { where: {status: {$ne: 3}}, include:[{model: Order, where: {invoice_date: {$lt: createdAt}}}] } :
-        {order: '"id" ASC'};
+  var selectConditionOne =
+    (trackingNumber != 'any') ? { where: { tracking_number: trackingNumber } } :
+    (createdAt != 'any') ? { where: {status: {$ne: 3}}, include:[{model: Order, where: {invoice_date: {$lt: createdAt}}}] } :
+    {order: '"id" ASC'};
 
-    if (deliveryTime != 'any' && logisticId != 'any') {
-        return Parcel.sequelize.query("SELECT * FROM parcels RIGHT JOIN orders ON orders.id = parcels.order_id WHERE parcels.logistic_id=" + logisticId+" AND " + selectConditionTwo , {type: Sequelize.QueryTypes.SELECT}).then(function(parcelsResult)
-            {
-                return parcelsResult;
-            })
-    } else {
-        return Parcel.findAll(selectConditionOne);
-    }
+  if (deliveryTime != 'any' && logisticId != 'any') {
+    return Parcel.sequelize.query("SELECT * FROM parcels RIGHT JOIN orders ON orders.id = parcels.order_id WHERE parcels.logistic_id=" + logisticId+" AND " + selectConditionTwo , {type: Sequelize.QueryTypes.SELECT}).then(function(parcelsResult)
+      {
+        return parcelsResult;
+      })
+  } else {
+    return Parcel.findAll(selectConditionOne);
+  }
 }
 
 export function getFilterParcels(days, fromDate, toDate) {
-
-    if (days != 'any') {
-        return Parcel.findAll({where: {status: 3 }, include:[{model: Order, where: {invoice_date: {$gte: days}}}]});
-    } else if (fromDate != 'any' && toDate != 'any') {
-        return Parcel.findAll({where: {status: 3 }, include:[{model: Order, where: {invoice_date: {$gte: fromDate, $lte: toDate}}}]});
-    } else {
-        return Parcel.findAll();
-    }
+  if (days != 'any') {
+    return Parcel.findAll({where: {status: 3 }, include:[{model: Order, where: {invoice_date: {$gte: days}}}]});
+  } else if (fromDate != 'any' && toDate != 'any') {
+    return Parcel.findAll({where: {status: 3 }, include:[{model: Order, where: {invoice_date: {$gte: fromDate, $lte: toDate}}}]});
+  } else {
+    return Parcel.findAll();
+  }
 }
 
 export function getAllLogistics() {
-    return Logistic.findAll()
+  return Logistic.findAll()
 }
+
+
 
 
 

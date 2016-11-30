@@ -121,167 +121,165 @@ const { connectionType: TodosConnection, edgeType: GraphQLTodoEdge } =
 const GraphQLOrder = new GraphQLObjectType({
   name: 'Order',
   fields: () => ({
-      id: globalIdField('Order'),
-      status: {
-        type: GraphQLString,
-        resolve: (obj) => obj.status,
-      },
-      invoice_number: {
-        type: GraphQLString,
-        resolve: (obj) => obj.invoice_number,
-      },
-      invoice_date: {
-        type: GraphQLString,
-        resolve: (obj) => obj.invoice_date,
-      },
-      billing_firstname: {
-        type: GraphQLString,
-        resolve: (obj) => obj.billing_firstname,
-      },
-      billing_lastname: {
-        type: GraphQLString,
-        resolve: (obj) => obj.billing_lastname,
-      },
-      billing_email: {
-        type: GraphQLString,
-        resolve: (obj) => obj.billing_email,
-      },
-      billing_phone: {
-        type: GraphQLString,
-        resolve: (obj) => obj.billing_phone,
-      },
-      billing_street: {
-        type: GraphQLString,
-        resolve: (obj) => obj.billing_street,
-      },
-      billing_suburb: {
-        type: GraphQLString,
-        resolve: (obj) => obj.billing_suburb,
-      },
-      billing_postcode: {
-        type: GraphQLString,
-        resolve: (obj) => obj.billing_postcode,
-      },
-      billing_state: {
-        type: GraphQLString,
-        resolve: (obj) => obj.billing_state,
-      },
-      grand_total: {
-        type: GraphQLString,
-        resolve: (obj) => obj.grand_total,
-      },
-      shipping_amount: {
-        type: GraphQLString,
-        resolve: (obj) => obj.shipping_amount,
-      },
-      created_at: {
-        type: GraphQLString,
-        resolve: (obj) => obj.created_at,
-      },
-      updated_at:{
-        type:GraphQLString,
-        resolve: (obj) => obj.updated_at,
-      },
-      parcels: {
-        args: connectionArgs,
-        type: ParcelsConnection,
-        resolve: (obj, ...args) => connectionFromPromisedArray(obj.getParcels(), args),
-      },
-    }),
+    id: globalIdField('Order'),
+    status: {
+      type: GraphQLString,
+      resolve: (obj) => obj.status,
+    },
+    invoice_number: {
+      type: GraphQLString,
+      resolve: (obj) => obj.invoice_number,
+    },
+    invoice_date: {
+      type: GraphQLString,
+      resolve: (obj) => obj.invoice_date,
+    },
+    billing_firstname: {
+      type: GraphQLString,
+      resolve: (obj) => obj.billing_firstname,
+    },
+    billing_lastname: {
+      type: GraphQLString,
+      resolve: (obj) => obj.billing_lastname,
+    },
+    billing_email: {
+      type: GraphQLString,
+      resolve: (obj) => obj.billing_email,
+    },
+    billing_phone: {
+      type: GraphQLString,
+      resolve: (obj) => obj.billing_phone,
+    },
+    billing_street: {
+      type: GraphQLString,
+      resolve: (obj) => obj.billing_street,
+    },
+    billing_suburb: {
+      type: GraphQLString,
+      resolve: (obj) => obj.billing_suburb,
+    },
+    billing_postcode: {
+      type: GraphQLString,
+      resolve: (obj) => obj.billing_postcode,
+    },
+    billing_state: {
+      type: GraphQLString,
+      resolve: (obj) => obj.billing_state,
+    },
+    grand_total: {
+      type: GraphQLString,
+      resolve: (obj) => obj.grand_total,
+    },
+    shipping_amount: {
+      type: GraphQLString,
+      resolve: (obj) => obj.shipping_amount,
+    },
+    created_at: {
+      type: GraphQLString,
+      resolve: (obj) => obj.created_at,
+    },
+    updated_at:{
+      type:GraphQLString,
+      resolve: (obj) => obj.updated_at,
+    },
+    parcels: {
+      args: connectionArgs,
+      type: ParcelsConnection,
+      resolve: (obj, ...args) => connectionFromPromisedArray(obj.getParcels(), args),
+    },
+  }),
   interfaces: [nodeInterface],
 });
 
 const { connectionType: OrdersConnection, edgeType: GraphQLOrderEdge } =
-   connectionDefinitions({ name: 'Order', nodeType: GraphQLOrder });
+  connectionDefinitions({ name: 'Order', nodeType: GraphQLOrder });
 
 const GraphQLParcel = new GraphQLObjectType({
   name: 'Parcel',
   fields: () => ({
-      id: globalIdField('Parcel'),
-      status: {
-        type: GraphQLString,
-        resolve: (obj) => obj.status,
-      },
-      tracking_number: {
-        type: GraphQLString,
-        resolve: (obj) => obj.tracking_number,
-      },
-      delivery_time: {
-        type: GraphQLString,
-        resolve: (obj) => obj.delivery_time,
-      },
-      dispatch_time: {
-        type: GraphQLString,
-        resolve: (obj) => obj.dispatch_time,
-      },
-      packing_time: {
-        type: GraphQLString,
-        resolve: (obj) => obj.packing_time,
-      },
-      created_datetime: {
-        type: GraphQLString,
-        resolve: (obj) => obj.created_datetime,
-      },
-      carrier: {
-        type: GraphQLString,
-        resolve: (obj) => obj.carrier,
-      },
-      logistic: {
-        type: GraphQLLogistic,
-        resolve: (obj) => obj.getLogistic(),
-      },
-      order: {
-        type: GraphQLOrder,
-        resolve: (obj) => obj.getOrder(),
-      },
-      packed_by: {
-        type: GraphQLString,
-        resolve: (obj) => obj.packed_by,
-      },
-      shipping_firstname: {
-        type: GraphQLString,
-        resolve: (obj) => obj.shipping_firstname,
-      },
-      shipping_lastname: {
-        type: GraphQLString,
-        resolve: (obj) => obj.shipping_lastname,
-      },
-      shipping_email: {
-        type: GraphQLString,
-        resolve: (obj) => obj.shipping_email,
-      },
-      shipping_phone: {
-        type: GraphQLString,
-        resolve: (obj) => obj.shipping_phone,
-      },
-      shipping_street: {
-        type: GraphQLString,
-        resolve: (obj) => obj.shipping_street,
-      },
-      shipping_suburb: {
-        type: GraphQLString,
-        resolve: (obj) => obj.shipping_suburb,
-      },
-      shipping_postcode: {
-        type: GraphQLString,
-        resolve: (obj) => obj.shipping_postcode,
-      },
-      shipping_state: {
-        type: GraphQLString,
-        resolve: (obj) => obj.shipping_state,
-      },
-
-      created_at: {
-        type: GraphQLString,
-        resolve: (obj) => obj.created_at,
-      },
-      updated_at: {
-        type: GraphQLString,
-        resolve: (obj) => obj.updated_at,
-      }
-    }),
+    id: globalIdField('Parcel'),
+    status: {
+      type: GraphQLString,
+      resolve: (obj) => obj.status,
+    },
+    tracking_number: {
+      type: GraphQLString,
+      resolve: (obj) => obj.tracking_number,
+    },
+    delivery_time: {
+      type: GraphQLString,
+      resolve: (obj) => obj.delivery_time,
+    },
+    dispatch_time: {
+      type: GraphQLString,
+      resolve: (obj) => obj.dispatch_time,
+    },
+    packing_time: {
+      type: GraphQLString,
+      resolve: (obj) => obj.packing_time,
+    },
+    created_datetime: {
+      type: GraphQLString,
+      resolve: (obj) => obj.created_datetime,
+    },
+    carrier: {
+      type: GraphQLString,
+      resolve: (obj) => obj.carrier,
+    },
+    logistic: {
+      type: GraphQLLogistic,
+      resolve: (obj) => obj.getLogistic(),
+    },
+    order: {
+      type: GraphQLOrder,
+      resolve: (obj) => obj.getOrder(),
+    },
+    packed_by: {
+      type: GraphQLString,
+      resolve: (obj) => obj.packed_by,
+    },
+    shipping_firstname: {
+      type: GraphQLString,
+      resolve: (obj) => obj.shipping_firstname,
+    },
+    shipping_lastname: {
+      type: GraphQLString,
+      resolve: (obj) => obj.shipping_lastname,
+    },
+    shipping_email: {
+      type: GraphQLString,
+      resolve: (obj) => obj.shipping_email,
+    },
+    shipping_phone: {
+      type: GraphQLString,
+      resolve: (obj) => obj.shipping_phone,
+    },
+    shipping_street: {
+      type: GraphQLString,
+      resolve: (obj) => obj.shipping_street,
+    },
+    shipping_suburb: {
+      type: GraphQLString,
+      resolve: (obj) => obj.shipping_suburb,
+    },
+    shipping_postcode: {
+      type: GraphQLString,
+      resolve: (obj) => obj.shipping_postcode,
+    },
+    shipping_state: {
+      type: GraphQLString,
+      resolve: (obj) => obj.shipping_state,
+    },
+    created_at: {
+      type: GraphQLString,
+      resolve: (obj) => obj.created_at,
+    },
+    updated_at: {
+      type: GraphQLString,
+      resolve: (obj) => obj.updated_at,
+    }
+  }),
   interfaces: [nodeInterface],
-
 });
 
 const { connectionType: ParcelsConnection, edgeType: GraphQLParcelEdge } =
@@ -290,49 +288,49 @@ const { connectionType: ParcelsConnection, edgeType: GraphQLParcelEdge } =
 const GraphQLLogistic = new GraphQLObjectType({
   name: 'Logistic',
   fields: () => ({
-      id: globalIdField('Logistic'),
-      name: {
-        type: GraphQLString,
-        resolve: (obj) => obj.name,
-      },
-      parcels: {
-        args: connectionArgs,
-        type: ParcelsConnection,
-        resolve: (obj, ...args) => connectionFromPromisedArray(obj.getParcels(), args),
-      },
-      filterparcels: {
-        type: ParcelsConnection,
-        args: {
-          days: {
-            type: GraphQLString,
-            defaultValue: 'any',
-          },
-          fromDate: {
-            type: GraphQLString,
-            defaultValue: 'any',
-          },
-          toDate: {
-            type: GraphQLString,
-            defaultValue: 'any',
-          },
-          ...connectionArgs,
+    id: globalIdField('Logistic'),
+    name: {
+      type: GraphQLString,
+      resolve: (obj) => obj.name,
+    },
+    parcels: {
+      args: connectionArgs,
+      type: ParcelsConnection,
+      resolve: (obj, ...args) => connectionFromPromisedArray(obj.getParcels(), args),
+    },
+    filterparcels: {
+      type: ParcelsConnection,
+      args: {
+        days: {
+          type: GraphQLString,
+          defaultValue: 'any',
         },
-        resolve: (obj, {days,fromDate,toDate, ...args}) =>
-          connectionFromPromisedArray(getFilterParcels(days,fromDate,toDate), args)
+        fromDate: {
+          type: GraphQLString,
+          defaultValue: 'any',
+        },
+        toDate: {
+          type: GraphQLString,
+          defaultValue: 'any',
+        },
+        ...connectionArgs,
       },
-      lessTwo: {
-        type: GraphQLInt,
-        resolve: (obj) => getLogisticDeliveryTime(2, obj.id),
-      },
-      ThreeToFive: {
-        type: GraphQLInt,
-        resolve: (obj) => getLogisticDeliveryTime(3, obj.id),
-      },
-      fiveMore: {
-        type: GraphQLInt,
-        resolve: (obj) => getLogisticDeliveryTime(5, obj.id),
-      },
-    }),
+      resolve: (obj, {days,fromDate,toDate, ...args}) =>
+        connectionFromPromisedArray(getFilterParcels(days,fromDate,toDate), args)
+    },
+    lessTwo: {
+      type: GraphQLInt,
+      resolve: (obj) => getLogisticDeliveryTime(2, obj.id),
+    },
+    ThreeToFive: {
+      type: GraphQLInt,
+      resolve: (obj) => getLogisticDeliveryTime(3, obj.id),
+    },
+    fiveMore: {
+      type: GraphQLInt,
+      resolve: (obj) => getLogisticDeliveryTime(5, obj.id),
+    },
+  }),
   interfaces: [nodeInterface],
 });
 

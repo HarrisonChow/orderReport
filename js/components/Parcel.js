@@ -53,18 +53,48 @@ class ParcelDetails extends React.Component {
     };
   }
 
-
-
   handleOpen = () => {
-    function track(){
+    function auspostTrack(){
       request({url: 'http://localhost:3333/post/auspost', method: 'GET'}, function(error,response,body) {
-        console.log(response);
         console.log(body);
+        var checkEvents = JSON.parse(body).QueryTrackEventsResponse.TrackingResults[0].Consignment.Articles[0].Events;
+        var parcelDetails = checkEvents.map(function(parcel) {
+          var message =
+
+          "EventDescription: " + parcel.EventDescription + "<br />" +
+          "EventDateTime: " + parcel.EventDateTime + "<br />" +
+          "Location: " + parcel.Location + "<br />" +
+          "WorkCentreID: " + parcel.WorkCentreID +"<br />";
+          "EventCode: " + parcel.EventCode + "<br />" +
+          "Status: " + parcel.Status + "<br /><br />"
+
+          return message;
+        })
+        document.getElementById('details').innerHTML = parcelDetails.join(" ");
+        console.log(checkEvents);
       });
     }
-    // let carrierName = this.props.viewer.parcels.edges[0].node.carrier;
+    function couriersPleaseTrack(){
+      request({url: 'http://localhost:3333/post/couriersP', method: 'GET'}, function(error,response,body) {
+        var checkEvents = JSON.parse(body).MainRootNode.Root[0].TrakingInfo;
+        checkEvents.shift();
+        var parcelDetails = checkEvents.map(function(parcel) {
+          var message =
+          "Date: " + parcel.Date + "<br />" +
+          "Time: " + parcel.time + "<br />" +
+          "Status: " + parcel.Action +"<br /><br />";
+          return message;
+        })
+        document.getElementById('details').innerHTML = parcelDetails.join(" ");
+      });
+    }
+    let carrierName = this.props.viewer.parcels.edges[0].node.carrier;
+    if (carrierName === 'Australia Post') {
+      auspostTrack()
+    } else {
+      couriersPleaseTrack();
+    }
     // trackingDetails(this.props.id, carrierName);
-    track();
     this.setState({open: true});
   };
 
@@ -86,29 +116,29 @@ class ParcelDetails extends React.Component {
       />,
     ];
     return (
-        <div>
-          <NavbarInstance />
-            <div className = "pagelayout">
-              <Dialog
-                title="Delivery tracking details"
-                actions={actions}
-                modal={false}
-                open={this.state.open}
-                onRequestClose={this.handleClose}
-                autoScrollBodyContent={true}
-                contentStyle={style.dialogStyle}
-              >
-                <div id = "details"></div>
-              </Dialog>
-              <div className="parcel">
-                {this.props.viewer.parcels.edges
-                  .map(edge =>
-                  <Detail showCheckboxes={this.state.showCheckboxes} handleOpen={this.handleOpen} edge={edge} key={edge.node.id}/>
-                )}
-              </div>
+      <div>
+        <NavbarInstance />
+          <div className = "pagelayout">
+            <Dialog
+              title="Delivery tracking details"
+              actions={actions}
+              modal={false}
+              open={this.state.open}
+              onRequestClose={this.handleClose}
+              autoScrollBodyContent={true}
+              contentStyle={style.dialogStyle}
+            >
+              <div id = "details"></div>
+            </Dialog>
+            <div className="parcel">
+              {this.props.viewer.parcels.edges
+                .map(edge =>
+                <Detail showCheckboxes={this.state.showCheckboxes} handleOpen={this.handleOpen} edge={edge} key={edge.node.id}/>
+              )}
             </div>
-          <FooterNavigation />
-        </div>
+          </div>
+        <FooterNavigation />
+      </div>
     )
   }
 }
@@ -176,7 +206,7 @@ class Detail extends React.Component {
 
 export default Relay.createContainer(ParcelDetails, {
   initialVariables: {
-    trackingNumber: null,
+     trackingNumber: null,
   },
 
   fragments: {

@@ -80,11 +80,11 @@ class Logistic extends React.Component {
       )
     } else {
       return (
-          <div className="logistic">
-            <Paper zDepth={1} style={style.bottomPaper}>
-              <div className={`logistic-${logistic.name}`}><ReactChart width={650} height={120} data={data} /></div>
-            </Paper>
-          </div>
+        <div className="logistic">
+          <Paper zDepth={1} style={style.bottomPaper}>
+            <div className={`logistic-${logistic.name}`}><ReactChart width={650} height={120} data={data} /></div>
+          </Paper>
+        </div>
       )
     }
   }
@@ -99,7 +99,6 @@ export default Relay.createContainer(LogisticsList, {
   fragments: {
     viewer: () => Relay.QL`
       fragment on User {
-
         logistics(first: 99999) {
           edges {
             cursor,
